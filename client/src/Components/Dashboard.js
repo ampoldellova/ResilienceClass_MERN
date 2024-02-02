@@ -1,11 +1,11 @@
-import React from 'react';
+import React, { useEffect, useState } from 'react';
 import { styled, createTheme, ThemeProvider } from '@mui/material/styles';
-import { CssBaseline, Drawer as MuiDrawer, Box, AppBar as MuiAppBar, Toolbar, List, Typography, Divider, IconButton, Badge, Container, Grid, Paper, Link, } from '@mui/material';
+import { CssBaseline, Drawer as MuiDrawer, Box, AppBar as MuiAppBar, Toolbar, List, Typography, Divider, IconButton, Badge, Container, Grid, Paper, Avatar, } from '@mui/material';
 import { Menu as MenuIcon, ChevronLeft as ChevronLeftIcon, Notifications as NotificationsIcon, } from '@mui/icons-material';
 import { mainListItems } from './listItems';
-// import Chart from './Chart';
-// import Deposits from './Deposits';
-// import Orders from './Orders';
+import { getUser } from '../utils/helpers';
+import MetaData from './Layout/Metadata';
+
 
 const drawerWidth = 240;
 
@@ -56,14 +56,21 @@ const Drawer = styled(MuiDrawer, { shouldForwardProp: (prop) => prop !== 'open' 
 // TODO remove, this demo shouldn't need to reset the theme.
 const defaultTheme = createTheme();
 
-export default function Dashboard() {
+const Dashboard = () => {
     const [open, setOpen] = React.useState(true);
+    const [user, setUser] = useState('')
+
+    useEffect(() => {
+        setUser(getUser())
+    }, [])
+
     const toggleDrawer = () => {
         setOpen(!open);
     };
 
     return (
         <ThemeProvider theme={defaultTheme}>
+            <MetaData title={'Dashboard'} />
             <Box sx={{ display: 'flex' }}>
                 <CssBaseline />
                 <AppBar position="absolute" open={open}>
@@ -94,9 +101,10 @@ export default function Dashboard() {
                             Dashboard
                         </Typography>
                         <IconButton color="inherit">
-                            <Badge badgeContent={4} color="secondary">
+                            <Avatar alt={user && user.name} src={user.avatar && user.avatar.url} style={{ border: '2px solid white' }} />
+                            {/* <Badge badgeContent={4} color="secondary">
                                 <NotificationsIcon />
-                            </Badge>
+                            </Badge> */}
                         </IconButton>
                     </Toolbar>
                 </AppBar>
@@ -171,4 +179,6 @@ export default function Dashboard() {
             </Box>
         </ThemeProvider>
     );
-}
+};
+
+export default Dashboard;
