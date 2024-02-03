@@ -1,10 +1,15 @@
 import React, { useEffect, useState } from 'react';
 import { styled, createTheme, ThemeProvider } from '@mui/material/styles';
-import { CssBaseline, Drawer as MuiDrawer, Box, AppBar as MuiAppBar, Toolbar, List, Typography, Divider, IconButton, Badge, Container, Grid, Paper, Avatar, } from '@mui/material';
-import { Menu as MenuIcon, ChevronLeft as ChevronLeftIcon, Notifications as NotificationsIcon, } from '@mui/icons-material';
+import { Menu, MenuItem, CssBaseline, Drawer as MuiDrawer, Box, AppBar as MuiAppBar, Toolbar, List, Typography, Divider, IconButton, Badge, Container, Grid, Paper, Avatar, } from '@mui/material';
+import { Menu as MenuIcon, ChevronLeft as ChevronLeftIcon } from '@mui/icons-material';
+import AccountCircle from '@mui/icons-material/AccountCircle';
+import LogoutIcon from '@mui/icons-material/Logout';
+import { Link, useNavigate } from 'react-router-dom';
 import { mainListItems } from './listItems';
-import { getUser } from '../utils/helpers';
+import { getUser, logout } from '../utils/helpers';
+import { toast } from 'react-toastify';
 import MetaData from './Layout/Metadata';
+import axios from 'axios';
 
 
 const drawerWidth = 240;
@@ -59,6 +64,56 @@ const defaultTheme = createTheme();
 const Dashboard = () => {
     const [open, setOpen] = React.useState(true);
     const [user, setUser] = useState('')
+    const navigate = useNavigate()
+    const menuId = 'primary-search-account-menu';
+    const [anchorEl, setAnchorEl] = React.useState(null);
+    const isMenuOpen = Boolean(anchorEl);
+    const logoutUser = async () => {
+
+        try {
+            await axios.get(`http://localhost:4003/api/v1/logout`)
+            setUser('')
+            logout(() => navigate('/login'))
+        } catch (error) {
+            toast.error(error.response.data.message)
+
+        }
+    }
+
+    const logoutHandler = () => {
+        logoutUser();
+        handleMenuClose();
+        toast.success('log out', {
+            position: toast.POSITION.BOTTOM_RIGHT
+        });
+    }
+
+    const handleProfileMenuOpen = (event) => {
+        setAnchorEl(event.currentTarget);
+    };
+    const handleMenuClose = () => {
+        setAnchorEl(null);
+    };
+
+    const renderMenu = (
+        <Menu
+            anchorEl={anchorEl}
+            anchorOrigin={{
+                vertical: 'top',
+                horizontal: 'right',
+            }}
+            id={menuId}
+            keepMounted
+            transformOrigin={{
+                vertical: 'top',
+                horizontal: 'right',
+            }}
+            open={isMenuOpen}
+            onClose={handleMenuClose}
+        >
+            <MenuItem onClick={logoutHandler}><LogoutIcon style={{ marginRight: 10 }} /> Logout</MenuItem>
+        </Menu>
+    );
 
     useEffect(() => {
         setUser(getUser())
@@ -98,13 +153,18 @@ const Dashboard = () => {
                             noWrap
                             sx={{ flexGrow: 1 }}
                         >
-                            Dashboard
+                            Resilience Class
                         </Typography>
-                        <IconButton color="inherit">
+                        <IconButton
+                            size="large"
+                            edge="end"
+                            aria-label="account of current user"
+                            aria-controls={menuId}
+                            aria-haspopup="true"
+                            onClick={handleProfileMenuOpen}
+                            color="inherit">
                             <Avatar alt={user && user.name} src={user.avatar && user.avatar.url} style={{ border: '2px solid white' }} />
-                            {/* <Badge badgeContent={4} color="secondary">
-                                <NotificationsIcon />
-                            </Badge> */}
+
                         </IconButton>
                     </Toolbar>
                 </AppBar>
@@ -176,6 +236,7 @@ const Dashboard = () => {
                         </Grid>
                     </Container>
                 </Box>
+                {renderMenu}
             </Box>
         </ThemeProvider>
     );
