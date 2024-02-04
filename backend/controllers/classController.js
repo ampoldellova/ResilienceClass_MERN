@@ -1,52 +1,17 @@
-const Supplier = require('../models/supplier');
+const Class = require('../models/class');
 const APIFeatures = require('../utils/apiFeatures');
 const cloudinary = require('cloudinary')
 
-exports.newProduct = async (req, res, next) => {
-
-    let images = []
-    if (typeof req.body.images === 'string') {
-        images.push(req.body.images)
-    } else {
-        images = req.body.images.flat()
-    }
-
-    let imagesLinks = [];
-
-    for (let i = 0; i < images.length; i++) {
-        let imageDataUri = images[i]
-        // console.log(imageDataUri)
-        try {
-            const result = await cloudinary.v2.uploader.upload(`${imageDataUri}`, {
-                folder: 'Kickz/products',
-                width: 150,
-                crop: "scale",
-            });
-
-            imagesLinks.push({
-                public_id: result.public_id,
-                url: result.secure_url
-            })
-
-        } catch (error) {
-            console.log(error)
-        }
-
-    }
-
-    req.body.images = imagesLinks
-    req.body.user = req.user.id;
-
-    const product = await Product.create(req.body);
-    if (!product)
+exports.newClass = async (req, res, next) => {
+    const classRoom = await Class.create(req.body);
+    if (!classRoom)
         return res.status(400).json({
             success: false,
-            message: 'Product not created'
+            message: 'Class Room has not been created'
         })
-
 
     res.status(201).json({
         success: true,
-        product
+        classRoom
     })
 }

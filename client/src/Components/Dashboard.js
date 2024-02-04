@@ -10,6 +10,7 @@ import { getUser, logout } from '../utils/helpers';
 import { toast } from 'react-toastify';
 import MetaData from './Layout/Metadata';
 import axios from 'axios';
+import NewClass from './Class/NewClass';
 
 
 const drawerWidth = 240;
@@ -58,8 +59,8 @@ const Drawer = styled(MuiDrawer, { shouldForwardProp: (prop) => prop !== 'open' 
     }),
 );
 
-// TODO remove, this demo shouldn't need to reset the theme.
 const defaultTheme = createTheme();
+
 
 const Dashboard = () => {
     const [open, setOpen] = React.useState(true);
@@ -68,6 +69,17 @@ const Dashboard = () => {
     const menuId = 'primary-search-account-menu';
     const [profileaAnchorEl, setProfileAnchorEl] = React.useState(null);
     const [classMenuAnchorEl, setClassMenuAnchorEl] = useState(null);
+    const [isModalOpen, setIsModalOpen] = useState(false);
+
+    const handleCreateClassClick = () => {
+        // Toggle the modal's visibility
+        setIsModalOpen(!isModalOpen);
+    };
+
+    const handleCloseModal = () => {
+        // Close the modal
+        setIsModalOpen(false);
+    };
 
     const handleClassMenuOpen = (event) => {
         setClassMenuAnchorEl(event.currentTarget);
@@ -171,7 +183,7 @@ const Dashboard = () => {
                             open={Boolean(classMenuAnchorEl)}
                             onClose={handleClassMenuClose}
                         >
-                            <MenuItem>Create Class</MenuItem>
+                            <MenuItem onClick={handleCreateClassClick} >Create Class</MenuItem>
                         </Menu>
 
                         <IconButton
@@ -203,6 +215,7 @@ const Dashboard = () => {
                         </Menu>
                     </Toolbar>
                 </AppBar>
+
                 <Drawer variant="permanent" open={open}>
                     <Toolbar
                         sx={{
@@ -235,40 +248,7 @@ const Dashboard = () => {
                 >
                     <Toolbar />
                     <Container maxWidth="lg" sx={{ mt: 4, mb: 4 }}>
-                        <Grid container spacing={3}>
-                            {/* Chart */}
-                            <Grid item xs={12} md={8} lg={9}>
-                                <Paper
-                                    sx={{
-                                        p: 2,
-                                        display: 'flex',
-                                        flexDirection: 'column',
-                                        height: 240,
-                                    }}
-                                >
-                                    {/* <Chart /> */}
-                                </Paper>
-                            </Grid>
-                            {/* Recent Deposits */}
-                            <Grid item xs={12} md={4} lg={3}>
-                                <Paper
-                                    sx={{
-                                        p: 2,
-                                        display: 'flex',
-                                        flexDirection: 'column',
-                                        height: 240,
-                                    }}
-                                >
-                                    {/* <Deposits /> */}
-                                </Paper>
-                            </Grid>
-                            {/* Recent Orders */}
-                            <Grid item xs={12}>
-                                <Paper sx={{ p: 2, display: 'flex', flexDirection: 'column' }}>
-                                    {/* <Orders /> */}
-                                </Paper>
-                            </Grid>
-                        </Grid>
+                        {isModalOpen && <NewClass onClose={handleCloseModal} />}
                     </Container>
                 </Box>
             </Box>

@@ -1,86 +1,34 @@
 const mongoose = require('mongoose')
 
 const classSchema = new mongoose.Schema({
-    name: {
+    className: {
         type: String,
         required: [true, 'Please enter class name'],
         trim: true,
         maxLength: [100, 'Class name cannot exceed 100 characters']
     },
-    description: {
+    section: {
         type: String,
-        required: [true, 'Please enter product description'],
+        required: [true, 'Please enter class section'],
     },
-    ratings: {
-        type: Number,
-        default: 0
-    },
-    images: [
-        {
-            public_id: {
-                type: String,
-                required: true
-            },
-            url: {
-                type: String,
-                required: true
-            },
-        }
-    ],
-    size: {
-        type: Number,
-        required: [true, 'Please enter shoe size'],
-        maxLength: [2, 'Shoe size cannot exceed 2 characters'],
-        default: 0.0
-    },
-    colorway: {
+    subject: {
         type: String,
-        required: [true, 'Please enter product colorway'],
+        required: [true, 'Please enter class subject'],
     },
-    brand: {
-        type: mongoose.Schema.Types.ObjectId,
-        required: [true, 'Please select a brand for this product'],
-    },
-    type: {
+    roomNumber: {
         type: String,
-        required: [true, 'Please select type of shoe for this product'],
-        enum: {
-            values: [
-                'High-tops',
-                'Mid-cut',
-                'Low-tops',
-                'Slip-ons'
-            ],
-            message: 'Please select correct type of shoe for the product'
+        required: [true, 'Please enter class room number'],
+    },
+    coverPhoto: {
+        public_id: {
+            type: String,
+            default: 'ResilienceClass/classCoverPhotos/user_fr5bdx'
+        },
+        url: {
+            type: String,
+            default: 'https://res.cloudinary.com/dwkmutbz3/image/upload/v1707029676/ResilienceClass/classCoverPhotos/360_F_214316329_vX8WM2z1DLYfzcyRxqOenc9SJV7gXOyJ_flnrrp.jpg'
         }
     },
-    stock: {
-        type: Number,
-        required: [true, 'Please enter product stock'],
-        maxLength: [5, 'Product stock cannot exceed 5 characters'],
-        default: 0
-    },
-    reviews: [
-        {
-            // user: {
-            //     type: mongoose.Schema.ObjectId,
-            //     ref: 'User',
-            //     required: true
-            // },
-            name: {
-                type: String,
-                required: true
-            },
-            rating: {
-                type: Number,
-                required: true
-            },
-            comment: {
-                type: String,
-                required: true
-            }
-        }
-    ],
     createdAt: {
         type: Date,
         default: Date.now
