@@ -1,8 +1,8 @@
 import React, { useEffect, useState } from 'react';
 import { styled, createTheme, ThemeProvider } from '@mui/material/styles';
-import { Menu, MenuItem, CssBaseline, Drawer as MuiDrawer, Box, AppBar as MuiAppBar, Toolbar, List, Typography, Divider, IconButton, Badge, Container, Grid, Paper, Avatar, } from '@mui/material';
+import { Menu, MenuItem, CssBaseline, Drawer as MuiDrawer, Box, AppBar as MuiAppBar, Toolbar, List, Typography, Divider, IconButton, Badge, Container, Grid, Paper, Avatar, Button } from '@mui/material';
 import { Menu as MenuIcon, ChevronLeft as ChevronLeftIcon } from '@mui/icons-material';
-import AccountCircle from '@mui/icons-material/AccountCircle';
+import AddIcon from '@mui/icons-material/Add';
 import LogoutIcon from '@mui/icons-material/Logout';
 import { Link, useNavigate } from 'react-router-dom';
 import { mainListItems } from './listItems';
@@ -66,8 +66,24 @@ const Dashboard = () => {
     const [user, setUser] = useState('')
     const navigate = useNavigate()
     const menuId = 'primary-search-account-menu';
-    const [anchorEl, setAnchorEl] = React.useState(null);
-    const isMenuOpen = Boolean(anchorEl);
+    const [profileaAnchorEl, setProfileAnchorEl] = React.useState(null);
+    const [classMenuAnchorEl, setClassMenuAnchorEl] = useState(null);
+
+    const handleClassMenuOpen = (event) => {
+        setClassMenuAnchorEl(event.currentTarget);
+    };
+
+    const handleClassMenuClose = () => {
+        setClassMenuAnchorEl(null);
+    };
+
+    const handleProfileMenuOpen = (event) => {
+        setProfileAnchorEl(event.currentTarget);
+    };
+    const handleProfileMenuClose = () => {
+        setProfileAnchorEl(null);
+    };
+
     const logoutUser = async () => {
 
         try {
@@ -82,38 +98,11 @@ const Dashboard = () => {
 
     const logoutHandler = () => {
         logoutUser();
-        handleMenuClose();
+        handleProfileMenuClose();
         toast.success('log out', {
             position: toast.POSITION.BOTTOM_RIGHT
         });
     }
-
-    const handleProfileMenuOpen = (event) => {
-        setAnchorEl(event.currentTarget);
-    };
-    const handleMenuClose = () => {
-        setAnchorEl(null);
-    };
-
-    const renderMenu = (
-        <Menu
-            anchorEl={anchorEl}
-            anchorOrigin={{
-                vertical: 'top',
-                horizontal: 'right',
-            }}
-            id={menuId}
-            keepMounted
-            transformOrigin={{
-                vertical: 'top',
-                horizontal: 'right',
-            }}
-            open={isMenuOpen}
-            onClose={handleMenuClose}
-        >
-            <MenuItem onClick={logoutHandler}><LogoutIcon style={{ marginRight: 10 }} /> Logout</MenuItem>
-        </Menu>
-    );
 
     useEffect(() => {
         setUser(getUser())
@@ -156,6 +145,36 @@ const Dashboard = () => {
                             Resilience Class
                         </Typography>
                         <IconButton
+                            variant="text"
+                            style={{ color: 'white' }}
+                            size="large"
+                            edge="end"
+                            aria-controls="classMenu"
+                            aria-haspopup="true"
+                            onClick={handleClassMenuOpen}
+                            color="inherit"
+                        >
+                            <AddIcon />
+                        </IconButton>
+                        <Menu
+                            id="classMenu"
+                            anchorEl={classMenuAnchorEl}
+                            anchorOrigin={{
+                                vertical: 'bottom',
+                                horizontal: 'right',
+                            }}
+                            keepMounted
+                            transformOrigin={{
+                                vertical: 'top',
+                                horizontal: 'right',
+                            }}
+                            open={Boolean(classMenuAnchorEl)}
+                            onClose={handleClassMenuClose}
+                        >
+                            <MenuItem>Create Class</MenuItem>
+                        </Menu>
+
+                        <IconButton
                             size="large"
                             edge="end"
                             aria-label="account of current user"
@@ -164,8 +183,24 @@ const Dashboard = () => {
                             onClick={handleProfileMenuOpen}
                             color="inherit">
                             <Avatar alt={user && user.name} src={user.avatar && user.avatar.url} style={{ border: '2px solid white' }} />
-
                         </IconButton>
+                        <Menu
+                            id="profileMenu"
+                            anchorEl={profileaAnchorEl}
+                            anchorOrigin={{
+                                vertical: 'bottom',
+                                horizontal: 'right',
+                            }}
+                            keepMounted
+                            transformOrigin={{
+                                vertical: 'top',
+                                horizontal: 'right',
+                            }}
+                            open={Boolean(profileaAnchorEl)}
+                            onClose={handleProfileMenuClose}
+                        >
+                            <MenuItem onClick={logoutHandler}><LogoutIcon style={{ marginRight: 10 }} /> Logout</MenuItem>
+                        </Menu>
                     </Toolbar>
                 </AppBar>
                 <Drawer variant="permanent" open={open}>
@@ -236,7 +271,6 @@ const Dashboard = () => {
                         </Grid>
                     </Container>
                 </Box>
-                {renderMenu}
             </Box>
         </ThemeProvider>
     );
