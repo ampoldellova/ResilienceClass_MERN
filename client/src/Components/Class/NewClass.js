@@ -9,7 +9,6 @@ import Typography from '@mui/material/Typography';
 import Container from '@mui/material/Container';
 import { createTheme, ThemeProvider } from '@mui/material/styles';
 import { useFormik } from 'formik';
-import { toast } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
 import axios from 'axios';
 import { getToken } from '../../utils/helpers';
@@ -28,6 +27,7 @@ const NewClass = () => {
     const [success, setSuccess] = useState('')
     const [Class, setClass] = useState({})
     const [error, setError] = useState('')
+    const [isVisible, setIsVisible] = useState(true);
     let navigate = useNavigate()
 
     const formik = useFormik({
@@ -62,6 +62,8 @@ const NewClass = () => {
             const { data } = await axios.post(`http://localhost:4003/api/v1/class/new`, formData, config)
             setSuccess(data.success)
             setClass(data.class)
+
+            setIsVisible(false);
         } catch (error) {
             setError(error.response.data.message)
 
@@ -69,20 +71,19 @@ const NewClass = () => {
     }
 
     useEffect(() => {
-
         if (error) {
-            toast.error(error, {
-                position: toast.POSITION.BOTTOM_RIGHT
-            });
+            console.log(error)
         }
 
         if (success) {
-            toast.success('Supplier created successfully', {
-                position: toast.POSITION.BOTTOM_RIGHT
-            })
+            console.log('Class created successfully')
         }
 
     }, [error, success])
+
+    if (!isVisible) {
+        return null;
+    }
 
     return (
         <ThemeProvider theme={defaultTheme}>
