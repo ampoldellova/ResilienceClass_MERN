@@ -148,6 +148,7 @@ const Dashboard = () => {
 
             const { data } = await axios.post(`http://localhost:4003/api/v1/class/new`, formData, config)
             toggle();
+            formik.resetForm();
             setSuccess(data.success)
             setClass(data.class)
         } catch (error) {
@@ -197,7 +198,7 @@ const Dashboard = () => {
                         </Typography>
                         <IconButton
                             variant="text"
-                            style={{ color: 'white' }}
+                            style={{ color: 'white', marginRight: 10 }}
                             size="large"
                             edge="end"
                             aria-controls="classMenu"
