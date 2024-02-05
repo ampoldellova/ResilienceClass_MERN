@@ -11,6 +11,7 @@ import { toast } from 'react-toastify';
 import MetaData from './Layout/Metadata';
 import axios from 'axios';
 import NewClass from './Class/NewClass';
+import Classroom from './Class/Class';
 
 
 const drawerWidth = 240;
@@ -72,12 +73,10 @@ const Dashboard = () => {
     const [isModalOpen, setIsModalOpen] = useState(false);
 
     const handleCreateClassClick = () => {
-        // Toggle the modal's visibility
         setIsModalOpen(!isModalOpen);
     };
 
     const handleCloseModal = () => {
-        // Close the modal
         setIsModalOpen(false);
     };
 
@@ -248,6 +247,7 @@ const Dashboard = () => {
                 >
                     <Toolbar />
                     <Container maxWidth="lg" sx={{ mt: 4, mb: 4 }}>
+                        {!isModalOpen && <Classroom />}
                         {isModalOpen && <NewClass onClose={handleCloseModal} />}
                     </Container>
                 </Box>

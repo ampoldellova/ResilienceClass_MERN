@@ -29,6 +29,24 @@ const classSchema = new mongoose.Schema({
             default: 'https://res.cloudinary.com/dwkmutbz3/image/upload/v1707029676/ResilienceClass/classCoverPhotos/360_F_214316329_vX8WM2z1DLYfzcyRxqOenc9SJV7gXOyJ_flnrrp.jpg'
         }
     },
+    classCode: {
+        type: String,
+        required: true
+
+    },
+    joinedUsers: [
+        {
+            user: {
+                type: mongoose.Schema.Types.ObjectId,
+                required: true,
+                ref: 'user'
+            },
+            dateJoined: {
+                type: Date,
+                default: Date.now
+            }
+        }
+    ],
     createdAt: {
         type: Date,
         default: Date.now

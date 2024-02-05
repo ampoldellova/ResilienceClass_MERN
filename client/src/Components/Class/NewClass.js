@@ -13,6 +13,8 @@ import 'react-toastify/dist/ReactToastify.css';
 import axios from 'axios';
 import { getToken } from '../../utils/helpers';
 import * as Yup from 'yup';
+import { IconButton } from "@mui/material";
+import ClearIcon from '@mui/icons-material/Clear';
 
 const validationSchema = Yup.object({
     className: Yup.string().required('Class Name is required'),
@@ -91,7 +93,7 @@ const NewClass = () => {
                 <CssBaseline />
                 <Box
                     sx={{
-                        marginTop: 8,
+                        // marginTop: 8,
                         display: 'flex',
                         flexDirection: 'column',
                         alignItems: 'center',
