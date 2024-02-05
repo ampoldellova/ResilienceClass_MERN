@@ -1,18 +1,27 @@
 import React, { useEffect, useState } from 'react';
 import { styled, createTheme, ThemeProvider } from '@mui/material/styles';
-import { Menu, MenuItem, CssBaseline, Drawer as MuiDrawer, Box, AppBar as MuiAppBar, Toolbar, List, Typography, Divider, IconButton, Badge, Container, Grid, Paper, Avatar, Button } from '@mui/material';
+import { TextField, Menu, MenuItem, CssBaseline, Drawer as MuiDrawer, Box, AppBar as MuiAppBar, Toolbar, List, Typography, Divider, IconButton, Badge, Container, Grid, Paper, Avatar, Button } from '@mui/material';
 import { Menu as MenuIcon, ChevronLeft as ChevronLeftIcon } from '@mui/icons-material';
 import AddIcon from '@mui/icons-material/Add';
 import LogoutIcon from '@mui/icons-material/Logout';
-import { Link, useNavigate } from 'react-router-dom';
+import { useNavigate } from 'react-router-dom';
 import { mainListItems } from './listItems';
 import { getUser, logout } from '../utils/helpers';
 import { toast } from 'react-toastify';
 import MetaData from './Layout/Metadata';
 import axios from 'axios';
-import NewClass from './Class/NewClass';
 import Classroom from './Class/Class';
+import { Modal, ModalHeader, ModalBody } from 'reactstrap';
+import { getToken } from '../utils/helpers';
+import * as Yup from 'yup';
+import { useFormik } from 'formik';
 
+const validationSchema = Yup.object({
+    className: Yup.string().required('Class Name is required'),
+    section: Yup.string().required('Class Section is required'),
+    subject: Yup.string().required('Class Subject is required'),
+    roomNumber: Yup.string().required('Class Room Number is required'),
+});
 
 const drawerWidth = 240;
 
@@ -70,15 +79,11 @@ const Dashboard = () => {
     const menuId = 'primary-search-account-menu';
     const [profileaAnchorEl, setProfileAnchorEl] = React.useState(null);
     const [classMenuAnchorEl, setClassMenuAnchorEl] = useState(null);
-    const [isModalOpen, setIsModalOpen] = useState(false);
-
-    const handleCreateClassClick = () => {
-        setIsModalOpen(!isModalOpen);
-    };
-
-    const handleCloseModal = () => {
-        setIsModalOpen(false);
-    };
+    const [success, setSuccess] = useState('')
+    const [Class, setClass] = useState({})
+    const [error, setError] = useState('')
+    const [modal, setModal] = useState(false);
+    const toggle = () => setModal(!modal);
 
     const handleClassMenuOpen = (event) => {
         setClassMenuAnchorEl(event.currentTarget);
@@ -96,14 +101,12 @@ const Dashboard = () => {
     };
 
     const logoutUser = async () => {
-
         try {
             await axios.get(`http://localhost:4003/api/v1/logout`)
             setUser('')
             logout(() => navigate('/login'))
         } catch (error) {
             toast.error(error.response.data.message)
-
         }
     }
 
@@ -113,6 +116,43 @@ const Dashboard = () => {
         toast.success('log out', {
             position: toast.POSITION.BOTTOM_RIGHT
         });
+    }
+
+    const formik = useFormik({
+        initialValues: {
+            className: '',
+            section: '',
+            subject: '',
+            roomNumber: ''
+        },
+        validationSchema: validationSchema,
+        onSubmit: (values) => {
+            const formData = new FormData();
+            formData.set('className', values.className);
+            formData.set('section', values.section);
+            formData.set('subject', values.subject);
+            formData.set('roomNumber', values.roomNumber);
+
+            NewClassRoom(formData)
+        },
+    });
+
+    const NewClassRoom = async (formData) => {
+        try {
+            const config = {
+                headers: {
+                    'Content-Type': 'application/json',
+                    'Authorization': `Bearer ${getToken()}`
+                }
+            }
+
+            const { data } = await axios.post(`http://localhost:4003/api/v1/class/new`, formData, config)
+            toggle();
+            setSuccess(data.success)
+            setClass(data.class)
+        } catch (error) {
+            setError(error.response.data.message)
+        }
     }
 
     useEffect(() => {
@@ -182,9 +222,8 @@ const Dashboard = () => {
                             open={Boolean(classMenuAnchorEl)}
                             onClose={handleClassMenuClose}
                         >
-                            <MenuItem onClick={handleCreateClassClick} >Create Class</MenuItem>
+                            <MenuItem onClick={toggle} >Create Class</MenuItem>
                         </Menu>
-
                         <IconButton
                             size="large"
                             edge="end"
@@ -247,12 +286,81 @@ const Dashboard = () => {
                 >
                     <Toolbar />
                     <Container maxWidth="lg" sx={{ mt: 4, mb: 4 }}>
-                        {!isModalOpen && <Classroom />}
-                        {isModalOpen && <NewClass onClose={handleCloseModal} />}
+                        <Classroom />
                     </Container>
                 </Box>
             </Box>
-        </ThemeProvider>
+            <Modal isOpen={modal} toggle={() => toggle()} centered>
+                <ModalHeader toggle={toggle}>Create Class</ModalHeader>
+                <ModalBody>
+                    <Box component="form" noValidate onSubmit={formik.handleSubmit} sx={{ mt: 3 }}>
+                        <Grid container spacing={2}>
+                            <Grid item xs={12} sm={6}>
+                                <TextField
+                                    name="className"
+                                    required
+                                    fullWidth
+                                    id="className"
+                                    label="Class Name"
+                                    autoFocus
+                                    value={formik.values.className}
+                                    onChange={formik.handleChange}
+                                    error={formik.touched.className && Boolean(formik.errors.className)}
+                                    helperText={formik.touched.className && formik.errors.className}
+                                />
+                            </Grid>
+                            <Grid item xs={12} sm={6}>
+                                <TextField
+                                    required
+                                    fullWidth
+                                    id="section"
+                                    label="Section"
+                                    name="section"
+                                    value={formik.values.section}
+                                    onChange={formik.handleChange}
+                                    error={formik.touched.section && Boolean(formik.errors.section)}
+                                    helperText={formik.touched.section && formik.errors.section}
+                                />
+                            </Grid>
+                            <Grid item xs={12}>
+                                <TextField
+                                    required
+                                    fullWidth
+                                    id="subject"
+                                    label="Subject"
+                                    name="subject"
+                                    value={formik.values.subject}
+                                    onChange={formik.handleChange}
+                                    error={formik.touched.subject && Boolean(formik.errors.subject)}
+                                    helperText={formik.touched.subject && formik.errors.subject}
+                                />
+                            </Grid>
+                            <Grid item xs={12}>
+                                <TextField
+                                    required
+                                    fullWidth
+                                    name="roomNumber"
+                                    label="Room Number"
+                                    id="roomNumber"
+                                    value={formik.values.roomNumber}
+                                    onChange={formik.handleChange}
+                                    error={formik.touched.roomNumber && Boolean(formik.errors.roomNumber)}
+                                    helperText={formik.touched.roomNumber && formik.errors.roomNumber}
+                                />
+                            </Grid>
+                        </Grid>
+                        <Button
+                            type="submit"
+                            fullWidth
+                            variant="contained"
+                            sx={{ mt: 3, mb: 2 }}
+                        >
+                            Create Class
+                        </Button>
+                    </Box>
+                </ModalBody>
+            </Modal>
+        </ThemeProvider >
     );
 };
 
