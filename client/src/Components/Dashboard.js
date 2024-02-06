@@ -315,7 +315,6 @@ const Dashboard = () => {
                             return <Classroom key={classes._id} classes={classes} />
 
                         })}
-                        {/* <Classroom /> */}
                     </Container>
                 </Box>
             </Box>

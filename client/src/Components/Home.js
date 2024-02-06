@@ -8,6 +8,7 @@ import Box from '@mui/material/Box';
 import Toolbar from '@mui/material/Toolbar';
 import Typography from '@mui/material/Typography';
 import Container from '@mui/material/Container';
+import { Link } from 'react-router-dom';
 import { createTheme, ThemeProvider } from '@mui/material/styles';
 
 const defaultTheme = createTheme();
@@ -53,8 +54,8 @@ const Home = () => (
                         spacing={2}
                         justifyContent="center"
                     >
-                        <Button variant="contained">Main call to action</Button>
-                        <Button variant="outlined">Secondary action</Button>
+                        <Button variant="contained" component={Link} to="/login">Sign In</Button>
+                        {/* <Button variant="outlined">Create an Account</Button> */}
                     </Stack>
                 </Container>
             </Box>

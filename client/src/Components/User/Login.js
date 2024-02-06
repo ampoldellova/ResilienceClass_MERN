@@ -56,7 +56,7 @@ const Login = (email, password) => {
             const { data } = await axios.post(`http://localhost:4003/api/v1/login`, { email, password }, config)
             console.log(data)
             authenticate(data, () => {
-                navigate("/")
+                navigate("/dashboard")
                 window.location.reload();
             });
         } catch (error) {
