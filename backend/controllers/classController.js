@@ -35,3 +35,21 @@ exports.getClass = async (req, res, next) => {
         classRoom
     })
 }
+
+exports.userClasses = async (req, res, next) => {
+
+    const classRoom = await Class.find();
+    // let classes = []
+
+    const classes = classRoom.filter(classOne => {
+        for (let index = 0; index < classOne.joinedUsers.length; index++) {
+            if (classOne.joinedUsers[index].user.toString() == req.user._id.toString()) {
+                return classOne
+            }
+        }
+    })
+    res.json({
+        classRoom: classes
+    })
+
+}

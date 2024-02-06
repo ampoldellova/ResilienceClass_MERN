@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import { styled, createTheme, ThemeProvider } from '@mui/material/styles';
-import { TextField, Menu, MenuItem, CssBaseline, Drawer as MuiDrawer, Box, AppBar as MuiAppBar, Toolbar, List, Typography, Divider, IconButton, Badge, Container, Grid, Paper, Avatar, Button } from '@mui/material';
+import { TextField, Menu, MenuItem, CssBaseline, Drawer as MuiDrawer, Box, AppBar as MuiAppBar, Toolbar, List, Typography, Divider, IconButton, Container, Grid, Avatar, Button } from '@mui/material';
 import { Menu as MenuIcon, ChevronLeft as ChevronLeftIcon } from '@mui/icons-material';
 import AddIcon from '@mui/icons-material/Add';
 import LogoutIcon from '@mui/icons-material/Logout';
@@ -83,6 +83,7 @@ const Dashboard = () => {
     const [Class, setClass] = useState({})
     const [error, setError] = useState('')
     const [modal, setModal] = useState(false);
+    const [classroom, setClassroom] = useState([])
     const toggle = () => setModal(!modal);
 
     const handleClassMenuOpen = (event) => {
@@ -96,6 +97,7 @@ const Dashboard = () => {
     const handleProfileMenuOpen = (event) => {
         setProfileAnchorEl(event.currentTarget);
     };
+
     const handleProfileMenuClose = () => {
         setProfileAnchorEl(null);
     };
@@ -149,6 +151,7 @@ const Dashboard = () => {
             const { data } = await axios.post(`http://localhost:4003/api/v1/class/new`, formData, config)
             toggle();
             formik.resetForm();
+            window.location.reload();
             setSuccess(data.success)
             setClass(data.class)
         } catch (error) {
@@ -156,8 +159,27 @@ const Dashboard = () => {
         }
     }
 
+    const getClassroom = async () => {
+        try {
+
+            const config = {
+                headers: {
+                    'Content-Type': 'multipart/form-data',
+                    'Authorization': `Bearer ${getToken()}`
+                }
+            }
+
+            const { data } = await axios.get(`http://localhost:4003/api/v1/class/user`, config)
+            console.log(data)
+            setClassroom(data.classRoom)
+        } catch (error) {
+            setError(error.response.data.message)
+        }
+    }
+
     useEffect(() => {
         setUser(getUser())
+        getClassroom()
     }, [])
 
     const toggleDrawer = () => {
@@ -283,11 +305,17 @@ const Dashboard = () => {
                         flexGrow: 1,
                         height: '100vh',
                         overflow: 'auto',
+                        textAlign: 'left'
                     }}
                 >
                     <Toolbar />
                     <Container maxWidth="lg" sx={{ mt: 4, mb: 4 }}>
-                        <Classroom />
+                        {classroom && classroom.map(classes => {
+                            console.log(classes)
+                            return <Classroom key={classes._id} classes={classes} />
+
+                        })}
+                        {/* <Classroom /> */}
                     </Container>
                 </Box>
             </Box>

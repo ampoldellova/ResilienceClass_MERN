@@ -24,14 +24,10 @@ const Register = () => {
         email: '',
         password: '',
     })
-
-    const { name, email, password } = user;
-    const [imagesPreview, setImagesPreview] = useState([]);
     const [avatar, setAvatar] = useState('')
     const [avatarPreview, setAvatarPreview] = useState('/images/default_avatar.jpg')
     const [isAuthenticated, setIsAuthenticated] = useState(false)
     const [error, setError] = useState('')
-    const [loading, setLoading] = useState(true)
 
     const formik = useFormik({
         initialValues: {
@@ -88,7 +84,6 @@ const Register = () => {
 
     const register = async (userData) => {
         try {
-            setLoading(false)
             const config = {
                 headers: {
                     'Content-Type': 'multipart/form-data'
@@ -103,7 +98,6 @@ const Register = () => {
 
         } catch (error) {
             setIsAuthenticated(false)
-            setLoading(false)
             setUser(null)
             setError(error.response.data.message)
             console.log(error.response.data.message)

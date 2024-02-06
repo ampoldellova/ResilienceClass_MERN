@@ -1,4 +1,4 @@
-import React, { Fragment, useState, useEffect } from 'react'
+import React, { Fragment, useEffect } from 'react'
 import { createTheme, ThemeProvider } from '@mui/material/styles';
 import { Link, useNavigate, useLocation } from 'react-router-dom';
 import { authenticate } from '../../utils/helpers';
@@ -45,9 +45,6 @@ const Login = (email, password) => {
     const navigate = useNavigate()
     let location = useLocation();
     const redirect = location.search ? new URLSearchParams(location.search).get('redirect') : ''
-    const notify = (error) => toast.error(error, {
-        position: toast.POSITION.BOTTOM_RIGHT
-    });
 
     const login = async (email, password) => {
         try {
@@ -67,10 +64,6 @@ const Login = (email, password) => {
                 position: toast.POSITION.BOTTOM_RIGHT
             })
         }
-    }
-    const submitHandler = (e) => {
-        e.preventDefault();
-        login(email, password)
     }
 
     useEffect(() => {

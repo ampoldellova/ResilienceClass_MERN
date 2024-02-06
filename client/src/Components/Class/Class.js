@@ -2,31 +2,36 @@ import React from 'react';
 import Card from '@mui/material/Card';
 import CardActions from '@mui/material/CardActions';
 import CardContent from '@mui/material/CardContent';
+import CardMedia from '@mui/material/CardMedia';
 import Button from '@mui/material/Button';
 import Typography from '@mui/material/Typography';
 
-
-
-const Classroom = () => {
+const Classroom = ({ classes }) => {
     return (
-        <Card sx={{ minWidth: 275 }}>
-            <CardContent>
-                <Typography sx={{ fontSize: 14 }} color="text.secondary" gutterBottom>
-                    Word of the Day
-                </Typography>
-                <Typography sx={{ mb: 1.5 }} color="text.secondary">
-                    adjective
-                </Typography>
-                <Typography variant="body2">
-                    well meaning and kindly.
-                    <br />
-                    {'"a benevolent smile"'}
-                </Typography>
-            </CardContent>
-            <CardActions>
-                <Button size="small">Learn More</Button>
-            </CardActions>
-        </Card>
+        <div style={{ display: 'inline-block' }}>
+            <div style={{ width: '345px', margin: '10px' }}>
+                <Card sx={{ maxWidth: 345 }}>
+                    <CardMedia
+                        sx={{ height: 140 }}
+                        image={classes.coverPhoto.url}
+                    />
+                    <CardContent style={{ textAlign: 'left' }}>
+                        <Typography gutterBottom variant="h5" component="div">
+                            {classes.subject}
+                        </Typography>
+                        <Typography variant="body2" color="text.secondary" >
+                            Class Name: {classes.className}
+                        </Typography>
+                        <Typography variant="body2" color="text.secondary">
+                            Section: {classes.section}
+                        </Typography>
+                    </CardContent>
+                    <CardActions>
+                        <Button size="small">View Class</Button>
+                    </CardActions>
+                </Card>
+            </div>
+        </div>
     );
 }
 
