@@ -53,3 +53,18 @@ exports.userClasses = async (req, res, next) => {
     })
 
 }
+
+exports.getSingleClass = async (req, res, next) => {
+    const classRoom = await Class.findById(req.params.id)
+
+    if (!classRoom) {
+        return res.status(404).json({
+            success: false,
+            message: 'Class Room not found'
+        })
+    }
+    res.status(200).json({
+        success: true,
+        classRoom
+    })
+}

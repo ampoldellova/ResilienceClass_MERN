@@ -6,6 +6,7 @@ import Login from './Components/User/Login';
 import Register from './Components/User/Register';
 import ForgotPassword from './Components/User/ForgotPassword';
 import ProtectedRoute from './Components/Route/ProtectedRoute';
+import ClassDetails from './Components/Class/ClassDetails';
 
 function App() {
   return (
@@ -14,6 +15,7 @@ function App() {
         <Routes>
           <Route path="/" element={<Home />} exact />
           <Route path="/dashboard" element={<ProtectedRoute><Dashboard /></ProtectedRoute>} exact />
+          <Route path="/class/:id" element={<ProtectedRoute><ClassDetails /></ProtectedRoute>} exact />
           <Route path="/login" element={<Login />} exact />
           <Route path="/register" element={<Register />} exact />
           <Route path="/password/forgot" element={<ForgotPassword />} exact />

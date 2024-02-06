@@ -5,6 +5,7 @@ import CardContent from '@mui/material/CardContent';
 import CardMedia from '@mui/material/CardMedia';
 import Button from '@mui/material/Button';
 import Typography from '@mui/material/Typography';
+import { Link } from 'react-router-dom';
 
 const Classroom = ({ classes }) => {
     return (
@@ -27,7 +28,7 @@ const Classroom = ({ classes }) => {
                         </Typography>
                     </CardContent>
                     <CardActions>
-                        <Button size="small">View Class</Button>
+                        <Button component={Link} to={`/class/${classes._id}`} size="small">View Class</Button>
                     </CardActions>
                 </Card>
             </div>
