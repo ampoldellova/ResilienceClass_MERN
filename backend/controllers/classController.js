@@ -6,7 +6,7 @@ const generateString = require('../utils/codeGenerator')
 exports.newClass = async (req, res, next) => {
     console.log(req.user)
     const randomCode = generateString(6);
-    req.body.classCode = randomCode;
+    req.body.classCode = randomCode.trim();
     req.body.joinedUsers = {
         user: []
     };
@@ -67,4 +67,31 @@ exports.getSingleClass = async (req, res, next) => {
         success: true,
         classRoom
     })
+}
+
+exports.joinClass = async (req, res, next) => {
+    const { enteredCode } = req.body;
+
+    try {
+        const foundClass = await Class.findOne({ classCode: enteredCode });
+        console.log(foundClass)
+        if (!foundClass) {
+            return res.status(404).json({ message: "Class not found." });
+        }
+
+        const isUserJoined = foundClass.joinedUsers.some(user => user.user.toString() === req.user._id);
+        if (isUserJoined) {
+            return res.status(400).json({ message: "User already joined the class." });
+        }
+
+        foundClass.joinedUsers.push({ user: req.user._id });
+
+        await foundClass.save();
+
+        res.status(200).json({ message: "User joined the class successfully." });
+
+    } catch (error) {
+        console.error(error);
+        res.status(500).json({ message: "Internal Server Error." });
+    }
 }

@@ -23,6 +23,10 @@ const validationSchema = Yup.object({
     roomNumber: Yup.string().required('Class Room Number is required'),
 });
 
+const joinClassValidation = Yup.object({
+    enteredCode: Yup.string().required('Class Code is required'),
+});
+
 const drawerWidth = 240;
 
 const AppBar = styled(MuiAppBar, {
@@ -71,7 +75,6 @@ const Drawer = styled(MuiDrawer, { shouldForwardProp: (prop) => prop !== 'open' 
 
 const defaultTheme = createTheme();
 
-
 const Dashboard = () => {
     const [open, setOpen] = React.useState(true);
     const [user, setUser] = useState('')
@@ -81,10 +84,21 @@ const Dashboard = () => {
     const [classMenuAnchorEl, setClassMenuAnchorEl] = useState(null);
     const [success, setSuccess] = useState('')
     const [Class, setClass] = useState({})
+    const [joinClass, setJoinClass] = useState({})
     const [error, setError] = useState('')
     const [modal, setModal] = useState(false);
+    const [joinModal, setJoinModal] = useState(false);
     const [classroom, setClassroom] = useState([])
-    const toggle = () => setModal(!modal);
+
+    const toggle = () => {
+        setModal(!modal);
+        setJoinModal(false);
+    };
+
+    const joinToggle = () => {
+        setJoinModal(!joinModal);
+        setModal(false)
+    };
 
     const handleClassMenuOpen = (event) => {
         setClassMenuAnchorEl(event.currentTarget);
@@ -139,6 +153,19 @@ const Dashboard = () => {
         },
     });
 
+    const joinClassFormik = useFormik({
+        initialValues: {
+            enteredCode: ''
+        },
+        validationSchema: joinClassValidation,
+        onSubmit: (values) => {
+            const formData = new FormData();
+            formData.set('enteredCode', values.enteredCode);
+
+            joinClassRoom(formData)
+        },
+    })
+
     const NewClassRoom = async (formData) => {
         try {
             const config = {
@@ -154,6 +181,26 @@ const Dashboard = () => {
             window.location.reload();
             setSuccess(data.success)
             setClass(data.class)
+        } catch (error) {
+            setError(error.response.data.message)
+        }
+    }
+
+    const joinClassRoom = async (formData) => {
+        try {
+            const config = {
+                headers: {
+                    'Content-Type': 'application/json',
+                    'Authorization': `Bearer ${getToken()}`
+                }
+            }
+
+            const { data } = await axios.post(`http://localhost:4003/api/v1/class/join`, formData, config)
+            toggle();
+            formik.resetForm();
+            window.location.reload();
+            setSuccess(data.success)
+            setJoinClass(data.class)
         } catch (error) {
             setError(error.response.data.message)
         }
@@ -246,6 +293,7 @@ const Dashboard = () => {
                             onClose={handleClassMenuClose}
                         >
                             <MenuItem onClick={toggle} >Create Class</MenuItem>
+                            <MenuItem onClick={joinToggle} >Join Class</MenuItem>
                         </Menu>
                         <IconButton
                             size="large"
@@ -384,6 +432,36 @@ const Dashboard = () => {
                             sx={{ mt: 3, mb: 2 }}
                         >
                             Create Class
+                        </Button>
+                    </Box>
+                </ModalBody>
+            </Modal>
+            <Modal isOpen={joinModal} toggle={() => joinToggle()} centered>
+                <ModalHeader toggle={joinToggle}>Join Class</ModalHeader>
+                <ModalBody>
+                    <Box component="form" noValidate onSubmit={joinClassFormik.handleSubmit} sx={{ mt: 3 }}>
+                        <Grid container spacing={2}>
+                            <Grid item xs={12}>
+                                <TextField
+                                    required
+                                    fullWidth
+                                    name="enteredCode"
+                                    label="Class Code"
+                                    id="enteredCode"
+                                    value={joinClassFormik.values.enteredCode}
+                                    onChange={joinClassFormik.handleChange}
+                                    error={joinClassFormik.touched.enteredCode && Boolean(joinClassFormik.errors.enteredCode)}
+                                    helperText={joinClassFormik.touched.enteredCode && joinClassFormik.errors.enteredCode}
+                                />
+                            </Grid>
+                        </Grid>
+                        <Button
+                            type="submit"
+                            fullWidth
+                            variant="contained"
+                            sx={{ mt: 3, mb: 2 }}
+                        >
+                            Join Class
                         </Button>
                     </Box>
                 </ModalBody>
