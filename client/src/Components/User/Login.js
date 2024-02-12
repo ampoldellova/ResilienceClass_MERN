@@ -68,7 +68,7 @@ const Login = (email, password) => {
 
     useEffect(() => {
         if (getUser() && redirect === 'shipping') {
-            navigate(`/${redirect}`)
+            navigate(`/dashboard${redirect}`)
         }
     }, [])
 

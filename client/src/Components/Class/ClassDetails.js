@@ -1,6 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import { styled, createTheme, ThemeProvider } from '@mui/material/styles';
-import { Menu, MenuItem, CssBaseline, Drawer as MuiDrawer, Box, AppBar as MuiAppBar, Toolbar, List, Typography, Divider, IconButton, Container, Avatar } from '@mui/material';
+import { useParams } from 'react-router-dom'
+import { CardMedia, Menu, MenuItem, CssBaseline, Drawer as MuiDrawer, Box, AppBar as MuiAppBar, Toolbar, List, Typography, Divider, IconButton, Container, Avatar } from '@mui/material';
 import { Menu as MenuIcon, ChevronLeft as ChevronLeftIcon } from '@mui/icons-material';
 import LogoutIcon from '@mui/icons-material/Logout';
 import { useNavigate } from 'react-router-dom';
@@ -8,6 +9,7 @@ import { mainListItems } from '../listItems';
 import { getUser, logout } from '../../utils/helpers';
 import { toast } from 'react-toastify';
 import MetaData from '../Layout/Metadata';
+import { getToken } from '../../utils/helpers';
 import axios from 'axios';
 
 const drawerWidth = 240;
@@ -63,6 +65,8 @@ const ClassDetails = () => {
     const [user, setUser] = useState('')
     const navigate = useNavigate()
     const menuId = 'primary-search-account-menu';
+    const [error, setError] = useState('');
+    const [classRoom, setClass] = useState({})
     const [profileaAnchorEl, setProfileAnchorEl] = React.useState(null);
 
     const handleProfileMenuOpen = (event) => {
@@ -91,9 +95,29 @@ const ClassDetails = () => {
         });
     }
 
+    let { id } = useParams()
+
+    const classDetails = async (id) => {
+        let link = `http://localhost:4003/api/v1/class/${id}`
+
+        const config = {
+            headers: {
+                'Content-Type': 'application/json',
+                'Authorization': `Bearer ${getToken()}`
+            }
+        }
+
+        let res = await axios.get(link, config)
+        console.log(res)
+        if (!res)
+            setError('Class not found')
+        setClass(res.data.classRoom)
+    }
+
     useEffect(() => {
-        setUser(getUser())
-    }, [])
+        setUser(getUser());
+        classDetails(id);
+    }, [id])
 
     const toggleDrawer = () => {
         setOpen(!open);
@@ -194,7 +218,10 @@ const ClassDetails = () => {
                 >
                     <Toolbar />
                     <Container maxWidth="lg" sx={{ mt: 4, mb: 4 }}>
-
+                        <CardMedia
+                            sx={{ height: 140 }}
+                            image={classRoom.coverPhoto?.url}
+                        />
                     </Container>
                 </Box>
             </Box>
