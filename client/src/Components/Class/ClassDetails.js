@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import { styled, createTheme, ThemeProvider } from '@mui/material/styles';
 import { useParams } from 'react-router-dom'
-import { CardMedia, Menu, MenuItem, CssBaseline, Drawer as MuiDrawer, Box, AppBar as MuiAppBar, Toolbar, List, Typography, Divider, IconButton, Container, Avatar } from '@mui/material';
+import { Button, Grid, Paper, CardMedia, Menu, MenuItem, CssBaseline, Drawer as MuiDrawer, Box, AppBar as MuiAppBar, Toolbar, List, Typography, Divider, IconButton, Container, Avatar } from '@mui/material';
 import { Menu as MenuIcon, ChevronLeft as ChevronLeftIcon } from '@mui/icons-material';
 import LogoutIcon from '@mui/icons-material/Logout';
 import { useNavigate } from 'react-router-dom';
@@ -218,10 +218,67 @@ const ClassDetails = () => {
                 >
                     <Toolbar />
                     <Container maxWidth="lg" sx={{ mt: 4, mb: 4 }}>
-                        <CardMedia
-                            sx={{ height: 140 }}
-                            image={classRoom.coverPhoto?.url}
-                        />
+                        <Box position="relative" sx={{ mb: 3 }}>
+                            <CardMedia
+                                sx={{ height: 300, borderRadius: 2 }}
+                                image={classRoom.coverPhoto?.url}
+                            />
+                            <Typography
+                                variant="h3"
+                                sx={{
+                                    position: 'absolute',
+                                    bottom: 30,
+                                    left: 10,
+                                    color: '#fff',
+                                    padding: '8px',
+                                }}
+                            >
+                                {classRoom.subject}
+                            </Typography>
+                            <Typography
+                                variant="h6"
+                                sx={{
+                                    position: 'absolute',
+                                    bottom: 0,
+                                    left: 10,
+                                    color: '#fff',
+                                    padding: '8px',
+                                }}
+                            >
+                                Room: {classRoom.roomNumber}
+                            </Typography>
+                        </Box>
+                        <Grid container spacing={3}>
+                            {/* Chart */}
+                            <Grid item xs={12} md={8} lg={9}>
+                                <Paper
+                                    sx={{
+                                        p: 3,
+                                        display: 'flex',
+                                        flexDirection: 'row', // Change to 'row' for horizontal alignment
+                                        alignItems: 'center', // Align items vertically in the center
+                                        height: 'auto',
+                                    }}
+                                >
+                                    <Avatar alt={user && user.name} src={user.avatar && user.avatar.url} style={{ border: '2px solid white' }} />
+                                    <Button variant="text">Announce Something to your class</Button>
+                                </Paper>
+                            </Grid>
+
+                            <Grid item xs={12} md={4} lg={3}>
+                                <Paper
+                                    sx={{
+                                        p: 2,
+                                        display: 'flex',
+                                        flexDirection: 'column',
+                                        height: 105,
+                                    }}
+                                >
+                                    <Typography variant='subtitle1'>Class Code: </Typography>
+                                    <Typography variant='h4' sx={{ textAlign: 'center' }}>{classRoom.classCode}</Typography>
+                                </Paper>
+                            </Grid>
+                        </Grid>
                     </Container>
                 </Box>
             </Box>
