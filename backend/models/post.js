@@ -10,18 +10,32 @@ const postSchema = new mongoose.Schema({
         type: String,
         required: true
     },
-    attachments: {
-        type: File
-    },
+    attachments: [
+        {
+            public_id: {
+                type: String
+            },
+            url: {
+                type: String
+            }
+        }
+    ],
     comments: [
         {
             body: {
                 type: String,
                 required: true
             },
-            fileAttachments: {
-                type: File
-            }
+            fileAttachments: [
+                {
+                    public_id: {
+                        type: String
+                    },
+                    url: {
+                        type: String
+                    }
+                }
+            ]
         }
     ],
     createdAt: {
