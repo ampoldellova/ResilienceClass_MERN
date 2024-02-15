@@ -1,17 +1,12 @@
 import React, { useState, useEffect } from 'react';
-import { getUser } from '../../utils/helpers';
 import { Grid, Paper } from '@mui/material';
 import { useParams } from 'react-router-dom'
 import { Avatar, TextField } from '@mui/material';
-// import { trusted } from 'mongoose';
+import { getToken } from '../../utils/helpers';
+import axios from 'axios';
 
-const Posts = () => {
-    const [user, setUser] = useState('');
-    let { id } = useParams()
+const Posts = ({posts}) => {
 
-    useEffect(() => {
-        setUser(getUser());
-    }, [id])
     return (
         <>
             <Paper
@@ -24,10 +19,6 @@ const Posts = () => {
                     marginTop: 2
                 }}
             >
-                <Grid>
-
-                </Grid>
-                <Avatar alt={user && user.name} src={user.avatar && user.avatar.url} style={{ border: '2px solid white' }} />
                 <TextField
                     fullWidth
                     disabled

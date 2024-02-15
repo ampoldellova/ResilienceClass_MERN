@@ -13,12 +13,18 @@ import { getToken } from '../../utils/helpers';
 import axios from 'axios';
 import Posts from './Posts';
 import { Modal, ModalHeader, ModalBody } from 'reactstrap';
-// import '@mui/x-date-pickers/dist/date-picker.css';
-// import { DatePicker } from '@mui/x-date-pickers/DatePicker';
 import { DemoContainer } from '@mui/x-date-pickers/internals/demo';
 import { AdapterDayjs } from '@mui/x-date-pickers/AdapterDayjs';
 import { LocalizationProvider } from '@mui/x-date-pickers/LocalizationProvider';
-import { DatePicker } from '@mui/x-date-pickers/DatePicker';
+import { DateTimePicker } from '@mui/x-date-pickers/DateTimePicker';
+import * as Yup from 'yup';
+import { useFormik } from 'formik';
+
+const validationSchema = Yup.object({
+    contents: Yup.string().required('Content is required'),
+    attachments: Yup.mixed(),
+    deadline: Yup.date()
+});
 
 const drawerWidth = 240;
 
@@ -75,8 +81,11 @@ const ClassDetails = () => {
     const menuId = 'primary-search-account-menu';
     const [error, setError] = useState('');
     const [classRoom, setClass] = useState({});
+    const [success, setSuccess] = useState('')
     const [modal, setModal] = useState(false);
     const [profileaAnchorEl, setProfileAnchorEl] = React.useState(null);
+    const [classPosts, setClassPosts] = useState([])
+    // const [classPosts, setClassPosts] = useState([])
 
     const toggle = () => {
         setModal(!modal);
@@ -127,9 +136,67 @@ const ClassDetails = () => {
         setClass(res.data.classRoom)
     }
 
+    const formik = useFormik({
+        initialValues: {
+            contents: '',
+            attachments: [],
+            deadline: '',
+        },
+        validationSchema: validationSchema,
+        onSubmit: (values) => {
+            const formData = new FormData();
+            formData.set('class', id);
+            formData.set('contents', values.contents);
+            // formData.set('attachments', values.attachments);
+            for (let i = 0; i < values.attachments.length; i++) {
+                formData.append('attachments', values.attachments[i]);
+            }
+            formData.set('deadline', values.deadline);
+            console.log(values)
+            NewPost(formData)
+        },
+    });
+
+    const NewPost = async (formData) => {
+        try {
+            const config = {
+                headers: {
+                    'Content-Type': 'multipart/form-data',
+                    'Authorization': `Bearer ${getToken()}`
+                }
+            }
+
+            const { data } = await axios.post(`http://localhost:4003/api/v1/class/post/new`, formData, config)
+            toggle();
+            formik.resetForm();
+            window.location.reload();
+            setSuccess(data.success);
+        } catch (error) {
+            setError(error.response.data.message)
+        }
+    }
+
+    const getClassPosts = async (id) => {
+        try {
+
+            const config = {
+                headers: {
+                    'Authorization': `Bearer ${getToken()}`
+                }
+            }
+
+            const { data } = await axios.get(`http://localhost:4003/api/v1/class/post/${id}`, config)
+            console.log(data.post)
+            setClassPosts(data.post)
+        } catch (error) {
+            setError(error.response.data.message)
+        }
+    }
+
     useEffect(() => {
         setUser(getUser());
         classDetails(id);
+        getClassPosts(id);
     }, [id])
 
     const toggleDrawer = () => {
@@ -276,36 +343,57 @@ const ClassDetails = () => {
                                     <Avatar alt={user && user.name} src={user.avatar && user.avatar.url} style={{ border: '2px solid white' }} />
                                     <Button variant="text" onClick={toggle} sx={{ marginLeft: 2 }}>Announce Something to your class</Button>
                                 </Paper>
-                                <Posts />
+                                {/* <Posts /> */}
+                                {classPosts && classPosts.map(posts => {
+                                    console.log(posts)
+                                    return <Posts key={posts._id} posts={posts} />
+                                })}
                                 <Modal isOpen={modal} toggle={() => toggle()} centered>
                                     <ModalHeader toggle={toggle}>Create a Post</ModalHeader>
                                     <ModalBody>
-                                        <Box component="form" noValidate sx={{ mt: 3 }}>
+                                        <Box component="form" noValidate onSubmit={formik.handleSubmit} sx={{ mt: 3 }}>
                                             <Grid container spacing={2}>
                                                 <Grid item xs={12}>
                                                     <TextField
                                                         fullWidth
-                                                        id="filled-multiline-static"
+                                                        id="contents"
                                                         label="Content"
                                                         multiline
                                                         rows={5}
                                                         variant="filled"
+                                                        value={formik.values.contents}
+                                                        onChange={formik.handleChange}
+                                                        error={formik.touched.contents && Boolean(formik.errors.contents)}
+                                                        helperText={formik.touched.contents && formik.errors.contents}
                                                     />
                                                 </Grid>
                                                 <Grid item xs={12}>
-                                                    <InputLabel>Attach a File</InputLabel>
+                                                    <InputLabel>Attach a File </InputLabel>
                                                     <TextField
                                                         fullWidth
-                                                        name="avatar"
+                                                        name="attachments"
                                                         type="file"
-                                                        id="avatar"
-                                                        accept="images/*"
+                                                        id="attachments"
+                                                        accept=".pdf"
+                                                        inputProps={{
+                                                            multiple: true
+                                                        }}
+                                                        onChange={(e) => {
+                                                            formik.setFieldValue('attachments', e.target.files)
+                                                        }}
                                                     />
                                                 </Grid>
                                                 <Grid item xs={12}>
                                                     <LocalizationProvider dateAdapter={AdapterDayjs}>
-                                                        <DemoContainer components={['DatePicker']}>
-                                                            <DatePicker fullWidth label="Set a Deadline" />
+                                                        <DemoContainer components={['DateTimePicker ']}>
+                                                            <DateTimePicker
+                                                                fullWidth
+                                                                disablePast={true}
+                                                                label="Set a Deadline"
+                                                                onChange={(value) => {
+                                                                    formik.setFieldValue('deadline', value)
+                                                                }}
+                                                            />
                                                         </DemoContainer>
                                                     </LocalizationProvider>
                                                 </Grid>

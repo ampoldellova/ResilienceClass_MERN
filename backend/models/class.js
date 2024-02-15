@@ -41,6 +41,9 @@ const classSchema = new mongoose.Schema({
                 required: true,
                 ref: 'user'
             },
+            role: {
+                type: String
+            },
             dateJoined: {
                 type: Date,
                 default: Date.now

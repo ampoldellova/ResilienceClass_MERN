@@ -45,12 +45,8 @@ const postSchema = new mongoose.Schema({
     ],
     deadline: {
         type: Date,
-        default: Date.now()
+        default: null
     },
-    // createdAt: {
-    //     type: Date,
-    //     default: Date.now
-    // }
 }, { timestamps: true })
 
 module.exports = mongoose.model('Post', postSchema);
