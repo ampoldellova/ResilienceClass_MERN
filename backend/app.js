@@ -5,6 +5,7 @@ const cookieParser = require('cookie-parser');
 
 const auth = require('./routes/auth');
 const classRoom = require('./routes/class');
+const posts = require('./routes/post');
 
 app.use(cors())
 app.use(express.json({ limit: '50mb' }));
@@ -13,5 +14,6 @@ app.use(cookieParser());
 
 app.use('/api/v1', auth);
 app.use('/api/v1', classRoom);
+app.use('/api/v1', posts);
 
 module.exports = app
