@@ -5,7 +5,7 @@ import { Avatar, TextField } from '@mui/material';
 import { getToken } from '../../utils/helpers';
 import axios from 'axios';
 
-const Posts = ({posts}) => {
+const Posts = ({ posts }) => {
 
     return (
         <>
