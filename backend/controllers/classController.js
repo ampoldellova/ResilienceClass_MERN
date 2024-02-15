@@ -12,7 +12,6 @@ exports.newClass = async (req, res, next) => {
     };
     req.body.joinedUsers.user.push(req.user._id);
 
-
     const classRoom = await Class.create(req.body);
     if (!classRoom)
         return res.status(400).json({

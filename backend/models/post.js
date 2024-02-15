@@ -22,6 +22,11 @@ const postSchema = new mongoose.Schema({
     ],
     comments: [
         {
+            user: {
+                type: mongoose.Schema.Types.ObjectId,
+                required: true,
+                ref: 'user'
+            },
             body: {
                 type: String,
                 required: true
@@ -38,10 +43,13 @@ const postSchema = new mongoose.Schema({
             ]
         }
     ],
+    deadline: {
+        type: Date
+    },
     createdAt: {
         type: Date,
         default: Date.now
     }
 })
 
-module.exports = mongoose.model('Class', classSchema);
+module.exports = mongoose.model('Post', postSchema);

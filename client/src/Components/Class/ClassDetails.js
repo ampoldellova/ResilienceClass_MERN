@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import { styled, createTheme, ThemeProvider } from '@mui/material/styles';
 import { useParams } from 'react-router-dom'
-import { Button, Grid, Paper, CardMedia, Menu, MenuItem, CssBaseline, Drawer as MuiDrawer, Box, AppBar as MuiAppBar, Toolbar, List, Typography, Divider, IconButton, Container, Avatar } from '@mui/material';
+import { InputLabel, TextField, Button, Grid, Paper, CardMedia, Menu, MenuItem, CssBaseline, Drawer as MuiDrawer, Box, AppBar as MuiAppBar, Toolbar, List, Typography, Divider, IconButton, Container, Avatar } from '@mui/material';
 import { Menu as MenuIcon, ChevronLeft as ChevronLeftIcon } from '@mui/icons-material';
 import LogoutIcon from '@mui/icons-material/Logout';
 import { useNavigate } from 'react-router-dom';
@@ -11,6 +11,14 @@ import { toast } from 'react-toastify';
 import MetaData from '../Layout/Metadata';
 import { getToken } from '../../utils/helpers';
 import axios from 'axios';
+import Posts from './Posts';
+import { Modal, ModalHeader, ModalBody } from 'reactstrap';
+// import '@mui/x-date-pickers/dist/date-picker.css';
+// import { DatePicker } from '@mui/x-date-pickers/DatePicker';
+import { DemoContainer } from '@mui/x-date-pickers/internals/demo';
+import { AdapterDayjs } from '@mui/x-date-pickers/AdapterDayjs';
+import { LocalizationProvider } from '@mui/x-date-pickers/LocalizationProvider';
+import { DatePicker } from '@mui/x-date-pickers/DatePicker';
 
 const drawerWidth = 240;
 
@@ -66,8 +74,13 @@ const ClassDetails = () => {
     const navigate = useNavigate()
     const menuId = 'primary-search-account-menu';
     const [error, setError] = useState('');
-    const [classRoom, setClass] = useState({})
+    const [classRoom, setClass] = useState({});
+    const [modal, setModal] = useState(false);
     const [profileaAnchorEl, setProfileAnchorEl] = React.useState(null);
+
+    const toggle = () => {
+        setModal(!modal);
+    };
 
     const handleProfileMenuOpen = (event) => {
         setProfileAnchorEl(event.currentTarget);
@@ -261,8 +274,53 @@ const ClassDetails = () => {
                                     }}
                                 >
                                     <Avatar alt={user && user.name} src={user.avatar && user.avatar.url} style={{ border: '2px solid white' }} />
-                                    <Button variant="text">Announce Something to your class</Button>
+                                    <Button variant="text" onClick={toggle} sx={{ marginLeft: 2 }}>Announce Something to your class</Button>
                                 </Paper>
+                                <Posts />
+                                <Modal isOpen={modal} toggle={() => toggle()} centered>
+                                    <ModalHeader toggle={toggle}>Create a Post</ModalHeader>
+                                    <ModalBody>
+                                        <Box component="form" noValidate sx={{ mt: 3 }}>
+                                            <Grid container spacing={2}>
+                                                <Grid item xs={12}>
+                                                    <TextField
+                                                        fullWidth
+                                                        id="filled-multiline-static"
+                                                        label="Content"
+                                                        multiline
+                                                        rows={5}
+                                                        variant="filled"
+                                                    />
+                                                </Grid>
+                                                <Grid item xs={12}>
+                                                    <InputLabel>Attach a File</InputLabel>
+                                                    <TextField
+                                                        fullWidth
+                                                        name="avatar"
+                                                        type="file"
+                                                        id="avatar"
+                                                        accept="images/*"
+                                                    />
+                                                </Grid>
+                                                <Grid item xs={12}>
+                                                    <LocalizationProvider dateAdapter={AdapterDayjs}>
+                                                        <DemoContainer components={['DatePicker']}>
+                                                            <DatePicker fullWidth label="Set a Deadline" />
+                                                        </DemoContainer>
+                                                    </LocalizationProvider>
+                                                </Grid>
+                                            </Grid>
+                                            <Button
+                                                type="submit"
+                                                fullWidth
+                                                variant="contained"
+                                                sx={{ mt: 3, mb: 2 }}
+                                            >
+                                                Create Post
+                                            </Button>
+                                        </Box>
+                                    </ModalBody>
+                                </Modal>
                             </Grid>
 
                             <Grid item xs={12} md={4} lg={3}>
