@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { Grid, Paper } from '@mui/material';
+import { Grid, Paper, Typography } from '@mui/material';
 import { useParams } from 'react-router-dom'
 import { Avatar, TextField } from '@mui/material';
 import { getToken } from '../../utils/helpers';
@@ -19,15 +19,10 @@ const Posts = ({ posts }) => {
                     marginTop: 2
                 }}
             >
-                <TextField
-                    fullWidth
-                    disabled
-                    multiline
-                    rows={4}
-                    defaultValue="Default Value"
-                    variant="filled"
-                    sx={{ marginLeft: 2 }}
-                />
+                <Typography variant='subtitle1'>
+                    {posts.contents}
+                </Typography>
+
             </Paper>
         </>
     )

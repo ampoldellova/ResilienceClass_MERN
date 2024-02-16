@@ -11,6 +11,7 @@ exports.newClass = async (req, res, next) => {
         user: []
     };
     req.body.joinedUsers.user.push(req.user._id);
+    req.body.joinedUsers.role = 'teacher';
 
     const classRoom = await Class.create(req.body);
     if (!classRoom)
@@ -30,6 +31,51 @@ exports.getClass = async (req, res, next) => {
     const classRoom = await Class.find();
 
     res.status(200).json({
+        success: true,
+        classRoom
+    })
+}
+
+exports.updateClass = async (req, res, next) => {
+    let classRoom = await Class.findById(req.params.id)
+    const newClassData = {
+        className: req.body.className,
+        section: req.body.section,
+        subject: req.body.subject,
+        roomNumber: req.body.roomNumber,
+    }
+
+    console.log(req.body)
+    if (!classRoom) {
+        return res.status(404).json({
+            success: false,
+            message: 'Class not found'
+        })
+    }
+
+    console.log(req.file)
+    console.log(req.body)
+
+
+    if (req.file) {
+        const result = await cloudinary.v2.uploader.upload(req.file.path, {
+            folder: 'ResilienceClass/classCoverPhotos',
+            crop: "scale"
+        })
+
+        newClassData.coverPhoto = {
+            public_id: result.public_id,
+            url: result.secure_url
+        }
+    }
+
+    classRoom = await Class.findByIdAndUpdate(req.params.id, newClassData, {
+        new: true,
+        runValidators: true,
+        useFindandModify: false
+    })
+
+    return res.status(200).json({
         success: true,
         classRoom
     })
@@ -83,7 +129,7 @@ exports.joinClass = async (req, res, next) => {
             return res.status(400).json({ message: "User already joined the class." });
         }
 
-        foundClass.joinedUsers.push({ user: req.user._id });
+        foundClass.joinedUsers.push({ user: req.user._id, role: 'student' });
 
         await foundClass.save();
 

@@ -6,6 +6,11 @@ const postSchema = new mongoose.Schema({
         required: true,
         ref: 'Class'
     },
+    teacher: {
+        type: mongoose.Schema.Types.ObjectId,
+        required: true,
+        ref: 'user'
+    },
     contents: {
         type: String,
         required: true

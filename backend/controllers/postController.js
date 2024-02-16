@@ -6,8 +6,8 @@ const Post = require('../models/post');
 
 exports.newPost = async (req, res, next) => {
 
-    // req.body.class.push(req.class._id);
-    console.log(req.files)
+    req.body.teacher = req.user._id;
+
     let attachments = []
 
     if (req.files) {
