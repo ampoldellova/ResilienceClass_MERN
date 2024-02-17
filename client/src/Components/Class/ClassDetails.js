@@ -20,18 +20,13 @@ import { DateTimePicker } from '@mui/x-date-pickers/DateTimePicker';
 import MoreVertIcon from '@mui/icons-material/MoreVert';
 import * as Yup from 'yup';
 import { useFormik } from 'formik';
+import CreateClasswork from './CreateClasswork';
+import EditClassDetails from './EditClassDetails';
 
 const validationSchema = Yup.object({
     contents: Yup.string().required('Content is required'),
     attachments: Yup.mixed(),
     deadline: Yup.date()
-});
-
-const classUpdateValidationSchema = Yup.object({
-    className: Yup.string().required('Class Name is required'),
-    section: Yup.string().required('Class Section is required'),
-    subject: Yup.string().required('Class Subject is required'),
-    roomNumber: Yup.string().required('Class Room Number is required'),
 });
 
 const drawerWidth = 240;
@@ -91,19 +86,11 @@ const ClassDetails = () => {
     const [classRoom, setClass] = useState({});
     const [success, setSuccess] = useState('')
     const [modal, setModal] = useState(false);
-    const [updateClassModal, setUpdateClassModal] = useState(false);
     const [profileaAnchorEl, setProfileAnchorEl] = React.useState(null);
     const [classPosts, setClassPosts] = useState([])
-    // const [classPosts, setClassPosts] = useState([])
 
     const toggle = () => {
         setModal(!modal);
-        setUpdateClassModal(false);
-    };
-
-    const updateClassToggle = () => {
-        setUpdateClassModal(!updateClassModal);
-        setModal(false)
     };
 
     const handleProfileMenuOpen = (event) => {
@@ -135,7 +122,6 @@ const ClassDetails = () => {
     let { id } = useParams()
 
     const classDetails = async (id) => {
-        // let link = `http://localhost:4003/api/v1/class/${id}`
 
         const config = {
             headers: {
@@ -146,14 +132,6 @@ const ClassDetails = () => {
 
         const { data: { classRoom } } = await axios.get(`http://localhost:4003/api/v1/class/${id}`, config);
 
-        // let res = await axios.get(link, config)
-        // console.log(res)
-        // if (!res)
-        //     setError('Class not found')
-        updateClassFormik.setFieldValue('className', classRoom.className);
-        updateClassFormik.setFieldValue('section', classRoom.section);
-        updateClassFormik.setFieldValue('subject', classRoom.subject);
-        updateClassFormik.setFieldValue('roomNumber', classRoom.roomNumber);
         setClass(classRoom)
     }
 
@@ -161,7 +139,7 @@ const ClassDetails = () => {
         initialValues: {
             contents: '',
             attachments: [],
-            deadline: '',
+            // deadline: '',
         },
         validationSchema: validationSchema,
         onSubmit: (values) => {
@@ -172,30 +150,9 @@ const ClassDetails = () => {
             for (let i = 0; i < values.attachments.length; i++) {
                 formData.append('attachments', values.attachments[i]);
             }
-            formData.set('deadline', values.deadline);
-            console.log(values)
+            // formData.set('deadline', values.deadline);
+            // console.log(values)
             NewPost(formData)
-        },
-    });
-
-    const updateClassFormik = useFormik({
-        initialValues: {
-            className: '',
-            section: '',
-            subject: '',
-            roomNumber: '',
-            coverPhoto: ''
-        },
-        validationSchema: classUpdateValidationSchema,
-        onSubmit: (values) => {
-            const formData = new FormData();
-            formData.set('className', values.className);
-            formData.set('section', values.section);
-            formData.set('subject', values.subject);
-            formData.set('roomNumber', values.roomNumber);
-            formData.set('coverPhoto', values.coverPhoto[0]);
-
-            UpdateClassRoom(id, formData)
         },
     });
 
@@ -218,7 +175,7 @@ const ClassDetails = () => {
         }
     }
 
-    const getClassPosts = async (id) => {
+    const getClassPosts = async () => {
         try {
 
             const config = {
@@ -228,32 +185,7 @@ const ClassDetails = () => {
             }
 
             const { data } = await axios.get(`http://localhost:4003/api/v1/class/post/${id}`, config)
-            console.log(data.post)
             setClassPosts(data.post)
-        } catch (error) {
-            setError(error.response.data.message)
-        }
-    }
-
-    const UpdateClassRoom = async (id, formData) => {
-
-        for (const pair of formData.entries()) {
-            console.log(pair[0], pair[1]);
-        }
-        try {
-            const config = {
-                headers: {
-                    'Content-Type': 'multipart/form-data',
-                    'Authorization': `Bearer ${getToken()}`
-                }
-            }
-
-            const { data } = await axios.put(`http://localhost:4003/api/v1/class/update/${id}`, formData, config)
-            toggle();
-            updateClassFormik.resetForm();
-            window.location.reload();
-            setSuccess(data.success)
-            setClass(data.class)
         } catch (error) {
             setError(error.response.data.message)
         }
@@ -277,7 +209,7 @@ const ClassDetails = () => {
                 <AppBar position="absolute" open={open}>
                     <Toolbar
                         sx={{
-                            pr: '24px', // keep right padding when drawer closed
+                            pr: '24px',
                         }}
                     >
                         <IconButton
@@ -375,7 +307,7 @@ const ClassDetails = () => {
                                     position: 'absolute',
                                     bottom: 30,
                                     left: 10,
-                                    color: '#fff',
+                                    color: 'white',
                                     padding: '8px',
                                 }}
                             >
@@ -387,7 +319,7 @@ const ClassDetails = () => {
                                     position: 'absolute',
                                     bottom: 0,
                                     left: 10,
-                                    color: '#fff',
+                                    color: 'white',
                                     padding: '8px',
                                 }}
                             >
@@ -395,25 +327,26 @@ const ClassDetails = () => {
                             </Typography>
                         </Box>
                         <Grid container spacing={3}>
-                            {/* Chart */}
                             <Grid item xs={12} md={8} lg={9}>
-                                <Paper
-                                    sx={{
-                                        p: 3,
-                                        display: 'flex',
-                                        flexDirection: 'row',
-                                        alignItems: 'center',
-                                        height: 'auto',
-                                    }}
-                                >
 
-                                    <Avatar alt={user && user.name} src={user.avatar && user.avatar.url} style={{ border: '2px solid white' }} />
-                                    <Button variant="text" onClick={toggle} sx={{ marginLeft: 2 }}>Announce Something to your class</Button>
-                                </Paper>
+                                {classRoom?.joinedUsers?.find((joinedUser) => joinedUser.user === getUser()?._id).role === 'teacher' ?
+                                    <Paper
+                                        sx={{
+                                            p: 3,
+                                            display: 'flex',
+                                            flexDirection: 'row',
+                                            alignItems: 'center',
+                                            height: 'auto',
+                                        }}
+                                    >
+
+                                        < Avatar alt={user && user.name} src={user.avatar && user.avatar.url} />
+                                        <Button variant="text" onClick={toggle} sx={{ marginLeft: 2 }}>Announce Something to your class</Button>
+                                    </Paper> : <></>
+                                }
 
                                 {classPosts && classPosts.map(posts => {
-                                    console.log(posts)
-                                    return <Posts key={posts._id} posts={posts} />
+                                    return <Posts key={posts._id} posts={posts} getClassPosts={getClassPosts} />
                                 })}
                                 <Modal isOpen={modal} toggle={() => toggle()} centered>
                                     <ModalHeader toggle={toggle}>Create a Post</ModalHeader>
@@ -427,7 +360,6 @@ const ClassDetails = () => {
                                                         label="Content"
                                                         multiline
                                                         rows={5}
-                                                        variant="filled"
                                                         value={formik.values.contents}
                                                         onChange={formik.handleChange}
                                                         error={formik.touched.contents && Boolean(formik.errors.contents)}
@@ -450,7 +382,7 @@ const ClassDetails = () => {
                                                         }}
                                                     />
                                                 </Grid>
-                                                <Grid item xs={12}>
+                                                {/* <Grid item xs={12}>
                                                     <LocalizationProvider dateAdapter={AdapterDayjs}>
                                                         <DemoContainer components={['DateTimePicker ']}>
                                                             <DateTimePicker
@@ -463,7 +395,7 @@ const ClassDetails = () => {
                                                             />
                                                         </DemoContainer>
                                                     </LocalizationProvider>
-                                                </Grid>
+                                                </Grid> */}
                                             </Grid>
                                             <Button
                                                 type="submit"
@@ -479,107 +411,26 @@ const ClassDetails = () => {
                             </Grid>
 
                             <Grid item xs={12} md={4} lg={3}>
-                                <Paper
-                                    sx={{
-                                        p: 2,
-                                        display: 'flex',
-                                        flexDirection: 'column',
-                                        height: 105,
-                                        marginBottom: 2
-                                    }}
-                                >
-                                    <Typography variant='subtitle1'>Class Code: </Typography>
-                                    <Typography variant='h4' sx={{ textAlign: 'center' }}>{classRoom?.classCode}</Typography>
-                                </Paper>
+                                {classRoom?.joinedUsers?.find((joinedUser) => joinedUser.user === getUser()?._id).role === 'teacher' ?
+                                    <>
+                                        <Paper
+                                            sx={{
+                                                p: 2,
+                                                display: 'flex',
+                                                flexDirection: 'column',
+                                                height: 105,
+                                                marginBottom: 2
+                                            }}
+                                        >
+                                            <Typography variant='subtitle1'>Class Code: </Typography>
+                                            <Typography variant='h4' sx={{ textAlign: 'center' }}>{classRoom?.classCode}</Typography>
+                                        </Paper>
 
-                                <Button variant='contained' onClick={updateClassToggle} fullWidth>
-                                    Edit Class
-                                </Button>
-
-                                <Modal isOpen={updateClassModal} toggle={() => updateClassToggle()} centered>
-                                    <ModalHeader toggle={updateClassToggle}>Update Class</ModalHeader>
-                                    <ModalBody>
-                                        <Box component="form" noValidate onSubmit={updateClassFormik.handleSubmit} sx={{ mt: 3 }}>
-                                            <Grid container spacing={2}>
-                                                <Grid item xs={12} sm={6}>
-                                                    <TextField
-                                                        name="className"
-                                                        required
-                                                        fullWidth
-                                                        id="className"
-                                                        label="Class Name"
-                                                        autoFocus
-                                                        value={updateClassFormik.values.className}
-                                                        onChange={updateClassFormik.handleChange}
-                                                        error={updateClassFormik.touched.className && Boolean(updateClassFormik.errors.className)}
-                                                        helperText={updateClassFormik.touched.className && updateClassFormik.errors.className}
-                                                    />
-                                                </Grid>
-                                                <Grid item xs={12} sm={6}>
-                                                    <TextField
-                                                        required
-                                                        fullWidth
-                                                        id="section"
-                                                        label="Section"
-                                                        name="section"
-                                                        value={updateClassFormik.values.section}
-                                                        onChange={updateClassFormik.handleChange}
-                                                        error={updateClassFormik.touched.section && Boolean(updateClassFormik.errors.section)}
-                                                        helperText={updateClassFormik.touched.section && updateClassFormik.errors.section}
-                                                    />
-                                                </Grid>
-                                                <Grid item xs={12}>
-                                                    <TextField
-                                                        required
-                                                        fullWidth
-                                                        id="subject"
-                                                        label="Subject"
-                                                        name="subject"
-                                                        value={updateClassFormik.values.subject}
-                                                        onChange={updateClassFormik.handleChange}
-                                                        error={updateClassFormik.touched.subject && Boolean(updateClassFormik.errors.subject)}
-                                                        helperText={updateClassFormik.touched.subject && updateClassFormik.errors.subject}
-                                                    />
-                                                </Grid>
-                                                <Grid item xs={12}>
-                                                    <TextField
-                                                        required
-                                                        fullWidth
-                                                        name="roomNumber"
-                                                        label="Room Number"
-                                                        id="roomNumber"
-                                                        value={updateClassFormik.values.roomNumber}
-                                                        onChange={updateClassFormik.handleChange}
-                                                        error={updateClassFormik.touched.roomNumber && Boolean(updateClassFormik.errors.roomNumber)}
-                                                        helperText={updateClassFormik.touched.roomNumber && updateClassFormik.errors.roomNumber}
-                                                    />
-                                                </Grid>
-                                                <Grid item xs={12}>
-                                                    <InputLabel>Select Class Cover Photo</InputLabel>
-                                                    <TextField
-                                                        required
-                                                        fullWidth
-                                                        name="coverPhoto"
-                                                        id="coverPhoto"
-                                                        type="file"
-                                                        accept="images/*"
-                                                        onChange={(e) => {
-                                                            updateClassFormik.setFieldValue('coverPhoto', e.target.files)
-                                                        }}
-                                                    />
-                                                </Grid>
-                                            </Grid>
-                                            <Button
-                                                type="submit"
-                                                fullWidth
-                                                variant="contained"
-                                                sx={{ mt: 3, mb: 2 }}
-                                            >
-                                                Edit Class
-                                            </Button>
-                                        </Box>
-                                    </ModalBody>
-                                </Modal>
+                                        <CreateClasswork />
+                                        <EditClassDetails />
+                                    </>
+                                    : <></>
+                                }
                             </Grid>
                         </Grid>
                     </Container>

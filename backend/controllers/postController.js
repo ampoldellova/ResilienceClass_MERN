@@ -3,6 +3,8 @@ const APIFeatures = require('../utils/apiFeatures');
 const cloudinary = require('cloudinary');
 const generateString = require('../utils/codeGenerator');
 const Post = require('../models/post');
+// const User = require('../models/user');
+const user = require('../models/user');
 
 exports.newPost = async (req, res, next) => {
 
@@ -53,10 +55,43 @@ exports.newPost = async (req, res, next) => {
 }
 
 exports.getAllPosts = async (req, res, next) => {
-    const post = await Post.find({ class: req.params.id });
+    const post = await Post.find({ class: req.params.id }).populate({
+        path: 'teacher',
+        model: user
+    }).populate({
+        path: 'comments.user',
+        model: user
+    })
 
     res.status(200).json({
         success: true,
         post
     })
+}
+
+exports.createComment = async (req, res, next) => {
+    // console.log(req.params.id)
+    try {
+
+        const post = await Post.findById(req.params.id);
+
+        req.body.user = req.user._id
+        req.body.body = req.body.comment
+
+        post.comments.push(req.body)
+
+        post.save()
+
+
+        res.status(200).json({
+            success: true,
+            post: post
+        })
+
+    } catch (err) {
+        console.log(err);
+        res.status(500).json({
+            success: false
+        })
+    }
 }

@@ -9,7 +9,7 @@ const postSchema = new mongoose.Schema({
     teacher: {
         type: mongoose.Schema.Types.ObjectId,
         required: true,
-        ref: 'user'
+        ref: 'User'
     },
     contents: {
         type: String,
@@ -30,28 +30,18 @@ const postSchema = new mongoose.Schema({
             user: {
                 type: mongoose.Schema.Types.ObjectId,
                 required: true,
-                ref: 'user'
+                ref: 'User'
             },
             body: {
                 type: String,
                 required: true
             },
-            fileAttachments: [
-                {
-                    public_id: {
-                        type: String
-                    },
-                    url: {
-                        type: String
-                    }
-                }
-            ]
+            commentCreated: {
+                type: Date,
+                default: Date.now
+            }
         }
-    ],
-    deadline: {
-        type: Date,
-        default: null
-    },
+    ]
 }, { timestamps: true })
 
 module.exports = mongoose.model('Post', postSchema);
