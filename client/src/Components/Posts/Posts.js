@@ -4,6 +4,7 @@ import { Avatar, TextField, Box } from '@mui/material';
 import { getToken, getUser } from '../../utils/helpers';
 import { MDBCardFooter, MDBTypography } from "mdb-react-ui-kit";
 import { MoreVert, Assignment } from '@mui/icons-material';
+import { Document, Page } from 'react-pdf'
 import axios from 'axios';
 import EditPost from './EditPost';
 
@@ -121,12 +122,24 @@ const Posts = ({ posts, getClassPosts, classRoom, postId }) => {
                         return <>
                             <div style={{ display: 'inline-block' }}>
                                 <div style={{ margin: '10px' }}>
-                                    <Card sx={{ width: 150 }} >
+                                    <Card variant='outlined' sx={{ width: 'auto', height: 80 }} >
                                         <CardContent>
                                             <div className="d-flex flex-start">
                                                 <Assignment color='primary' sx={{ width: 50, height: 50 }} />
-                                                <Typography>
-                                                    <a href={attachment.url} target="_blank" rel="noopener noreferrer">{attachment.public_id}</a>
+                                                <Typography sx={{ my: 'auto' }}>
+                                                    <a
+                                                        href={attachment.url}
+                                                        target="_blank"
+                                                        rel="noopener noreferrer"
+                                                        style={{
+                                                            display: 'inline-block',
+                                                            maxWidth: '20ch',
+                                                            overflow: 'hidden',
+                                                            textOverflow: 'ellipsis',
+                                                            whiteSpace: 'nowrap',
+                                                        }}>
+                                                        {attachment.url}
+                                                    </a>
                                                 </Typography>
                                             </div>
                                         </CardContent>
