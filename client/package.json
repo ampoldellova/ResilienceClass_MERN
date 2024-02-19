@@ -24,6 +24,7 @@
     "invariant": "^2.2.4",
     "mdb-react-ui-kit": "^6.3.0",
     "mdbreact": "^5.2.0",
+    "mui-file-input": "^4.0.4",
     "pagination": "^0.4.6",
     "rc-slider": "^9.7.5",
     "react": "^18.2.0",

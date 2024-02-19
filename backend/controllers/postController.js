@@ -1,10 +1,8 @@
-const Class = require('../models/class');
-const APIFeatures = require('../utils/apiFeatures');
 const cloudinary = require('cloudinary');
-const generateString = require('../utils/codeGenerator');
 const Post = require('../models/post');
-// const User = require('../models/user');
 const user = require('../models/user');
+// const Class = require('../models/class');
+const Class = require('../models/class')
 
 exports.newPost = async (req, res, next) => {
 
@@ -54,6 +52,59 @@ exports.newPost = async (req, res, next) => {
     })
 }
 
+exports.updatePost = async (req, res, next) => {
+    let post = await Post.findById(req.params.id)
+    const newPostData = {
+        contents: req.body.contents
+    }
+
+    console.log(req.body)
+    if (!post) {
+        return res.status(404).json({
+            success: false,
+            message: 'Post not found'
+        })
+    }
+
+    let attachmentsLinks = [];
+
+    if (req.files?.length > 0) {
+        let attachments = req.files;
+        for (let i = 0; i < attachments.length; i++) {
+            let attachmentsDataUri = attachments[i].path;
+
+            try {
+                const result = await cloudinary.uploader.upload(attachmentsDataUri, {
+                    folder: 'ResilienceClass/Posts',
+                    crop: "scale",
+                    resource_type: 'auto'
+                });
+
+                attachmentsLinks.push({
+                    public_id: result.public_id,
+                    url: result.secure_url
+                });
+
+            } catch (error) {
+                console.error(error);
+            }
+        }
+        // post.attachments = attachmentsLinks;
+        newPostData.attachments = attachmentsLinks
+    }
+
+    post = await Post.findByIdAndUpdate(req.params.id, newPostData, {
+        new: true,
+        runValidators: true,
+        useFindandModify: false
+    })
+
+    return res.status(200).json({
+        success: true,
+        post
+    })
+};
+
 exports.getAllPosts = async (req, res, next) => {
     const post = await Post.find({ class: req.params.id }).populate({
         path: 'teacher',
@@ -69,8 +120,22 @@ exports.getAllPosts = async (req, res, next) => {
     })
 }
 
+exports.getSinglePost = async (req, res, next) => {
+    const post = await Post.findById(req.params.id)
+
+    if (!post) {
+        return res.status(404).json({
+            success: false,
+            message: 'Post not found'
+        })
+    }
+    res.status(200).json({
+        success: true,
+        post
+    })
+}
+
 exports.createComment = async (req, res, next) => {
-    // console.log(req.params.id)
     try {
 
         const post = await Post.findById(req.params.id);
@@ -94,4 +159,19 @@ exports.createComment = async (req, res, next) => {
             success: false
         })
     }
+}
+
+exports.deletePost = async (req, res, next) => {
+    const post = await Post.findByIdAndDelete(req.params.id);
+    if (!post) {
+        return res.status(404).json({
+            success: false,
+            message: 'Post not found'
+        })
+    }
+
+    res.status(200).json({
+        success: true,
+        message: 'Post deleted'
+    })
 }

@@ -11,16 +11,11 @@ import { toast } from 'react-toastify';
 import MetaData from '../Layout/Metadata';
 import { getToken } from '../../utils/helpers';
 import axios from 'axios';
-import Posts from './Posts';
+import Posts from '../Posts/Posts';
 import { Modal, ModalHeader, ModalBody } from 'reactstrap';
-import { DemoContainer } from '@mui/x-date-pickers/internals/demo';
-import { AdapterDayjs } from '@mui/x-date-pickers/AdapterDayjs';
-import { LocalizationProvider } from '@mui/x-date-pickers/LocalizationProvider';
-import { DateTimePicker } from '@mui/x-date-pickers/DateTimePicker';
-import MoreVertIcon from '@mui/icons-material/MoreVert';
 import * as Yup from 'yup';
 import { useFormik } from 'formik';
-import CreateClasswork from './CreateClasswork';
+import CreateClasswork from '../Classworks/CreateClasswork';
 import EditClassDetails from './EditClassDetails';
 
 const validationSchema = Yup.object({
@@ -166,9 +161,10 @@ const ClassDetails = () => {
             }
 
             const { data } = await axios.post(`http://localhost:4003/api/v1/class/post/new`, formData, config)
-            toggle();
+
+            setModal(false);
             formik.resetForm();
-            window.location.reload();
+            getClassPosts();
             setSuccess(data.success);
         } catch (error) {
             setError(error.response.data.message)
@@ -329,24 +325,25 @@ const ClassDetails = () => {
                         <Grid container spacing={3}>
                             <Grid item xs={12} md={8} lg={9}>
 
-                                {classRoom?.joinedUsers?.find((joinedUser) => joinedUser.user === getUser()?._id).role === 'teacher' ?
-                                    <Paper
-                                        sx={{
-                                            p: 3,
-                                            display: 'flex',
-                                            flexDirection: 'row',
-                                            alignItems: 'center',
-                                            height: 'auto',
-                                        }}
-                                    >
+                                {/* {classRoom?.joinedUsers?.find((joinedUser) => joinedUser.user === getUser()?._id).role === 'teacher' ? */}
+                                <Paper
+                                    sx={{
+                                        p: 3,
+                                        display: 'flex',
+                                        flexDirection: 'row',
+                                        alignItems: 'center',
+                                        height: 'auto',
+                                    }}
+                                >
 
-                                        < Avatar alt={user && user.name} src={user.avatar && user.avatar.url} />
-                                        <Button variant="text" onClick={toggle} sx={{ marginLeft: 2 }}>Announce Something to your class</Button>
-                                    </Paper> : <></>
-                                }
+                                    < Avatar alt={user && user.name} src={user.avatar && user.avatar.url} />
+                                    <Button variant="text" onClick={toggle} sx={{ marginLeft: 2 }}>Announce Something to your class</Button>
+                                </Paper>
+                                {/* : <></> */}
+                                {/* } */}
 
                                 {classPosts && classPosts.map(posts => {
-                                    return <Posts key={posts._id} posts={posts} getClassPosts={getClassPosts} />
+                                    return <Posts key={posts._id} posts={posts} getClassPosts={getClassPosts} classRoom={classRoom} postId={posts._id} />
                                 })}
                                 <Modal isOpen={modal} toggle={() => toggle()} centered>
                                     <ModalHeader toggle={toggle}>Create a Post</ModalHeader>
@@ -382,20 +379,6 @@ const ClassDetails = () => {
                                                         }}
                                                     />
                                                 </Grid>
-                                                {/* <Grid item xs={12}>
-                                                    <LocalizationProvider dateAdapter={AdapterDayjs}>
-                                                        <DemoContainer components={['DateTimePicker ']}>
-                                                            <DateTimePicker
-                                                                fullWidth
-                                                                disablePast={true}
-                                                                label="Set a Deadline"
-                                                                onChange={(value) => {
-                                                                    formik.setFieldValue('deadline', value)
-                                                                }}
-                                                            />
-                                                        </DemoContainer>
-                                                    </LocalizationProvider>
-                                                </Grid> */}
                                             </Grid>
                                             <Button
                                                 type="submit"

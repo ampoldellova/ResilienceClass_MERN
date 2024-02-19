@@ -53,10 +53,6 @@ exports.updateClass = async (req, res, next) => {
         })
     }
 
-    console.log(req.file)
-    console.log(req.body)
-
-
     if (req.file) {
         const result = await cloudinary.v2.uploader.upload(req.file.path, {
             folder: 'ResilienceClass/classCoverPhotos',

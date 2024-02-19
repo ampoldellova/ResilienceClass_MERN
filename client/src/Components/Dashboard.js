@@ -176,11 +176,12 @@ const Dashboard = () => {
             }
 
             const { data } = await axios.post(`http://localhost:4003/api/v1/class/new`, formData, config)
-            toggle();
+
+            setModal(false);
             formik.resetForm();
-            window.location.reload();
             setSuccess(data.success)
             setClass(data.class)
+            getClassroom()
         } catch (error) {
             setError(error.response.data.message)
         }
@@ -196,11 +197,12 @@ const Dashboard = () => {
             }
 
             const { data } = await axios.post(`http://localhost:4003/api/v1/class/join`, formData, config)
-            toggle();
+
+            setJoinModal(false);
             formik.resetForm();
-            window.location.reload();
             setSuccess(data.success)
             setJoinClass(data.class)
+            getClassroom()
         } catch (error) {
             setError(error.response.data.message)
         }
