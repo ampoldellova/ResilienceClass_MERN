@@ -82,7 +82,6 @@ const CustomizedDialogs = () => {
             }
             const { data } = await axios.post(`http://localhost:4003/api/v1/class/classwork/new`, formData, config)
 
-            // window.location.reload();
             setOpen(false)
             setSuccess(data.success);
         } catch (error) {

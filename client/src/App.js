@@ -7,6 +7,7 @@ import Register from './Components/User/Register';
 import ForgotPassword from './Components/User/ForgotPassword';
 import ProtectedRoute from './Components/Route/ProtectedRoute';
 import ClassDetails from './Components/Class/ClassDetails';
+import ClassworkDetails from './Components/Classworks/ClassworkDetails';
 
 function App() {
   return (
@@ -19,6 +20,8 @@ function App() {
           <Route path="/login" element={<Login />} exact />
           <Route path="/register" element={<Register />} exact />
           <Route path="/password/forgot" element={<ForgotPassword />} exact />
+          
+          <Route path="/class/classwork/:id" element={<ProtectedRoute><ClassworkDetails /></ProtectedRoute>} exact />
         </Routes>
       </Router>
     </div>

@@ -63,10 +63,15 @@ const Posts = ({ posts, getClassPosts, classRoom, postId }) => {
             alert("Error occured")
         }
     }
-
+    
     useEffect(() => {
         setUser(getUser())
     }, [])
+
+    const getRole = (id) => {
+        const user = classRoom?.joinedUsers?.find((joinedUser) => joinedUser.user === id)
+        return user.role
+    }
 
     return (
         <>
@@ -74,12 +79,15 @@ const Posts = ({ posts, getClassPosts, classRoom, postId }) => {
                 <CardContent>
                     <div className="d-flex flex-start">
                         <Avatar alt={posts.teacher.name} src={posts.teacher.avatar.url} />
+
                         <Box sx={{ marginLeft: 2, mr: 'auto' }}>
-
-
                             <MDBTypography tag="h6" className="fw-bold mb-1">
                                 {posts.teacher.name}
-                                <Badge sx={{ marginLeft: 4 }} color="secondary" />
+                                <Badge
+                                    sx={{ marginLeft: 4, mb: 0.5 }}
+                                    badgeContent={getRole(posts.teacher._id)}
+                                    color={getRole(posts.teacher._id) === 'student' ? 'primary' : 'secondary'}
+                                />
                             </MDBTypography>
 
                             <div className="d-flex align-items-center mb-3">
@@ -88,7 +96,8 @@ const Posts = ({ posts, getClassPosts, classRoom, postId }) => {
 
                             </div>
                         </Box>
-                        {classRoom?.joinedUsers?.find((joinedUser) => joinedUser.user === getUser()?._id).role === 'teacher' ?
+                        {classRoom?.joinedUsers?.find((joinedUser) => joinedUser.user === getUser()?._id).role === 'teacher' ||
+                            posts.teacher._id === getUser()._id ?
                             <>
                                 <IconButton
                                     onClick={handleMenuOpen}>
@@ -133,7 +142,7 @@ const Posts = ({ posts, getClassPosts, classRoom, postId }) => {
                                                         rel="noopener noreferrer"
                                                         style={{
                                                             display: 'inline-block',
-                                                            maxWidth: '20ch',
+                                                            maxWidth: '18ch',
                                                             overflow: 'hidden',
                                                             textOverflow: 'ellipsis',
                                                             whiteSpace: 'nowrap',

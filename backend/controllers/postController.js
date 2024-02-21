@@ -1,7 +1,6 @@
 const cloudinary = require('cloudinary');
 const Post = require('../models/post');
 const user = require('../models/user');
-// const Class = require('../models/class');
 const Class = require('../models/class')
 
 exports.newPost = async (req, res, next) => {

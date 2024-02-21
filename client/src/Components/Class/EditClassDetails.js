@@ -7,6 +7,7 @@ import { getToken } from '../../utils/helpers';
 import * as Yup from 'yup';
 import { useFormik } from 'formik';
 import axios from 'axios';
+import { WindowSharp } from '@mui/icons-material';
 
 const classUpdateValidationSchema = Yup.object({
     className: Yup.string().required('Class Name is required'),
@@ -15,7 +16,7 @@ const classUpdateValidationSchema = Yup.object({
     roomNumber: Yup.string().required('Class Room Number is required'),
 });
 
-function EditClassDetails() {
+const EditClassDetails = () => {
     const [modal, setModal] = useState(false);
     const [classRoom, setClass] = useState({});
     const [success, setSuccess] = useState('')
@@ -57,6 +58,7 @@ function EditClassDetails() {
             }
 
             const { data } = await axios.put(`http://localhost:4003/api/v1/class/update/${id}`, formData, config)
+
             toggle();
             updateClassFormik.resetForm();
             window.location.reload();

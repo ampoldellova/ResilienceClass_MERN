@@ -7,7 +7,6 @@ import LogoutIcon from '@mui/icons-material/Logout';
 import { useNavigate } from 'react-router-dom';
 import { mainListItems } from '../listItems';
 import { getUser, logout } from '../../utils/helpers';
-import { toast } from 'react-toastify';
 import MetaData from '../Layout/Metadata';
 import { getToken } from '../../utils/helpers';
 import axios from 'axios';
@@ -17,6 +16,7 @@ import * as Yup from 'yup';
 import { useFormik } from 'formik';
 import CreateClasswork from '../Classworks/CreateClasswork';
 import EditClassDetails from './EditClassDetails';
+import ClassworkList from '../Classworks/ClassworkList';
 
 const validationSchema = Yup.object({
     contents: Yup.string().required('Content is required'),
@@ -102,16 +102,14 @@ const ClassDetails = () => {
             setUser('')
             logout(() => navigate('/login'))
         } catch (error) {
-            toast.error(error.response.data.message)
+            alert("Error occured")
         }
     }
 
     const logoutHandler = () => {
         logoutUser();
         handleProfileMenuClose();
-        toast.success('log out', {
-            position: toast.POSITION.BOTTOM_RIGHT
-        });
+        alert("Logged out")
     }
 
     let { id } = useParams()
@@ -324,8 +322,6 @@ const ClassDetails = () => {
                         </Box>
                         <Grid container spacing={3}>
                             <Grid item xs={12} md={8} lg={9}>
-
-                                {/* {classRoom?.joinedUsers?.find((joinedUser) => joinedUser.user === getUser()?._id).role === 'teacher' ? */}
                                 <Paper
                                     sx={{
                                         p: 3,
@@ -339,12 +335,11 @@ const ClassDetails = () => {
                                     < Avatar alt={user && user.name} src={user.avatar && user.avatar.url} />
                                     <Button variant="text" onClick={toggle} sx={{ marginLeft: 2 }}>Announce Something to your class</Button>
                                 </Paper>
-                                {/* : <></> */}
-                                {/* } */}
 
                                 {classPosts && classPosts.map(posts => {
                                     return <Posts key={posts._id} posts={posts} getClassPosts={getClassPosts} classRoom={classRoom} postId={posts._id} />
                                 })}
+
                                 <Modal isOpen={modal} toggle={() => toggle()} centered>
                                     <ModalHeader toggle={toggle}>Create a Post</ModalHeader>
                                     <ModalBody>
@@ -411,6 +406,24 @@ const ClassDetails = () => {
 
                                         <CreateClasswork />
                                         <EditClassDetails />
+                                    </>
+                                    : <></>
+                                }
+
+                                {classRoom?.joinedUsers?.find((joinedUser) => joinedUser.user === getUser()?._id).role === 'student' ?
+                                    <>
+                                        <Paper
+                                            sx={{
+                                                p: 2,
+                                                display: 'flex',
+                                                flexDirection: 'column',
+                                                height: 'auto',
+                                                marginBottom: 2
+                                            }}
+                                        >
+                                            <Typography variant='subtitle1'>Classworks: </Typography>
+                                            <ClassworkList />
+                                        </Paper>
                                     </>
                                     : <></>
                                 }

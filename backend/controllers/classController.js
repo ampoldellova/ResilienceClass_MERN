@@ -4,7 +4,7 @@ const cloudinary = require('cloudinary');
 const generateString = require('../utils/codeGenerator')
 
 exports.newClass = async (req, res, next) => {
-    console.log(req.user)
+    // console.log(req.user)
     const randomCode = generateString(6);
     req.body.classCode = randomCode.trim();
     req.body.joinedUsers = {
@@ -45,7 +45,7 @@ exports.updateClass = async (req, res, next) => {
         roomNumber: req.body.roomNumber,
     }
 
-    console.log(req.body)
+    // console.log(req.body)
     if (!classRoom) {
         return res.status(404).json({
             success: false,
@@ -115,7 +115,7 @@ exports.joinClass = async (req, res, next) => {
 
     try {
         const foundClass = await Class.findOne({ classCode: enteredCode });
-        console.log(foundClass)
+        // console.log(foundClass)
         if (!foundClass) {
             return res.status(404).json({ message: "Class not found." });
         }
