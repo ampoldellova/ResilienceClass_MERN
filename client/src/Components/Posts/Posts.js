@@ -63,7 +63,7 @@ const Posts = ({ posts, getClassPosts, classRoom, postId }) => {
             alert("Error occured")
         }
     }
-    
+
     useEffect(() => {
         setUser(getUser())
     }, [])
@@ -181,6 +181,7 @@ const Posts = ({ posts, getClassPosts, classRoom, postId }) => {
                             <Divider sx={{ marginBottom: 3 }} />
                         </>
                     })}
+
                     <div className="d-flex flex-start w-100">
                         <Avatar alt={user && user.name} src={user.avatar && user.avatar.url} sx={{ width: 30, height: 30 }} />
                         <TextField

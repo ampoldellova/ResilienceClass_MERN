@@ -74,14 +74,16 @@ const VisuallyHiddenInput = styled('input')({
 
 const defaultTheme = createTheme();
 
-const ClassworkDetails = () => {
+const ClassworkDetails = ({ classRoom, userRole }) => {
     const [open, setOpen] = React.useState(true);
     const [files, setFiles] = useState([]);
+    const [attach, setAttach] = useState('');
     const [filesPreview, setFilesPreview] = useState([])
     const [user, setUser] = useState('')
     const menuId = 'primary-search-account-menu';
     const [profileaAnchorEl, setProfileAnchorEl] = React.useState(null);
     const [classwork, setClasswork] = useState({});
+    const [submission, setSubmission] = useState({});
     const navigate = useNavigate()
 
     const toggleDrawer = () => {
@@ -123,34 +125,82 @@ const ClassworkDetails = () => {
             }
         }
 
-        const { data: { classwork } } = await axios.get(`http://localhost:4003/api/v1/class/classwork/${id}`, config);
-        // console.log(classwork)
+        const { data: { classwork, submission } } = await axios.get(`http://localhost:4003/api/v1/class/classwork/${id}`, config);
+
+        setFilesPreview(submission?.attachments || [])
+        console.log(submission)
         setClasswork(classwork)
+        setSubmission(submission)
+    }
+
+    const removeFile = async (publicId) => {
+        console.log(publicId);
+        const config = {
+            headers: {
+                'Authorization': `Bearer ${getToken()}`
+            }
+        }
+
+        const { data } = await axios.delete(`http://localhost:4003/api/v1/class/classwork/file/remove/${id}?publicId=${publicId}`, config);
+
+        getSingleClasswork()
+    }
+
+    const attachFile = async () => {
+        const formData = new FormData();
+        for (let i = 0; i < files.length; i++) {
+            formData.append('attachments', files[i]);
+        }
+
+        const config = {
+            headers: {
+                'Content-Type': 'multipart/form-data',
+                'Authorization': `Bearer ${getToken()}`
+            }
+        }
+
+        try {
+            const { data } = await axios.post(`http://localhost:4003/api/v1/class/classwork/${id}/attach`, formData, config);
+            console.log(data);
+            getSingleClasswork()
+        } catch (err) {
+            alert("Error occured")
+            console.log(err)
+        }
     }
 
     const onChange = e => {
         const files = Array.from(e.target.files)
+
         setFilesPreview([]);
-        setFiles([])
+        setFiles([]);
+        setFiles(e.target.files)
+
         files.forEach(file => {
             const reader = new FileReader();
             reader.onload = () => {
                 if (reader.readyState === 2) {
                     setFilesPreview(oldArray => [...oldArray, reader.result])
-                    setFiles(oldArray => [...oldArray, reader.result])
                 }
             }
 
             reader.readAsDataURL(file)
         })
-
     }
+
+    useEffect(() => {
+        if (files.length > 0) {
+            attachFile()
+        }
+
+    }, [files])
 
     useEffect(() => {
         setUser(getUser())
         getSingleClasswork(id)
-    }, [])
 
+    }, [])
+    // console.log(classwork.submissions)
     return (
         <>
             <ThemeProvider theme={defaultTheme}>
@@ -272,10 +322,37 @@ const ClassworkDetails = () => {
                                                 <Typography variant='body2'>
                                                     {classwork.instructions}
                                                 </Typography>
+
+                                                {classwork.attachments && classwork.attachments.map(attachment => {
+                                                    return <>
+                                                        <div style={{ display: 'inline-block' }}>
+                                                            <Card variant='outlined' sx={{ width: 'auto', height: 80, ml: 0, mt: 1, mr: 1 }} >
+                                                                <CardContent>
+                                                                    <div className="d-flex flex-start">
+                                                                        <Assignment color='primary' sx={{ width: 50, height: 50 }} />
+                                                                        <Typography sx={{ my: 'auto' }}>
+                                                                            <a
+                                                                                href={attachment.url}
+                                                                                target="_blank"
+                                                                                rel="noopener noreferrer"
+                                                                                style={{
+                                                                                    display: 'inline-block',
+                                                                                    maxWidth: '17ch',
+                                                                                    overflow: 'hidden',
+                                                                                    textOverflow: 'ellipsis',
+                                                                                    whiteSpace: 'nowrap',
+                                                                                }}>
+                                                                                {attachment.url}
+                                                                            </a>
+                                                                        </Typography>
+                                                                    </div>
+                                                                </CardContent>
+                                                            </Card>
+                                                        </div >
+                                                    </>
+                                                })}
                                             </div>
                                         </div>
-
-
                                     </Paper>
                                 </Grid>
 
@@ -285,7 +362,6 @@ const ClassworkDetails = () => {
                                             p: 2,
                                             display: 'flex',
                                             flexDirection: 'column',
-                                            // alignItems: 'center',
                                             height: 'auto',
                                         }}
                                     >
@@ -297,16 +373,16 @@ const ClassworkDetails = () => {
                                                         <div className="d-flex justify-content-between align-items-center">
                                                             <Assignment color='primary' sx={{ width: 50, height: 50 }} />
                                                             <Typography sx={{ my: 'auto', mr: 'auto', maxWidth: '18ch', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>
-                                                                <a href={attachment} target="_blank" rel="noopener noreferrer">
-                                                                    {attachment}
+                                                                <a href={attachment.url} target="_blank" rel="noopener noreferrer">
+                                                                    {attachment.public_id}
                                                                 </a>
                                                             </Typography>
-                                                            <IconButton>
+                                                            <IconButton onClick={() => {
+                                                                removeFile(attachment.public_id)
+                                                            }}>
                                                                 <CloseIcon />
                                                             </IconButton>
                                                         </div>
-
-
                                                     </CardContent>
                                                 </Card>
                                             ))}
@@ -330,11 +406,11 @@ const ClassworkDetails = () => {
                                                 sx={{ mt: 1 }}
                                                 fullWidth
                                                 variant='contained'
+                                                onClick={() => attachFile(id)}
                                             >
                                                 Submit work
                                             </Button>
                                         </Box>
-
                                     </Paper>
                                 </Grid>
                             </Grid>

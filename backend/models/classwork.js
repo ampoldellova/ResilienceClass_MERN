@@ -57,8 +57,7 @@ const classworkSchema = new mongoose.Schema({
                 type: Number
             },
             submittedAt: {
-                type: Date,
-                default: Date.now
+                type: Date
             }
         }
     ]

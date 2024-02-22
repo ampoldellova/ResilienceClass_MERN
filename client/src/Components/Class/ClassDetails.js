@@ -195,6 +195,10 @@ const ClassDetails = () => {
         setOpen(!open);
     };
 
+    const isUserTeacher = () => {
+        return classRoom?.joinedUsers?.find((joinedUser) => joinedUser.user === getUser()?._id).role === 'teacher';
+    };
+
     return (
         <ThemeProvider theme={defaultTheme}>
             <MetaData title={'Dashboard'} />
@@ -389,7 +393,7 @@ const ClassDetails = () => {
                             </Grid>
 
                             <Grid item xs={12} md={4} lg={3}>
-                                {classRoom?.joinedUsers?.find((joinedUser) => joinedUser.user === getUser()?._id).role === 'teacher' ?
+                                {isUserTeacher() ?
                                     <>
                                         <Paper
                                             sx={{
@@ -404,14 +408,23 @@ const ClassDetails = () => {
                                             <Typography variant='h4' sx={{ textAlign: 'center' }}>{classRoom?.classCode}</Typography>
                                         </Paper>
 
+                                        <Paper
+                                            sx={{
+                                                p: 2,
+                                                display: 'flex',
+                                                flexDirection: 'column',
+                                                height: 'auto',
+                                                marginBottom: 2
+                                            }}
+                                        >
+                                            <Typography variant='subtitle1'>Classworks: </Typography>
+                                            <ClassworkList />
+                                        </Paper>
+
                                         <CreateClasswork />
                                         <EditClassDetails />
                                     </>
-                                    : <></>
-                                }
-
-                                {classRoom?.joinedUsers?.find((joinedUser) => joinedUser.user === getUser()?._id).role === 'student' ?
-                                    <>
+                                    : <>
                                         <Paper
                                             sx={{
                                                 p: 2,
@@ -425,7 +438,6 @@ const ClassDetails = () => {
                                             <ClassworkList />
                                         </Paper>
                                     </>
-                                    : <></>
                                 }
                             </Grid>
                         </Grid>
