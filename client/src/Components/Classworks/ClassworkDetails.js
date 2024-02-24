@@ -4,7 +4,7 @@ import { styled, createTheme, ThemeProvider } from '@mui/material/styles';
 import { Card, CardContent, Button, Grid, Paper, Menu, MenuItem, CssBaseline, Drawer as MuiDrawer, Box, AppBar as MuiAppBar, Toolbar, List, Typography, Divider, IconButton, Container, Avatar } from '@mui/material';
 import { Menu as MenuIcon, ChevronLeft as ChevronLeftIcon } from '@mui/icons-material';
 import axios from 'axios';
-import { getToken, getUser, logout } from '../../utils/helpers';
+import { getToken, getUser, isUserTeacher, logout } from '../../utils/helpers';
 import { useParams } from 'react-router';
 import MetaData from '../Layout/Metadata';
 import LogoutIcon from '@mui/icons-material/Logout';
@@ -13,6 +13,7 @@ import AssignmentIcon from '@mui/icons-material/Assignment';
 import CloudUploadIcon from '@mui/icons-material/CloudUpload';
 import Assignment from '@mui/icons-material/Assignment';
 import CloseIcon from '@mui/icons-material/Close';
+import { green } from '@mui/material/colors';
 
 const drawerWidth = 240;
 
@@ -74,7 +75,7 @@ const VisuallyHiddenInput = styled('input')({
 
 const defaultTheme = createTheme();
 
-const ClassworkDetails = ({ classRoom, userRole }) => {
+const ClassworkDetails = () => {
     const [open, setOpen] = React.useState(true);
     const [files, setFiles] = useState([]);
     const [attach, setAttach] = useState('');
@@ -85,6 +86,8 @@ const ClassworkDetails = ({ classRoom, userRole }) => {
     const [classwork, setClasswork] = useState({});
     const [submission, setSubmission] = useState({});
     const navigate = useNavigate()
+
+    let { id } = useParams()
 
     const toggleDrawer = () => {
         setOpen(!open);
@@ -114,8 +117,6 @@ const ClassworkDetails = ({ classRoom, userRole }) => {
         alert("Successfully Logged out")
     }
 
-    let { id } = useParams()
-
     const getSingleClasswork = async () => {
 
         const config = {
@@ -128,7 +129,6 @@ const ClassworkDetails = ({ classRoom, userRole }) => {
         const { data: { classwork, submission } } = await axios.get(`http://localhost:4003/api/v1/class/classwork/${id}`, config);
 
         setFilesPreview(submission?.attachments || [])
-        console.log(submission)
         setClasswork(classwork)
         setSubmission(submission)
     }
@@ -169,6 +169,38 @@ const ClassworkDetails = ({ classRoom, userRole }) => {
         }
     }
 
+    const submitClasswork = async (id) => {
+        console.log(getToken())
+
+        const config = {
+            headers: {
+                'Content-Type': 'application/json',
+                'Authorization': `Bearer ${getToken()}`
+            }
+        }
+
+        const { data: { classwork } } = await axios.get(`http://localhost:4003/api/v1/class/classwork/${id}/submit`, config);
+
+        getSingleClasswork(classwork)
+        alert('Classwork submitted successfully')
+    };
+
+    const unsubmitClasswork = async (id) => {
+        console.log(getToken())
+
+        const config = {
+            headers: {
+                'Content-Type': 'application/json',
+                'Authorization': `Bearer ${getToken()}`
+            }
+        }
+
+        const { data: { classwork } } = await axios.get(`http://localhost:4003/api/v1/class/classwork/${id}/unsubmit`, config);
+
+        getSingleClasswork(classwork)
+        alert('Classwork unsubmitted')
+    };
+
     const onChange = e => {
         const files = Array.from(e.target.files)
 
@@ -188,19 +220,21 @@ const ClassworkDetails = ({ classRoom, userRole }) => {
         })
     }
 
+    const isSubmitted = () => {
+        return classwork?.submissions?.find(obj => obj.user._id === getUser()._id)?.submittedAt ? true : false;
+    }
+    // console.log(classwork);
     useEffect(() => {
         if (files.length > 0) {
             attachFile()
         }
-
     }, [files])
 
     useEffect(() => {
         setUser(getUser())
         getSingleClasswork(id)
-
     }, [])
-    // console.log(classwork.submissions)
+
     return (
         <>
             <ThemeProvider theme={defaultTheme}>
@@ -356,63 +390,86 @@ const ClassworkDetails = ({ classRoom, userRole }) => {
                                     </Paper>
                                 </Grid>
 
-                                <Grid item xs={12} md={4} lg={3}>
-                                    <Paper
-                                        sx={{
-                                            p: 2,
-                                            display: 'flex',
-                                            flexDirection: 'column',
-                                            height: 'auto',
-                                        }}
-                                    >
-                                        <Box>
-                                            <Typography variant='subtitle1'>Your Work </Typography>
-                                            {filesPreview.map(attachment => (
-                                                <Card variant='outlined' sx={{ width: 'auto', height: 80, my: 1 }} >
-                                                    <CardContent>
-                                                        <div className="d-flex justify-content-between align-items-center">
-                                                            <Assignment color='primary' sx={{ width: 50, height: 50 }} />
-                                                            <Typography sx={{ my: 'auto', mr: 'auto', maxWidth: '18ch', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>
-                                                                <a href={attachment.url} target="_blank" rel="noopener noreferrer">
-                                                                    {attachment.public_id}
-                                                                </a>
-                                                            </Typography>
-                                                            <IconButton onClick={() => {
-                                                                removeFile(attachment.public_id)
-                                                            }}>
-                                                                <CloseIcon />
-                                                            </IconButton>
-                                                        </div>
-                                                    </CardContent>
-                                                </Card>
-                                            ))}
-                                            <Button
-                                                fullWidth
-                                                sx={{ mt: 1 }}
-                                                component="label"
-                                                role={undefined}
-                                                variant="outlined"
-                                                startIcon={<CloudUploadIcon />}
+                                {isUserTeacher(classwork.class) ?
+                                    <>
+                                    </> : <>
+                                        <Grid item xs={12} md={4} lg={3}>
+                                            <Paper
+                                                sx={{
+                                                    p: 2,
+                                                    display: 'flex',
+                                                    flexDirection: 'column',
+                                                    height: 'auto',
+                                                }}
                                             >
-                                                Upload file
-                                                <VisuallyHiddenInput
-                                                    type="file"
-                                                    multiple
-                                                    onChange={(e) => {
-                                                        onChange(e)
-                                                    }} />
-                                            </Button>
-                                            <Button
-                                                sx={{ mt: 1 }}
-                                                fullWidth
-                                                variant='contained'
-                                                onClick={() => attachFile(id)}
-                                            >
-                                                Submit work
-                                            </Button>
-                                        </Box>
-                                    </Paper>
-                                </Grid>
+                                                <Box>
+                                                    <div style={{ display: 'flex', justifyContent: 'space-between' }}>
+                                                        <Typography variant='subtitle1'>Your Work </Typography>
+                                                        {isSubmitted() ?
+                                                            <Typography variant='subtitle1' style={{ color: green[500] }}>submitted</Typography> :
+                                                            <></>
+                                                        }
+                                                    </div>
+
+                                                    {filesPreview.map(attachment => (
+                                                        <Card variant='outlined' sx={{ width: 'auto', height: 80, my: 1 }} >
+                                                            <CardContent>
+                                                                <div className="d-flex justify-content-between align-items-center">
+                                                                    <Assignment color='primary' sx={{ width: 50, height: 50 }} />
+                                                                    <Typography sx={{ my: 'auto', mr: 'auto', maxWidth: '18ch', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>
+                                                                        <a href={attachment.url} target="_blank" rel="noopener noreferrer">
+                                                                            {attachment.public_id}
+                                                                        </a>
+                                                                    </Typography>
+                                                                    <IconButton onClick={() => {
+                                                                        removeFile(attachment.public_id)
+                                                                    }}>
+                                                                        <CloseIcon />
+                                                                    </IconButton>
+                                                                </div>
+                                                            </CardContent>
+                                                        </Card>
+                                                    ))}
+                                                    <Button
+                                                        fullWidth
+                                                        sx={{ mt: 1 }}
+                                                        component="label"
+                                                        role={undefined}
+                                                        variant="outlined"
+                                                        startIcon={<CloudUploadIcon />}
+                                                    >
+                                                        Upload file
+                                                        <VisuallyHiddenInput
+                                                            type="file"
+                                                            multiple
+                                                            onChange={(e) => {
+                                                                onChange(e)
+                                                            }} />
+                                                    </Button>
+
+                                                    {!isSubmitted() ?
+                                                        <Button
+                                                            sx={{ mt: 1 }}
+                                                            fullWidth
+                                                            variant='contained'
+                                                            onClick={() => submitClasswork(id)}
+                                                        >
+                                                            Submit work
+                                                        </Button> : <Button
+                                                            sx={{ mt: 1 }}
+                                                            fullWidth
+                                                            variant='contained'
+                                                            onClick={() => unsubmitClasswork(id)}
+                                                        >
+                                                            Unsubmit
+                                                        </Button>
+                                                    }
+                                                </Box>
+                                            </Paper>
+                                        </Grid>
+                                    </>
+                                }
+
                             </Grid>
                         </Container>
                     </Box>

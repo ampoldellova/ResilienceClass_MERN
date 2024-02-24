@@ -20,7 +20,6 @@ function App() {
           <Route path="/login" element={<Login />} exact />
           <Route path="/register" element={<Register />} exact />
           <Route path="/password/forgot" element={<ForgotPassword />} exact />
-          
           <Route path="/class/classwork/:id" element={<ProtectedRoute><ClassworkDetails /></ProtectedRoute>} exact />
         </Routes>
       </Router>

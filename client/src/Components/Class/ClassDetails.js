@@ -17,6 +17,7 @@ import { useFormik } from 'formik';
 import CreateClasswork from '../Classworks/CreateClasswork';
 import EditClassDetails from './EditClassDetails';
 import ClassworkList from '../Classworks/ClassworkList';
+import ClassworkDetails from '../Classworks/ClassworkDetails';
 
 const validationSchema = Yup.object({
     contents: Yup.string().required('Content is required'),
@@ -84,8 +85,14 @@ const ClassDetails = () => {
     const [profileaAnchorEl, setProfileAnchorEl] = React.useState(null);
     const [classPosts, setClassPosts] = useState([])
 
+    let { id } = useParams();
+
     const toggle = () => {
         setModal(!modal);
+    };
+
+    const toggleDrawer = () => {
+        setOpen(!open);
     };
 
     const handleProfileMenuOpen = (event) => {
@@ -111,8 +118,6 @@ const ClassDetails = () => {
         handleProfileMenuClose();
         alert("Logged out")
     }
-
-    let { id } = useParams()
 
     const classDetails = async (id) => {
 
@@ -190,10 +195,6 @@ const ClassDetails = () => {
         classDetails(id);
         getClassPosts(id);
     }, [])
-
-    const toggleDrawer = () => {
-        setOpen(!open);
-    };
 
     const isUserTeacher = () => {
         return classRoom?.joinedUsers?.find((joinedUser) => joinedUser.user === getUser()?._id).role === 'teacher';
@@ -436,6 +437,7 @@ const ClassDetails = () => {
                                         >
                                             <Typography variant='subtitle1'>Classworks: </Typography>
                                             <ClassworkList />
+                                            {/* <ClassworkDetails /> */}
                                         </Paper>
                                     </>
                                 }

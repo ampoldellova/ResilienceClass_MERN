@@ -4,6 +4,7 @@ const jwt = require("jsonwebtoken")
 exports.isAuthenticatedUser = async (req, res, next) => {
 
     let { token } = req.cookies
+    
     if (!token) {
         token = req.header('Authorization').split(' ')[1];
     }

@@ -1,6 +1,7 @@
 const cloudinary = require('cloudinary');
 const Classwork = require('../models/classwork');
 const user = require('../models/user');
+const Class = require('../models/class');
 
 exports.newClasswork = async (req, res, next) => {
     req.body.teacher = req.user._id;
@@ -64,6 +65,9 @@ exports.getSingleClasswork = async (req, res, next) => {
     }).populate({
         path: 'submissions.user',
         model: user
+    }).populate({
+        path: 'class',
+        model: Class
     })
 
     const submission = classwork.submissions.find(obj => obj.user._id.toString() === req.user._id.toString());
@@ -218,3 +222,41 @@ exports.updateClasswork = async (req, res, next) => {
         classwork
     })
 }
+
+exports.submitClasswork = async (req, res, next) => {
+    try {
+        const classwork = await Classwork.findById(req.params.id);
+        classwork.submissions.find(obj => obj.user.toString() === req.user._id.toString()).submittedAt = new Date();
+
+        classwork.save();
+
+        res.status(200).json({
+            success: true,
+            classwork: classwork
+        });
+    } catch (err) {
+        console.error(err);
+        res.status(500).json({
+            success: false
+        });
+    }
+};
+
+exports.unsubmitClasswork = async (req, res, next) => {
+    try {
+        const classwork = await Classwork.findById(req.params.id);
+        classwork.submissions.find(obj => obj.user.toString() === req.user._id.toString()).submittedAt = null;
+
+        classwork.save();
+
+        res.status(200).json({
+            success: true,
+            classwork: classwork
+        });
+    } catch (err) {
+        console.error(err);
+        res.status(500).json({
+            success: false
+        });
+    }
+};

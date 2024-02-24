@@ -54,10 +54,12 @@ const classworkSchema = new mongoose.Schema({
                 }
             ],
             grades: {
-                type: Number
+                type: Number,
+                default: null
             },
             submittedAt: {
-                type: Date
+                type: Date,
+                default: null
             }
         }
     ]

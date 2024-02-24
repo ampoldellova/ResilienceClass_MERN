@@ -53,3 +53,7 @@ export const errMsg = (message = '') => toast.error(message, {
 export const successMsg = (message = '') => toast.success(message, {
     position: toast.POSITION.BOTTOM_CENTER
 });
+
+export const isUserTeacher = (classRoom) => {
+    return classRoom?.joinedUsers?.find((joinedUser) => joinedUser.user === getUser()?._id).role === 'teacher';
+};
