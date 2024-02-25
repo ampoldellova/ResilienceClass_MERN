@@ -2,7 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { styled, createTheme, ThemeProvider } from '@mui/material/styles';
 import { Card, CardContent, Button, Grid, Paper, Menu, MenuItem, CssBaseline, Drawer as MuiDrawer, Box, AppBar as MuiAppBar, Toolbar, List, Typography, Divider, IconButton, Container, Avatar } from '@mui/material';
-import { Menu as MenuIcon, ChevronLeft as ChevronLeftIcon } from '@mui/icons-material';
+import { Menu as MenuIcon, ChevronLeft as ChevronLeftIcon, MoreVert } from '@mui/icons-material';
 import axios from 'axios';
 import { getToken, getUser, isUserTeacher, logout } from '../../utils/helpers';
 import { useParams } from 'react-router';
@@ -14,6 +14,7 @@ import CloudUploadIcon from '@mui/icons-material/CloudUpload';
 import Assignment from '@mui/icons-material/Assignment';
 import CloseIcon from '@mui/icons-material/Close';
 import { green } from '@mui/material/colors';
+import EditClasswork from './EditClasswork';
 
 const drawerWidth = 240;
 
@@ -76,7 +77,7 @@ const VisuallyHiddenInput = styled('input')({
 const defaultTheme = createTheme();
 
 const ClassworkDetails = () => {
-    const [open, setOpen] = React.useState(true);
+    const [open, setOpen] = React.useState(false);
     const [files, setFiles] = useState([]);
     const [attach, setAttach] = useState('');
     const [filesPreview, setFilesPreview] = useState([])
@@ -85,10 +86,19 @@ const ClassworkDetails = () => {
     const [profileaAnchorEl, setProfileAnchorEl] = React.useState(null);
     const [classwork, setClasswork] = useState({});
     const [submission, setSubmission] = useState({});
+    const [menuAnchorEl, setMenuAnchorEl] = useState(null);
+    const [isDeleted, setIsDeleted] = useState(false)
     const navigate = useNavigate()
 
     let { id } = useParams()
 
+    const handleMenuOpen = (event) => {
+        setMenuAnchorEl(event.currentTarget);
+    };
+
+    const handleMenuClose = () => {
+        setMenuAnchorEl(null);
+    };
     const toggleDrawer = () => {
         setOpen(!open);
     };
@@ -223,7 +233,30 @@ const ClassworkDetails = () => {
     const isSubmitted = () => {
         return classwork?.submissions?.find(obj => obj.user._id === getUser()._id)?.submittedAt ? true : false;
     }
-    // console.log(classwork);
+
+    const deleteClassworkHandler = (id) => {
+        deleteClasswork(id)
+    }
+
+    const deleteClasswork = async () => {
+        // console.log(classwork)
+        try {
+            const config = {
+                headers: {
+                    'Content-Type': 'multipart/form-data',
+                    'Authorization': `Bearer ${getToken()}`
+                }
+            }
+            const { data } = await axios.delete(`http://localhost:4003/api/v1/class/classwork/${id}/delete`, config)
+
+            setIsDeleted(data.success)
+            alert("Classwork Deleted!")
+            navigate(`/class/${classwork.class._id}`)
+        } catch (error) {
+            alert("Error occured")
+        }
+    }
+
     useEffect(() => {
         if (files.length > 0) {
             attachFile()
@@ -234,6 +267,10 @@ const ClassworkDetails = () => {
         setUser(getUser())
         getSingleClasswork(id)
     }, [])
+
+    useEffect(() => {
+        handleMenuClose()
+    }, [classwork])
 
     return (
         <>
@@ -332,63 +369,194 @@ const ClassworkDetails = () => {
                         <Toolbar />
                         <Container maxWidth="lg" sx={{ mt: 4, mb: 4 }}>
                             <Grid container spacing={3}>
-                                <Grid item xs={12} md={8} lg={9}>
-                                    <Paper
-                                        sx={{
-                                            p: 3,
-                                            display: 'flex',
-                                            flexDirection: 'row',
-                                            alignItems: 'center',
-                                            height: 'auto',
-                                        }}
-                                    >
-                                        <div className="d-flex flex-start">
-                                            <AssignmentIcon color='secondary' sx={{ width: 60, height: 60, mr: 1 }} />
-                                            <div>
-                                                <Typography variant='h5' color='secondary'>
-                                                    {classwork.title}
-                                                </Typography>
-                                                <Typography variant='caption'>
-                                                    {classwork?.teacher?.name} • {new Date(classwork.createdAt).toLocaleDateString('en-PH', { month: 'long', day: '2-digit', year: 'numeric' })}
-                                                </Typography>
+                                {isUserTeacher(classwork.class) ?
+                                    <Grid item xs={12} md={12} lg={12}>
+                                        <Paper
+                                            sx={{
+                                                p: 3,
+                                                display: 'flex',
+                                                flexDirection: 'row',
+                                                alignItems: 'center',
+                                                height: 'auto',
+                                            }}
+                                        >
+                                            <div className="d-flex flex-start w-100">
+                                                <AssignmentIcon color='secondary' sx={{ width: 60, height: 60, mr: 1 }} />
+                                                <div className='w-100'>
+                                                    <div style={{ display: 'flex', justifyContent: 'space-between' }}>
+                                                        <Typography variant='h5' color='secondary'>
+                                                            {classwork.title}
+                                                        </Typography>
+                                                        {isUserTeacher(classwork.class) ?
+                                                            <>
+                                                                <IconButton onClick={handleMenuOpen}>
+                                                                    <MoreVert />
+                                                                </IconButton>
+                                                                <Menu
+                                                                    id="postMenu"
+                                                                    anchorEl={menuAnchorEl}
+                                                                    anchorOrigin={{
+                                                                        vertical: 'top',
+                                                                        horizontal: 'right',
+                                                                    }}
+                                                                    keepMounted
+                                                                    transformOrigin={{
+                                                                        vertical: 'top',
+                                                                        horizontal: 'right',
+                                                                    }}
+                                                                    open={Boolean(menuAnchorEl)}
+                                                                    onClose={handleMenuClose}
+                                                                >
+                                                                    <EditClasswork setClasswork={setClasswork} />
+                                                                    <MenuItem onClick={() => deleteClassworkHandler()}>Delete</MenuItem>
+                                                                </Menu>
+                                                            </>
+                                                            : <></>
+                                                        }
+                                                    </div>
+                                                    <Typography variant='caption'>
+                                                        {classwork?.teacher?.name} • {new Date(classwork.createdAt).toLocaleDateString('en-PH', { month: 'long', day: '2-digit', year: 'numeric' })}
+                                                    </Typography>
 
-                                                <Divider sx={{ my: 3 }} />
-                                                <Typography variant='body2'>
-                                                    {classwork.instructions}
-                                                </Typography>
+                                                    {classwork.deadline !== null ?
+                                                        <div>
+                                                            <Typography variant='caption'>
+                                                                Deadline: {new Date(classwork.deadline).toLocaleDateString('en-PH', { month: 'long', day: '2-digit', year: 'numeric' }) + ' at ' + new Date(classwork.deadline).toLocaleTimeString('en-PH', { hour: '2-digit', minute: '2-digit' })}
+                                                            </Typography>
+                                                        </div>
+                                                        : <></>
+                                                    }
 
-                                                {classwork.attachments && classwork.attachments.map(attachment => {
-                                                    return <>
-                                                        <div style={{ display: 'inline-block' }}>
-                                                            <Card variant='outlined' sx={{ width: 'auto', height: 80, ml: 0, mt: 1, mr: 1 }} >
-                                                                <CardContent>
-                                                                    <div className="d-flex flex-start">
-                                                                        <Assignment color='primary' sx={{ width: 50, height: 50 }} />
-                                                                        <Typography sx={{ my: 'auto' }}>
-                                                                            <a
-                                                                                href={attachment.url}
-                                                                                target="_blank"
-                                                                                rel="noopener noreferrer"
-                                                                                style={{
-                                                                                    display: 'inline-block',
-                                                                                    maxWidth: '17ch',
-                                                                                    overflow: 'hidden',
-                                                                                    textOverflow: 'ellipsis',
-                                                                                    whiteSpace: 'nowrap',
-                                                                                }}>
-                                                                                {attachment.url}
-                                                                            </a>
-                                                                        </Typography>
-                                                                    </div>
-                                                                </CardContent>
-                                                            </Card>
-                                                        </div >
-                                                    </>
-                                                })}
+                                                    {classwork.points !== null ?
+                                                        <div>
+                                                            <Typography variant='caption'>
+                                                                Points: /{classwork.points}
+                                                            </Typography>
+                                                        </div>
+                                                        : <></>
+                                                    }
+
+                                                    <Divider style={{ margin: '16px 0', width: '100%' }} />
+
+                                                    <Typography variant='body2'>
+                                                        {classwork.instructions}
+                                                    </Typography>
+
+                                                    {classwork.attachments && classwork.attachments.map(attachment => {
+                                                        return <>
+                                                            <div style={{ display: 'inline-block' }}>
+                                                                <Card variant='outlined' sx={{ width: 'auto', height: 80, ml: 0, mt: 1, mr: 1 }} >
+                                                                    <CardContent>
+                                                                        <div className="d-flex flex-start">
+                                                                            <Assignment color='primary' sx={{ width: 50, height: 50 }} />
+                                                                            <Typography sx={{ my: 'auto' }}>
+                                                                                <a
+                                                                                    href={attachment.url}
+                                                                                    target="_blank"
+                                                                                    rel="noopener noreferrer"
+                                                                                    style={{
+                                                                                        display: 'inline-block',
+                                                                                        maxWidth: '17ch',
+                                                                                        overflow: 'hidden',
+                                                                                        textOverflow: 'ellipsis',
+                                                                                        whiteSpace: 'nowrap',
+                                                                                    }}>
+                                                                                    {attachment.url}
+                                                                                </a>
+                                                                            </Typography>
+                                                                        </div>
+                                                                    </CardContent>
+                                                                </Card>
+                                                            </div >
+                                                        </>
+                                                    })}
+                                                </div>
                                             </div>
-                                        </div>
-                                    </Paper>
-                                </Grid>
+                                        </Paper>
+                                    </Grid> : <Grid item xs={12} md={8} lg={9}>
+                                        <Paper
+                                            sx={{
+                                                p: 3,
+                                                display: 'flex',
+                                                flexDirection: 'row',
+                                                alignItems: 'center',
+                                                height: 'auto',
+                                            }}
+                                        >
+                                            <div className="d-flex flex-start w-100">
+                                                <AssignmentIcon color='secondary' sx={{ width: 60, height: 60, mr: 1 }} />
+                                                <div className='w-100'>
+                                                    <div style={{ display: 'flex', justifyContent: 'space-between' }}>
+                                                        <Typography variant='h5' color='secondary'>
+                                                            {classwork.title}
+                                                        </Typography>
+                                                        {isUserTeacher(classwork.class) ?
+                                                            <IconButton>
+                                                                <MoreVert />
+                                                            </IconButton> : <></>
+                                                        }
+                                                    </div>
+                                                    <Typography variant='caption'>
+                                                        {classwork?.teacher?.name} • {new Date(classwork.createdAt).toLocaleDateString('en-PH', { month: 'long', day: '2-digit', year: 'numeric' })}
+                                                    </Typography>
+
+                                                    {classwork.deadline !== null ?
+                                                        <div>
+                                                            <Typography variant='caption'>
+                                                                Deadline: {new Date(classwork.deadline).toLocaleDateString('en-PH', { month: 'long', day: '2-digit', year: 'numeric' }) + ' at ' + new Date(classwork.deadline).toLocaleTimeString('en-PH', { hour: '2-digit', minute: '2-digit' })}
+                                                            </Typography>
+                                                        </div>
+                                                        : <></>
+                                                    }
+
+                                                    {classwork.points !== null ?
+                                                        <div>
+                                                            <Typography variant='caption'>
+                                                                Points: /{classwork.points}
+                                                            </Typography>
+                                                        </div>
+                                                        : <></>
+                                                    }
+
+                                                    <Divider style={{ margin: '16px 0', width: '100%' }} />
+
+                                                    <Typography variant='body2'>
+                                                        {classwork.instructions}
+                                                    </Typography>
+
+                                                    {classwork.attachments && classwork.attachments.map(attachment => {
+                                                        return <>
+                                                            <div style={{ display: 'inline-block' }}>
+                                                                <Card variant='outlined' sx={{ width: 'auto', height: 80, ml: 0, mt: 1, mr: 1 }} >
+                                                                    <CardContent>
+                                                                        <div className="d-flex flex-start">
+                                                                            <Assignment color='primary' sx={{ width: 50, height: 50 }} />
+                                                                            <Typography sx={{ my: 'auto' }}>
+                                                                                <a
+                                                                                    href={attachment.url}
+                                                                                    target="_blank"
+                                                                                    rel="noopener noreferrer"
+                                                                                    style={{
+                                                                                        display: 'inline-block',
+                                                                                        maxWidth: '17ch',
+                                                                                        overflow: 'hidden',
+                                                                                        textOverflow: 'ellipsis',
+                                                                                        whiteSpace: 'nowrap',
+                                                                                    }}>
+                                                                                    {attachment.url}
+                                                                                </a>
+                                                                            </Typography>
+                                                                        </div>
+                                                                    </CardContent>
+                                                                </Card>
+                                                            </div >
+                                                        </>
+                                                    })}
+                                                </div>
+                                            </div>
+                                        </Paper>
+                                    </Grid>
+                                }
 
                                 {isUserTeacher(classwork.class) ?
                                     <>

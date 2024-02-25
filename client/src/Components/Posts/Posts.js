@@ -92,7 +92,7 @@ const Posts = ({ posts, getClassPosts, classRoom, postId }) => {
 
                             <div className="d-flex align-items-center mb-3">
 
-                                <Typography variant='caption'>{new Date(posts.createdAt).toLocaleDateString('en-PH', { month: 'long', day: '2-digit', year: 'numeric' })}</Typography>
+                                <Typography variant='caption'>{new Date(posts.createdAt).toLocaleDateString('en-PH', { month: 'long', day: '2-digit', year: 'numeric' })} • {new Date(posts.createdAt).toLocaleTimeString('en-PH', { hour: '2-digit', minute: '2-digit' })}</Typography>
 
                             </div>
                         </Box>
@@ -124,7 +124,7 @@ const Posts = ({ posts, getClassPosts, classRoom, postId }) => {
                             </> : <></>
                         }
                     </div>
-                    <Typography sx={{ marginTop: 2 }}>
+                    <Typography sx={{ marginTop: 2, ml: 1 }}>
                         {posts.contents}
                     </Typography>
                     {posts.attachments && posts.attachments.map(attachment => {
@@ -173,7 +173,7 @@ const Posts = ({ posts, getClassPosts, classRoom, postId }) => {
                                         {comment.user.name}
                                     </MDBTypography>
                                     <div className="d-flex align-items-center mb-3">
-                                        <Typography variant='caption'>{new Date(comment.commentCreated).toLocaleDateString('en-PH', { month: 'long', day: '2-digit', year: 'numeric' })}</Typography>
+                                        <Typography variant='caption'>{new Date(comment.commentCreated).toLocaleDateString('en-PH', { month: 'long', day: '2-digit', year: 'numeric' })} • {new Date(comment.commentCreated).toLocaleTimeString('en-PH', { hour: '2-digit', minute: '2-digit' })}</Typography>
                                     </div>
                                     <Typography sx={{ marginBottom: 3 }}>{comment.body}</Typography>
                                 </div>

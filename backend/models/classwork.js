@@ -33,8 +33,7 @@ const classworkSchema = new mongoose.Schema({
         type: Number
     },
     deadline: {
-        type: Date,
-        default: null
+        type: Date
     },
     submissions: [
         {

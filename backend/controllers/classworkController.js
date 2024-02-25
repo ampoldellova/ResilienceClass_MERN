@@ -170,6 +170,7 @@ exports.removeFile = async (req, res, next) => {
 
 exports.updateClasswork = async (req, res, next) => {
     let classwork = await Classwork.findById(req.params.id)
+    console.log(req.body)
     const newClassworkData = {
         title: req.body.title,
         instructions: req.body.instructions,
@@ -177,7 +178,14 @@ exports.updateClasswork = async (req, res, next) => {
         deadline: req.body.deadline
     }
 
-    console.log(req.body)
+    if (req.body.points === 'null') {
+        delete newClassworkData.points
+    }
+
+    if (req.body.deadline === 'null') {
+        delete newClassworkData.deadline
+    }
+
     if (!classwork) {
         return res.status(404).json({
             success: false,
@@ -260,3 +268,18 @@ exports.unsubmitClasswork = async (req, res, next) => {
         });
     }
 };
+
+exports.deleteClasswork = async (req, res, next) => {
+    const classwork = await Classwork.findByIdAndDelete(req.params.id);
+    if (!classwork) {
+        return res.status(404).json({
+            success: false,
+            message: 'Classwork not found'
+        })
+    }
+
+    res.status(200).json({
+        success: true,
+        message: 'Classwork deleted'
+    })
+}
