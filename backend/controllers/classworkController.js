@@ -255,6 +255,7 @@ exports.unsubmitClasswork = async (req, res, next) => {
         const classwork = await Classwork.findById(req.params.id);
         classwork.submissions.find(obj => obj.user.toString() === req.user._id.toString()).submittedAt = null;
         classwork.submissions.find(obj => obj.user.toString() === req.user._id.toString()).status = 'Not submitted';
+        classwork.submissions.find(obj => obj.user.toString() === req.user._id.toString()).grades = null;
         classwork.save();
 
         res.status(200).json({

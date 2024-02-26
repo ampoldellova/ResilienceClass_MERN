@@ -18,6 +18,7 @@ import EditClasswork from './EditClasswork';
 import TurnedInIcon from '@mui/icons-material/TurnedIn';
 import ReturnClasswork from './ReturnClasswork';
 import { Loader } from '../Loader';
+import EditGrade from './EditGrade';
 
 const drawerWidth = 240;
 
@@ -103,6 +104,7 @@ const ClassworkDetails = () => {
     const handleMenuClose = () => {
         setMenuAnchorEl(null);
     };
+
     const toggleDrawer = () => {
         setOpen(!open);
     };
@@ -533,17 +535,14 @@ const ClassworkDetails = () => {
                                                                 <Typography tag="h6" className="fw-bold mb-1">
                                                                     {submission.user.name}
                                                                 </Typography>
-                                                                <Typography tag="h6" className="fw-bold mb-1">
-                                                                    {submission.grades === null ? (
-                                                                        <>
-                                                                            <ReturnClasswork studentId={submission.user._id} classwork={classwork} setClasswork={setClasswork} />
-                                                                        </>
-                                                                    ) : (
-                                                                        <>
-                                                                            Grade: {submission.grades} / {classwork.points}
-                                                                        </>
-                                                                    )}
-                                                                </Typography>
+                                                                {/* <Typography tag="h6" className="fw-bold mb-1"> */}
+                                                                {submission.grades === null && submission.status === 'Submitted' ? (
+                                                                    <ReturnClasswork studentId={submission.user._id} classwork={classwork} getClasswork={getSingleClasswork} />
+                                                                ) : submission.grades !== null ? (
+                                                                    <Typography tag="h6" className="fw-bold mb-1">Grade: {submission.grades} / {classwork.points}</Typography>
+                                                                ) : submission.grades === null && submission.status === 'Not submitted' ? (
+                                                                    <></>
+                                                                ) : <></>}
                                                             </Box>
 
                                                             <div className="d-flex align-items-center mb-3">

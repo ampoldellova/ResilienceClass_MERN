@@ -12,13 +12,15 @@ import { getToken } from '../../utils/helpers';
 import axios from 'axios';
 import * as Yup from 'yup';
 import { useFormik } from 'formik';
+import { Loader } from '../Loader';
 
 const validationSchema = Yup.object({
     grades: Yup.number().required('Classwork grade is required'),
 });
 
-const ReturnClasswork = ({ studentId, classwork, setClasswork }) => {
+const ReturnClasswork = ({ studentId, classwork, getClasswork }) => {
     const [open, setOpen] = useState(false);
+    const [loader, setLoader] = useState(true);
 
     let { id } = useParams()
 
@@ -45,6 +47,7 @@ const ReturnClasswork = ({ studentId, classwork, setClasswork }) => {
     });
 
     const ReturnClasswork = async (studentId, formData) => {
+        // setLoader(true)
         try {
             const config = {
                 headers: {
@@ -52,19 +55,22 @@ const ReturnClasswork = ({ studentId, classwork, setClasswork }) => {
                     'Authorization': `Bearer ${getToken()}`
                 }
             }
-            const { data: { classwork } } = await axios.put(`http://localhost:4003/api/v1/class/classwork/${id}/return?grades=${formData.grades}&studentId=${studentId}`, formData, config)
+            const { data: { newClasswork } } = await axios.put(`http://localhost:4003/api/v1/class/classwork/${id}/return?grades=${formData.grades}&studentId=${studentId}`, formData, config)
 
             // console.log(classwork)
+            // setLoader(false)
             setOpen(false)
-            // setClasswork(classwork)
+            getClasswork()
             alert('Classwork graded sucessfully!')
         } catch (error) {
+            setLoader(false)
             alert('Error Ocurred')
         }
     }
 
     return (
         <React.Fragment>
+            {/* <Loader open={loader} /> */}
             <Button variant="outlined" size='small' onClick={handleClickOpen}>
                 Return Work
             </Button>
