@@ -170,7 +170,7 @@ exports.removeFile = async (req, res, next) => {
 
 exports.updateClasswork = async (req, res, next) => {
     let classwork = await Classwork.findById(req.params.id)
-    console.log(req.body)
+    // console.log(req.body)
     const newClassworkData = {
         title: req.body.title,
         instructions: req.body.instructions,
@@ -235,7 +235,7 @@ exports.submitClasswork = async (req, res, next) => {
     try {
         const classwork = await Classwork.findById(req.params.id);
         classwork.submissions.find(obj => obj.user.toString() === req.user._id.toString()).submittedAt = new Date();
-
+        classwork.submissions.find(obj => obj.user.toString() === req.user._id.toString()).status = 'Submitted';
         classwork.save();
 
         res.status(200).json({
@@ -254,7 +254,7 @@ exports.unsubmitClasswork = async (req, res, next) => {
     try {
         const classwork = await Classwork.findById(req.params.id);
         classwork.submissions.find(obj => obj.user.toString() === req.user._id.toString()).submittedAt = null;
-
+        classwork.submissions.find(obj => obj.user.toString() === req.user._id.toString()).status = 'Not submitted';
         classwork.save();
 
         res.status(200).json({
@@ -282,4 +282,25 @@ exports.deleteClasswork = async (req, res, next) => {
         success: true,
         message: 'Classwork deleted'
     })
+}
+
+exports.returnClasswork = async (req, res, next) => {
+    
+    try {
+        const classwork = await Classwork.findById(req.params.id);
+
+        classwork.submissions.find(obj => obj.user.toString() === req.query.studentId).grades = Number.parseInt(req.query.grades);
+        classwork.save();
+
+        res.status(200).json({
+            success: true,
+            classwork: classwork
+        });
+
+    } catch (err) {
+        console.error(err);
+        res.status(500).json({
+            success: false
+        });
+    }
 }

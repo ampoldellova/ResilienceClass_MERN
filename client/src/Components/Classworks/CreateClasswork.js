@@ -21,6 +21,7 @@ import { useParams } from 'react-router';
 const validationSchema = Yup.object({
     title: Yup.string().required('title is required'),
     instructions: Yup.string().required('instructions is required'),
+    points: Yup.number().required('Points are required'),
 });
 
 const BootstrapDialog = styled(Dialog)(({ theme }) => ({
@@ -170,6 +171,8 @@ const CustomizedDialogs = () => {
                                 sx={{ marginTop: 1 }}
                                 value={formik.values.points}
                                 onChange={formik.handleChange}
+                                error={formik.touched.points && Boolean(formik.errors.points)}
+                                helperText={formik.touched.points && formik.errors.points}
                             />
 
                             <LocalizationProvider dateAdapter={AdapterDayjs}>

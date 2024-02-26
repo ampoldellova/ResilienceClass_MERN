@@ -17,7 +17,7 @@ import { useFormik } from 'formik';
 import CreateClasswork from '../Classworks/CreateClasswork';
 import EditClassDetails from './EditClassDetails';
 import ClassworkList from '../Classworks/ClassworkList';
-import ClassworkDetails from '../Classworks/ClassworkDetails';
+import { Loader } from '../Loader';
 
 const validationSchema = Yup.object({
     contents: Yup.string().required('Content is required'),
@@ -83,7 +83,8 @@ const ClassDetails = () => {
     const [success, setSuccess] = useState('')
     const [modal, setModal] = useState(false);
     const [profileaAnchorEl, setProfileAnchorEl] = React.useState(null);
-    const [classPosts, setClassPosts] = useState([])
+    const [classPosts, setClassPosts] = useState([]);
+    const [loader, setLoader] = useState(true);
 
     let { id } = useParams();
 
@@ -120,17 +121,23 @@ const ClassDetails = () => {
     }
 
     const classDetails = async (id) => {
-
-        const config = {
-            headers: {
-                'Content-Type': 'application/json',
-                'Authorization': `Bearer ${getToken()}`
+        setLoader(true)
+        try {
+            const config = {
+                headers: {
+                    'Content-Type': 'application/json',
+                    'Authorization': `Bearer ${getToken()}`
+                }
             }
+
+            const { data: { classRoom } } = await axios.get(`http://localhost:4003/api/v1/class/${id}`, config);
+
+            setLoader(false)
+            setClass(classRoom)
+        } catch (error) {
+            setLoader(false)
+            alert('Error Occurred')
         }
-
-        const { data: { classRoom } } = await axios.get(`http://localhost:4003/api/v1/class/${id}`, config);
-
-        setClass(classRoom)
     }
 
     const formik = useFormik({
@@ -202,7 +209,8 @@ const ClassDetails = () => {
 
     return (
         <ThemeProvider theme={defaultTheme}>
-            <MetaData title={'Dashboard'} />
+            <MetaData title={classRoom.subject} />
+            <Loader open={loader} />
             <Box sx={{ display: 'flex' }}>
                 <CssBaseline />
                 <AppBar position="absolute" open={open}>
@@ -341,9 +349,18 @@ const ClassDetails = () => {
                                     <Button variant="text" onClick={toggle} sx={{ marginLeft: 2 }}>Announce Something to your class</Button>
                                 </Paper>
 
-                                {classPosts && classPosts.map(posts => {
-                                    return <Posts key={posts._id} posts={posts} getClassPosts={getClassPosts} classRoom={classRoom} postId={posts._id} />
-                                })}
+                                {classPosts && classPosts.length === 0 ?
+                                    <>
+                                        <div style={{ display: 'flex', justifyContent: 'center' }}>
+                                            <img className="my-5 img-fluid d-block mx-auto" src="https://res.cloudinary.com/dwkmutbz3/image/upload/v1708932245/ResilienceClass/3d-flame-blue-speech-bubble_d7ojwe.png" alt="No classroom yet" width="300" height="300" />
+                                        </div>
+                                        <Typography variant='h3' sx={{ textAlign: 'center', fontWeight: 1 }}> No posts yet.</Typography>
+                                    </> : <>
+                                        {classPosts && classPosts.map(posts => {
+                                            return <Posts key={posts._id} posts={posts} getClassPosts={getClassPosts} classRoom={classRoom} postId={posts._id} />
+                                        })}
+                                    </>
+                                }
 
                                 <Modal isOpen={modal} toggle={() => toggle()} centered>
                                     <ModalHeader toggle={toggle}>Create a Post</ModalHeader>

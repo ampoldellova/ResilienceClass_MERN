@@ -37,11 +37,17 @@ const ClassworkList = () => {
 
     return (
         <>
-            {classworks && classworks.map(classwork => {
-                return <>
-                    <Button component={Link} to={`/class/classwork/${classwork._id}`} startIcon={<Assignment />} color='secondary'>{classwork.title}</Button>
+            {classworks && classworks.length === 0 ?
+                <>
+                    <Typography variant='subtitle2' sx={{ margin: 5, textAlign: 'center' }}>No Classworks yet.</Typography>
+                </> : <>
+                    {classworks && classworks.map(classwork => {
+                        return <>
+                            <Button component={Link} to={`/class/classwork/${classwork._id}`} startIcon={<Assignment />} color='secondary'>{classwork.title}</Button>
+                        </>
+                    })}
                 </>
-            })}
+            }
         </>
     );
 }

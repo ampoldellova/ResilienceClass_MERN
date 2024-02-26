@@ -1,74 +1,51 @@
-import React from 'react';
-import AppBar from '@mui/material/AppBar';
-import Button from '@mui/material/Button';
+import React, { useState, useEffect } from 'react';
+import { AppBar, Box, Toolbar, Typography, Button, Grid } from '@mui/material';
+import { Link } from 'react-router-dom';
 import HealingIcon from '@mui/icons-material/Healing';
-import CssBaseline from '@mui/material/CssBaseline';
-import Stack from '@mui/material/Stack';
-import Box from '@mui/material/Box';
-import Toolbar from '@mui/material/Toolbar';
-import Typography from '@mui/material/Typography';
-import Container from '@mui/material/Container';
-import { Link, useNavigate } from 'react-router-dom';
-import { createTheme, ThemeProvider } from '@mui/material/styles';
-
-const defaultTheme = createTheme();
 
 const Home = () => {
 
-    const navigate = useNavigate()
+    const [fadeIn, setFadeIn] = useState(false);
 
+    useEffect(() => {
+        setFadeIn(true);
+    }, []);
     return (
-        <ThemeProvider theme={defaultTheme}>
-            <CssBaseline />
-            <AppBar position="relative">
-                <Toolbar>
-                    <Box onClick={() => navigate("/dashboard")} style={{ cursor: 'pointer' }}>
-                        <Typography variant="h6" color="inherit" noWrap>
-                            ResilienceClass
-                        </Typography>
-                    </Box>
-                </Toolbar>
-            </AppBar>
-            <main>
-                {/* Hero unit */}
-                <Box
-                    sx={{
-                        bgcolor: 'background.paper',
-                        pt: 8,
-                        pb: 6,
-                    }}
-                >
-                    <Container maxWidth="sm">
-                        <Typography
-                            component="h1"
-                            variant="h2"
-                            align="center"
-                            color="text.primary"
-                            gutterBottom
-                        >
-                            Home layout
-                        </Typography>
-                        <Typography variant="h5" align="center" color="text.secondary" paragraph>
-                            Something short and leading about the collection below—its contents,
-                            the creator, etc. Make it short and sweet, but not too short so folks
-                            don&apos;t simply skip over it entirely.
-                        </Typography>
-                        <Stack
-                            sx={{ pt: 4 }}
-                            direction="row"
-                            spacing={2}
-                            justifyContent="center"
-                        >
-                            <Button variant="contained" component={Link} to="/login">Sign In</Button>
+        <>
+            <Box sx={{ flexGrow: 1 }}>
+                <AppBar position="static">
+                    <Toolbar sx={{ display: 'flex', justifyContent: 'space-between' }}>
+                        <div style={{ display: 'flex', alignItems: 'center' }}>
+                            <HealingIcon sx={{ display: { xs: 'none', md: 'flex' }, mr: 1 }} />
+                            <Typography variant="h6">
+                                ResilienceClass
+                            </Typography>
+                        </div>
+                        <Button color="inherit" component={Link} to="/login">Sign in</Button>
+                    </Toolbar>
+                </AppBar>
+                <Grid container sx={{ mt: 2 }}>
+                    <Grid item xs={12} md={12} lg={6} sx={{ transition: 'opacity 1.5s', opacity: fadeIn ? 1 : 0 }}>
+                        <Box sx={{ display: 'flex', flexDirection: 'column', height: '100%', justifyContent: 'space-between' }}>
+                            <Box sx={{ display: 'flex', flexDirection: 'column', justifyContent: 'center', height: 'calc(100% - 64px)', mx: 10 }}>
+                                <Typography sx={{ textAlign: 'justify', fontSize: 28, fontWeight: 1, mb: 1 }}>
+                                    Welcome to ResilienceClass, your online learning lifeline during disasters. We're here to ensure education never stops, offering a diverse range of courses and resources to keep you engaged and growing, no matter the circumstances. Join us in staying resilient and empowered through continuous learning.
+                                </Typography>
+                                <Button variant='outlined' component={Link} to="/login">Sign in to ResilienceClass</Button>
+                            </Box>
+                        </Box>
+                    </Grid>
 
-                            {/* <Button variant="outlined">Create an Account</Button> */}
-                        </Stack>
-                    </Container>
-                </Box>
-            </main>
-        </ThemeProvider>
-    )
-}
+                    <Grid item xs={12} md={12} lg={6} sx={{ transition: 'opacity 1.5s', opacity: fadeIn ? 1 : 0 }}>
+                        <Box sx={{ margin: 20 }}>
+                            <img src="https://res.cloudinary.com/dwkmutbz3/image/upload/v1708857881/ResilienceClass/3d-casual-life-group-of-young-people-discussing-something-while-working_e1pvol.png" alt="Home" width="500" height="450" />
+                        </Box>
+                    </Grid>
+                </Grid>
+            </Box>
+        </>
 
+    );
+};
 
 export default Home;

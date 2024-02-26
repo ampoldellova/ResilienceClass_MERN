@@ -15,6 +15,7 @@ import { Modal, ModalHeader, ModalBody } from 'reactstrap';
 import { getToken } from '../utils/helpers';
 import * as Yup from 'yup';
 import { useFormik } from 'formik';
+import { Loader } from './Loader';
 
 const validationSchema = Yup.object({
     className: Yup.string().required('Class Name is required'),
@@ -88,7 +89,9 @@ const Dashboard = () => {
     const [error, setError] = useState('')
     const [modal, setModal] = useState(false);
     const [joinModal, setJoinModal] = useState(false);
-    const [classroom, setClassroom] = useState([])
+    const [classroom, setClassroom] = useState([]);
+    const [loader, setLoader] = useState(true);
+
 
     const toggle = () => {
         setModal(!modal);
@@ -167,6 +170,7 @@ const Dashboard = () => {
     })
 
     const NewClassRoom = async (formData) => {
+        setLoader(true)
         try {
             const config = {
                 headers: {
@@ -177,17 +181,20 @@ const Dashboard = () => {
 
             const { data } = await axios.post(`http://localhost:4003/api/v1/class/new`, formData, config)
 
+            setLoader(false);
             setModal(false);
             formik.resetForm();
-            setSuccess(data.success)
+            alert('Class created successfully')
             setClass(data.class)
             getClassroom()
         } catch (error) {
+            setLoader(false);
             setError(error.response.data.message)
         }
     }
 
     const joinClassRoom = async (formData) => {
+        setLoader(true)
         try {
             const config = {
                 headers: {
@@ -198,17 +205,20 @@ const Dashboard = () => {
 
             const { data } = await axios.post(`http://localhost:4003/api/v1/class/join`, formData, config)
 
+            setLoader(false);
             setJoinModal(false);
             formik.resetForm();
-            setSuccess(data.success)
-            setJoinClass(data.class)
+            setJoinClass(data.class);
+            alert('Successfully joined')
             getClassroom()
         } catch (error) {
+            setLoader(false);
             setError(error.response.data.message)
         }
     }
 
     const getClassroom = async () => {
+        setLoader(true)
         try {
 
             const config = {
@@ -219,9 +229,12 @@ const Dashboard = () => {
             }
 
             const { data } = await axios.get(`http://localhost:4003/api/v1/class/user`, config)
+
+            setLoader(false);
             console.log(data)
             setClassroom(data.classRoom)
         } catch (error) {
+            setLoader(false);
             setError(error.response.data.message)
         }
     }
@@ -237,7 +250,9 @@ const Dashboard = () => {
 
     return (
         <ThemeProvider theme={defaultTheme}>
+            <Loader open={loader} />
             <MetaData title={'Dashboard'} />
+
             <Box sx={{ display: 'flex' }}>
                 <CssBaseline />
                 <AppBar position="absolute" open={open}>
@@ -360,11 +375,20 @@ const Dashboard = () => {
                 >
                     <Toolbar />
                     <Container maxWidth="lg" sx={{ mt: 4, mb: 4 }}>
-                        {classroom && classroom.map(classes => {
-                            console.log(classes)
-                            return <Classroom key={classes._id} classes={classes} />
+                        {classroom && classroom.length === 0 ?
+                            <>
+                                <div style={{ display: 'flex', justifyContent: 'center' }}>
+                                    <img className="my-5 img-fluid d-block mx-auto" src="https://res.cloudinary.com/dwkmutbz3/image/upload/v1708850432/ResilienceClass/Empty_Classroom_ksg63g.png" alt="No classroom yet" width="500" height="500" />
+                                </div>
+                                <Typography variant='h3' sx={{ textAlign: 'center', fontWeight: 1 }}> No classroom yet.</Typography>
+                            </> : <>
+                                {classroom && classroom.map(classes => {
+                                    console.log(classes)
+                                    return <Classroom key={classes._id} classes={classes} />
 
-                        })}
+                                })}
+                            </>
+                        }
                     </Container>
                 </Box>
             </Box>

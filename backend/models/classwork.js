@@ -59,6 +59,9 @@ const classworkSchema = new mongoose.Schema({
             submittedAt: {
                 type: Date,
                 default: null
+            },
+            status:{
+                type: String
             }
         }
     ]

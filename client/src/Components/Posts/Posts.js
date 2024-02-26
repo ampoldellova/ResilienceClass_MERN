@@ -7,7 +7,7 @@ import { MoreVert, Assignment } from '@mui/icons-material';
 import { Document, Page } from 'react-pdf'
 import axios from 'axios';
 import EditPost from './EditPost';
-
+import SendIcon from '@mui/icons-material/Send';
 
 const Posts = ({ posts, getClassPosts, classRoom, postId }) => {
     const [user, setUser] = useState('')
@@ -96,8 +96,7 @@ const Posts = ({ posts, getClassPosts, classRoom, postId }) => {
 
                             </div>
                         </Box>
-                        {classRoom?.joinedUsers?.find((joinedUser) => joinedUser.user === getUser()?._id).role === 'teacher' ||
-                            posts.teacher._id === getUser()._id ?
+                        {classRoom?.joinedUsers?.find((joinedUser) => joinedUser.user === getUser()?._id).role === 'teacher' || posts.teacher._id === getUser()._id ?
                             <>
                                 <IconButton
                                     onClick={handleMenuOpen}>
@@ -195,9 +194,12 @@ const Posts = ({ posts, getClassPosts, classRoom, postId }) => {
                         />
                     </div>
                     <div className="float-end mt-2 pt-1" style={{ display: 'flex', justifyContent: 'flex-end' }}>
-                        <Button variant='contained' size='small' onClick={() => createComment(posts._id)}>
+                        {/* <Button variant='contained' size='small' onClick={() => createComment(posts._id)}>
                             Post Comment
-                        </Button>
+                        </Button> */}
+                        <IconButton color='primary' size='small' onClick={() => createComment(posts._id)}>
+                            <SendIcon />
+                        </IconButton>
                     </div>
                 </MDBCardFooter>
             </Card >

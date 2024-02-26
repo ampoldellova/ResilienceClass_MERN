@@ -13,8 +13,11 @@ import AssignmentIcon from '@mui/icons-material/Assignment';
 import CloudUploadIcon from '@mui/icons-material/CloudUpload';
 import Assignment from '@mui/icons-material/Assignment';
 import CloseIcon from '@mui/icons-material/Close';
-import { green } from '@mui/material/colors';
+import { green, red } from '@mui/material/colors';
 import EditClasswork from './EditClasswork';
+import TurnedInIcon from '@mui/icons-material/TurnedIn';
+import ReturnClasswork from './ReturnClasswork';
+import { Loader } from '../Loader';
 
 const drawerWidth = 240;
 
@@ -87,7 +90,8 @@ const ClassworkDetails = () => {
     const [classwork, setClasswork] = useState({});
     const [submission, setSubmission] = useState({});
     const [menuAnchorEl, setMenuAnchorEl] = useState(null);
-    const [isDeleted, setIsDeleted] = useState(false)
+    const [isDeleted, setIsDeleted] = useState(false);
+    const [loader, setLoader] = useState(true);
     const navigate = useNavigate()
 
     let { id } = useParams()
@@ -128,19 +132,25 @@ const ClassworkDetails = () => {
     }
 
     const getSingleClasswork = async () => {
-
-        const config = {
-            headers: {
-                'Content-Type': 'application/json',
-                'Authorization': `Bearer ${getToken()}`
+        setLoader(true)
+        try {
+            const config = {
+                headers: {
+                    'Content-Type': 'application/json',
+                    'Authorization': `Bearer ${getToken()}`
+                }
             }
+
+            const { data: { classwork, submission } } = await axios.get(`http://localhost:4003/api/v1/class/classwork/${id}`, config);
+
+            setLoader(false)
+            setFilesPreview(submission?.attachments || [])
+            setClasswork(classwork)
+            setSubmission(submission)
+        } catch (error) {
+            setLoader(false)
+            alert('Error Occurred')
         }
-
-        const { data: { classwork, submission } } = await axios.get(`http://localhost:4003/api/v1/class/classwork/${id}`, config);
-
-        setFilesPreview(submission?.attachments || [])
-        setClasswork(classwork)
-        setSubmission(submission)
     }
 
     const removeFile = async (publicId) => {
@@ -157,6 +167,7 @@ const ClassworkDetails = () => {
     }
 
     const attachFile = async () => {
+        setLoader(true)
         const formData = new FormData();
         for (let i = 0; i < files.length; i++) {
             formData.append('attachments', files[i]);
@@ -171,44 +182,59 @@ const ClassworkDetails = () => {
 
         try {
             const { data } = await axios.post(`http://localhost:4003/api/v1/class/classwork/${id}/attach`, formData, config);
+
+            setLoader(false)
             console.log(data);
             getSingleClasswork()
         } catch (err) {
+            setLoader(false)
             alert("Error occured")
             console.log(err)
         }
     }
 
     const submitClasswork = async (id) => {
-        console.log(getToken())
-
-        const config = {
-            headers: {
-                'Content-Type': 'application/json',
-                'Authorization': `Bearer ${getToken()}`
+        // console.log(getToken())
+        setLoader(true)
+        try {
+            const config = {
+                headers: {
+                    'Content-Type': 'application/json',
+                    'Authorization': `Bearer ${getToken()}`
+                }
             }
+
+            const { data: { classwork } } = await axios.get(`http://localhost:4003/api/v1/class/classwork/${id}/submit`, config);
+
+            setLoader(false)
+            getSingleClasswork(classwork)
+            alert('Classwork submitted successfully')
+        } catch (error) {
+            setLoader(false)
+            alert('Error Occurred')
         }
-
-        const { data: { classwork } } = await axios.get(`http://localhost:4003/api/v1/class/classwork/${id}/submit`, config);
-
-        getSingleClasswork(classwork)
-        alert('Classwork submitted successfully')
     };
 
     const unsubmitClasswork = async (id) => {
-        console.log(getToken())
-
-        const config = {
-            headers: {
-                'Content-Type': 'application/json',
-                'Authorization': `Bearer ${getToken()}`
+        // console.log(getToken())
+        setLoader(true)
+        try {
+            const config = {
+                headers: {
+                    'Content-Type': 'application/json',
+                    'Authorization': `Bearer ${getToken()}`
+                }
             }
+
+            const { data: { classwork } } = await axios.get(`http://localhost:4003/api/v1/class/classwork/${id}/unsubmit`, config);
+
+            setLoader(false)
+            getSingleClasswork(classwork)
+            alert('Classwork unsubmitted')
+        } catch (error) {
+            setLoader(false)
+            alert('Error Occurred')
         }
-
-        const { data: { classwork } } = await axios.get(`http://localhost:4003/api/v1/class/classwork/${id}/unsubmit`, config);
-
-        getSingleClasswork(classwork)
-        alert('Classwork unsubmitted')
     };
 
     const onChange = e => {
@@ -239,7 +265,6 @@ const ClassworkDetails = () => {
     }
 
     const deleteClasswork = async () => {
-        // console.log(classwork)
         try {
             const config = {
                 headers: {
@@ -276,6 +301,7 @@ const ClassworkDetails = () => {
         <>
             <ThemeProvider theme={defaultTheme}>
                 <MetaData title={classwork.title} />
+                <Loader open={loader} />
                 <Box sx={{ display: 'flex' }}>
                     <CssBaseline />
                     <AppBar position="absolute" open={open}>
@@ -378,6 +404,7 @@ const ClassworkDetails = () => {
                                                 flexDirection: 'row',
                                                 alignItems: 'center',
                                                 height: 'auto',
+                                                mb: 3
                                             }}
                                         >
                                             <div className="d-flex flex-start w-100">
@@ -426,15 +453,9 @@ const ClassworkDetails = () => {
                                                         </div>
                                                         : <></>
                                                     }
-
-                                                    {classwork.points !== null ?
-                                                        <div>
-                                                            <Typography variant='caption'>
-                                                                Points: /{classwork.points}
-                                                            </Typography>
-                                                        </div>
-                                                        : <></>
-                                                    }
+                                                    <Typography variant='caption'>
+                                                        Points: /{classwork.points}
+                                                    </Typography>
 
                                                     <Divider style={{ margin: '16px 0', width: '100%' }} />
 
@@ -473,7 +494,96 @@ const ClassworkDetails = () => {
                                                 </div>
                                             </div>
                                         </Paper>
-                                    </Grid> : <Grid item xs={12} md={8} lg={9}>
+
+                                        {classwork.submissions && classwork.submissions.length === 0 ?
+                                            <>
+                                                <div style={{ display: 'flex', justifyContent: 'center' }}>
+                                                    <img className="my-5 img-fluid d-block mx-auto" src="https://res.cloudinary.com/dwkmutbz3/image/upload/v1708849858/ResilienceClass/Empty_kcmdim.png" alt="No submissions yet" width="400" height="400" />
+                                                </div>
+                                                <Typography variant='h3' sx={{ textAlign: 'center', fontWeight: 1 }}> No submissions yet.</Typography>
+                                            </> : <>
+                                                <Typography variant='h6'><TurnedInIcon /> Submissions.</Typography>
+                                            </>
+                                        }
+
+                                        {classwork.submissions && classwork.submissions.map(submission => {
+                                            return <>
+                                                <Paper
+                                                    sx={{
+                                                        p: 3,
+                                                        display: 'flex',
+                                                        flexDirection: 'row',
+                                                        alignItems: 'center',
+                                                        height: 'auto',
+                                                        my: 2
+                                                    }}
+                                                >
+                                                    <div className="d-flex flex-start w-100">
+                                                        <Avatar alt={submission.user.name} src={submission.user.avatar.url} sx={{ width: 30, height: 30, marginRight: 2 }} />
+                                                        <div className="w-100">
+                                                            <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+                                                                <Typography tag="h6" className="fw-bold mb-1">
+                                                                    {submission.user.name}
+                                                                </Typography>
+                                                                <Typography tag="h6" className="fw-bold mb-1">
+                                                                    {submission.grades === null ? (
+                                                                        <>
+                                                                            <ReturnClasswork studentId={submission.user._id} classwork={classwork} setClasswork={setClasswork} />
+                                                                        </>
+                                                                    ) : (
+                                                                        <>
+                                                                            Grade: {submission.grades} / {classwork.points}
+                                                                        </>
+                                                                    )}
+                                                                </Typography>
+                                                            </Box>
+
+                                                            <div className="d-flex align-items-center mb-3">
+                                                                {submission.submittedAt === null ?
+                                                                    <>
+                                                                        <Typography variant='caption' color={red[500]}>Not yet submitted</Typography>
+                                                                    </> : <>
+                                                                        <Typography variant='caption' color={green[500]}>Date Submitted: {new Date(submission.submittedAt).toLocaleDateString('en-PH', { month: 'long', day: '2-digit', year: 'numeric' })} • {new Date(submission.submittedAt).toLocaleTimeString('en-PH', { hour: '2-digit', minute: '2-digit' })}</Typography>
+                                                                    </>
+                                                                }
+                                                            </div>
+                                                            {submission.attachments && submission.attachments.map(attachment => {
+                                                                return <>
+                                                                    <div style={{ display: 'inline-block' }}>
+                                                                        <div style={{ margin: '10px' }}>
+                                                                            <Card variant='outlined' sx={{ width: 'auto', height: 80 }} >
+                                                                                <CardContent>
+                                                                                    <div className="d-flex flex-start">
+                                                                                        <Assignment color='primary' sx={{ width: 50, height: 50 }} />
+                                                                                        <Typography sx={{ my: 'auto' }}>
+                                                                                            <a
+                                                                                                href={attachment.url}
+                                                                                                target="_blank"
+                                                                                                rel="noopener noreferrer"
+                                                                                                style={{
+                                                                                                    display: 'inline-block',
+                                                                                                    maxWidth: '18ch',
+                                                                                                    overflow: 'hidden',
+                                                                                                    textOverflow: 'ellipsis',
+                                                                                                    whiteSpace: 'nowrap',
+                                                                                                }}>
+                                                                                                {attachment.url}
+                                                                                            </a>
+                                                                                        </Typography>
+                                                                                    </div>
+                                                                                </CardContent>
+                                                                            </Card>
+                                                                        </div>
+                                                                    </div >
+                                                                </>
+                                                            })}
+                                                        </div>
+                                                    </div >
+                                                </Paper>
+                                            </>
+                                        })}
+                                    </Grid>
+                                    : <Grid item xs={12} md={8} lg={9}>
                                         <Paper
                                             sx={{
                                                 p: 3,

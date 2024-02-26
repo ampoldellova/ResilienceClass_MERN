@@ -25,9 +25,7 @@ const validationSchema = Yup.object({
     password: Yup.string().required('Input your password')
 });
 
-const Login = (email, password) => {
-    // const [email, setEmail] = useState('');
-    // const [password, setPassword] = useState('');
+const Login = () => {
     const defaultTheme = createTheme();
 
     const formik = useFormik({
@@ -37,7 +35,6 @@ const Login = (email, password) => {
         },
         validationSchema: validationSchema,
         onSubmit: (values) => {
-            // values.preventDefault();
             login(values.email, values.password)
         },
     });
