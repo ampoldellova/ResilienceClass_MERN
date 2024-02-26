@@ -5,6 +5,18 @@ const cloudinary = require('cloudinary');
 exports.newCourse = async (req, res, next) => {
     req.body.creator = req.user._id
 
+    if (req.file) {
+        const result = await cloudinary.v2.uploader.upload(req.file.path, {
+            folder: 'ResilienceClass/CourseImages',
+            crop: "scale"
+        })
+
+        req.body.coverPhoto = {
+            public_id: result.public_id,
+            url: result.secure_url
+        }
+    }
+
     let contents = []
 
     if (req.files) {
