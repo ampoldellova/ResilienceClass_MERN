@@ -54,9 +54,9 @@ const ReturnClasswork = ({ studentId, classwork, setClasswork }) => {
             }
             const { data: { classwork } } = await axios.put(`http://localhost:4003/api/v1/class/classwork/${id}/return?grades=${formData.grades}&studentId=${studentId}`, formData, config)
 
-            console.log(classwork)
+            // console.log(classwork)
             setOpen(false)
-            setClasswork(classwork)
+            // setClasswork(classwork)
             alert('Classwork graded sucessfully!')
         } catch (error) {
             alert('Error Ocurred')
@@ -92,7 +92,12 @@ const ReturnClasswork = ({ studentId, classwork, setClasswork }) => {
                             label="Grades"
                             name="grades"
                             value={formik.values.grades}
-                            onChange={formik.handleChange}
+                            onChange={(e) => {
+                                const value = parseFloat(e.target.value);
+                                if (!isNaN(value) && value > 0) {
+                                    formik.setFieldValue('grades', value);
+                                }
+                            }}
                             error={formik.touched.grades && Boolean(formik.errors.grades)}
                             helperText={formik.touched.grades && formik.errors.grades}
                         />

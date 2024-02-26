@@ -260,6 +260,14 @@ const ClassworkDetails = () => {
         return classwork?.submissions?.find(obj => obj.user._id === getUser()._id)?.submittedAt ? true : false;
     }
 
+    const isGraded = () => {
+        return classwork?.submissions?.find(obj => obj.user._id === getUser()._id)?.status === "Graded";
+    }
+
+    const grades = () => {
+        return classwork?.submissions?.find(obj => obj.user._id === getUser()._id)?.grades;
+    }
+    // console.log(grades())
     const deleteClassworkHandler = (id) => {
         deleteClasswork(id)
     }
@@ -454,7 +462,7 @@ const ClassworkDetails = () => {
                                                         : <></>
                                                     }
                                                     <Typography variant='caption'>
-                                                        Points: /{classwork.points}
+                                                        Points: / {classwork.points}
                                                     </Typography>
 
                                                     <Divider style={{ margin: '16px 0', width: '100%' }} />
@@ -621,9 +629,13 @@ const ClassworkDetails = () => {
 
                                                     {classwork.points !== null ?
                                                         <div>
-                                                            <Typography variant='caption'>
-                                                                Points: /{classwork.points}
-                                                            </Typography>
+                                                            {isGraded() ?
+                                                                <Typography variant='caption' color={green[500]}>
+                                                                    Points: {grades() ? `${grades()}` : ''}/{classwork.points}
+                                                                </Typography> : <Typography variant='caption'>
+                                                                    Points: /{classwork.points}
+                                                                </Typography>
+                                                            }
                                                         </div>
                                                         : <></>
                                                     }
@@ -683,10 +695,11 @@ const ClassworkDetails = () => {
                                                 <Box>
                                                     <div style={{ display: 'flex', justifyContent: 'space-between' }}>
                                                         <Typography variant='subtitle1'>Your Work </Typography>
-                                                        {isSubmitted() ?
-                                                            <Typography variant='subtitle1' style={{ color: green[500] }}>submitted</Typography> :
-                                                            <></>
-                                                        }
+                                                        {isSubmitted() && !isGraded() ? (
+                                                            <Typography variant='subtitle1' style={{ color: green[500] }}>submitted</Typography>
+                                                        ) : isSubmitted() && isGraded() ? (
+                                                            <Typography variant='subtitle1' style={{ color: green[500] }}>graded</Typography>
+                                                        ) : <></>}
                                                     </div>
 
                                                     {filesPreview.map(attachment => (

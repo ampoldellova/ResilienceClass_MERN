@@ -285,11 +285,12 @@ exports.deleteClasswork = async (req, res, next) => {
 }
 
 exports.returnClasswork = async (req, res, next) => {
-    
+
     try {
         const classwork = await Classwork.findById(req.params.id);
 
         classwork.submissions.find(obj => obj.user.toString() === req.query.studentId).grades = Number.parseInt(req.query.grades);
+        classwork.submissions.find(obj => obj.user.toString() === req.query.studentId).status = "Graded";
         classwork.save();
 
         res.status(200).json({
