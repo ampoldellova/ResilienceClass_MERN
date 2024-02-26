@@ -535,7 +535,6 @@ const ClassworkDetails = () => {
                                                                 <Typography tag="h6" className="fw-bold mb-1">
                                                                     {submission.user.name}
                                                                 </Typography>
-                                                                {/* <Typography tag="h6" className="fw-bold mb-1"> */}
                                                                 {submission.grades === null && submission.status === 'Submitted' ? (
                                                                     <ReturnClasswork studentId={submission.user._id} classwork={classwork} getClasswork={getSingleClasswork} />
                                                                 ) : submission.grades !== null ? (
