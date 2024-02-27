@@ -162,6 +162,7 @@ const ClassDetails = () => {
     });
 
     const NewPost = async (formData) => {
+        setLoader(true)
         try {
             const config = {
                 headers: {
@@ -172,11 +173,13 @@ const ClassDetails = () => {
 
             const { data } = await axios.post(`http://localhost:4003/api/v1/class/post/new`, formData, config)
 
+            setLoader(false)
             setModal(false);
             formik.resetForm();
             getClassPosts();
             setSuccess(data.success);
         } catch (error) {
+            setLoader(false)
             setError(error.response.data.message)
         }
     }

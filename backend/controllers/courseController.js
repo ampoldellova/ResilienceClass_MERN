@@ -1,6 +1,7 @@
 const Course = require('../models/course');
 const APIFeatures = require('../utils/apiFeatures');
 const cloudinary = require('cloudinary');
+const User = require('../models/user');
 
 exports.newCourse = async (req, res, next) => {
     req.body.creator = req.user._id
@@ -61,10 +62,28 @@ exports.newCourse = async (req, res, next) => {
 }
 
 exports.getAllCourses = async (req, res, next) => {
-    const courses = await Course.find();
+    const courses = await Course.find().populate({
+        path: 'creator',
+        model: User
+    });
 
     res.status(200).json({
         success: true,
         courses
+    })
+}
+
+exports.getSingleCourse = async (req, res, next) => {
+    const course = await Course.findById(req.params.id)
+
+    if (!course) {
+        return res.status(404).json({
+            success: false,
+            message: 'Course not found'
+        })
+    }
+    res.status(200).json({
+        success: true,
+        course
     })
 }

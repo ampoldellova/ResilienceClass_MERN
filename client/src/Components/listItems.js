@@ -6,7 +6,6 @@ import HomeIcon from '@mui/icons-material/Home';
 import { Link } from 'react-router-dom';
 import GolfCourseIcon from '@mui/icons-material/GolfCourse';
 
-
 export const mainListItems = (
     <React.Fragment>
         <ListItemButton component={Link} to="/dashboard">
@@ -15,7 +14,7 @@ export const mainListItems = (
             </ListItemIcon>
             <ListItemText primary="Home" />
         </ListItemButton>
-        <ListItemButton component={Link} to="">
+        <ListItemButton component={Link} to="/courses">
             <ListItemIcon>
                 <GolfCourseIcon />
             </ListItemIcon>

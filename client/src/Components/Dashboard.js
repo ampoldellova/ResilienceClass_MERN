@@ -92,7 +92,6 @@ const Dashboard = () => {
     const [classroom, setClassroom] = useState([]);
     const [loader, setLoader] = useState(true);
 
-
     const toggle = () => {
         setModal(!modal);
         setJoinModal(false);
