@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { styled, createTheme, ThemeProvider } from '@mui/material/styles';
-import { CardContent, Button, Grid, Paper, Menu, MenuItem, CssBaseline, Drawer as MuiDrawer, Box, AppBar as MuiAppBar, Toolbar, List, Typography, Divider, IconButton, Container, Avatar } from '@mui/material';
+import { CardMedia, CardContent, Button, Grid, Paper, Menu, MenuItem, CssBaseline, Drawer as MuiDrawer, Box, AppBar as MuiAppBar, Toolbar, List, Typography, Divider, IconButton, Container, Avatar, TextField } from '@mui/material';
 import { Menu as MenuIcon, ChevronLeft as ChevronLeftIcon, MoreVert } from '@mui/icons-material';
 import MetaData from '../Layout/Metadata';
 import { getToken, getUser, isUserTeacher, logout } from '../../utils/helpers';
@@ -19,9 +19,9 @@ import {
     MDBRipple,
     MDBBtn,
 } from "mdb-react-ui-kit";
-import CreateCourse from './CreateCourse';
+import CreateModule from './CreateModule';
 import { Loader } from '../Loader';
-import CourseDetail from './CourseDetail';
+import ModuleDetail from './ModuleDetail';
 
 const drawerWidth = 240;
 
@@ -71,9 +71,10 @@ const Drawer = styled(MuiDrawer, { shouldForwardProp: (prop) => prop !== 'open' 
 
 const defaultTheme = createTheme();
 
-const Courses = () => {
+const Modules = () => {
     const navigate = useNavigate()
-    const [courses, setCourses] = useState([])
+    const [modules, setModules] = useState([]);
+    const [filteredModules, setFilteredModules] = useState([]);
     const [user, setUser] = useState('')
     const menuId = 'primary-search-account-menu';
     const [open, setOpen] = React.useState(true);
@@ -108,7 +109,7 @@ const Courses = () => {
         setProfileAnchorEl(null);
     };
 
-    const getCourses = async () => {
+    const getModules = async () => {
         setLoader(true)
         try {
 
@@ -118,26 +119,36 @@ const Courses = () => {
                 }
             }
 
-            const { data: { courses } } = await axios.get(`http://localhost:4003/api/v1/courses`, config)
+            const { data: { modules } } = await axios.get(`http://localhost:4003/api/v1/modules`, config)
 
             setLoader(false)
-            console.log(courses)
-            setCourses(courses)
+            setModules(modules)
+            setFilteredModules(modules)
         } catch (error) {
             setLoader(false)
             alert('Error Occurred')
         }
     }
 
+    const handleSearch = (e) => {
+        const keyword = e.target.value;
+        const regex = new RegExp(keyword, 'i');
+        const filteredModules = modules.filter(module => regex.test(module.title) ||
+            regex.test(module.language) ||
+            regex.test(module.description) ||
+            regex.test(module.creator.name));
+        setFilteredModules(filteredModules);
+    }
+
     useEffect(() => {
         setUser(getUser());
-        getCourses();
+        getModules();
     }, [])
 
     return (
         <>
             <ThemeProvider theme={defaultTheme}>
-                <MetaData title={'Courses'} />
+                <MetaData title={'Learning Modules'} />
                 <Loader open={loader} />
                 <Box sx={{ display: 'flex' }}>
                     <CssBaseline />
@@ -231,8 +242,19 @@ const Courses = () => {
                     >
                         <Toolbar />
                         <Container maxWidth="lg" sx={{ mt: 4, mb: 4 }}>
-                            <CreateCourse getCourses={getCourses} />
-                            {courses && courses.map(course => {
+                            <Container maxWidth="md">
+                                <Box sx={{ display: 'flex' }}>
+                                    <CreateModule getModules={getModules} />
+                                    <TextField
+                                        fullWidth
+                                        variant='outlined'
+                                        label='Search'
+                                        onChange={handleSearch}
+                                        size='small'
+                                        sx={{ ml: 2 }} />
+                                </Box>
+                            </Container>
+                            {filteredModules && filteredModules.map(module => {
                                 return <MDBContainer fluid>
                                     <MDBRow className="justify-content-center mb-0">
                                         <MDBCol md="12" xl="10">
@@ -246,33 +268,23 @@ const Courses = () => {
                                                                 className="bg-image rounded hover-zoom hover-overlay"
                                                             >
                                                                 <MDBCardImage
-                                                                    src={course.coverImage.url}
+                                                                    src={module.coverImage.url}
                                                                     fluid
                                                                     className="w-100"
                                                                 />
-                                                                <a href="#!">
-                                                                    <div
-                                                                        className="mask"
-                                                                        style={{ backgroundColor: "rgba(251, 251, 251, 0.15)" }}
-                                                                    ></div>
-                                                                </a>
                                                             </MDBRipple>
                                                         </MDBCol>
                                                         <MDBCol md="6">
-                                                            <h5>{course.title}</h5>
+                                                            <h5>{module.title}</h5>
                                                             <div className="mt-1 mb-0 text-muted small">
-                                                                <span>Created By: {course.creator.name}</span>
+                                                                <span>Created By: {module.creator.name}</span>
                                                             </div>
-                                                            <div className="text-muted small">
-                                                                <span>Date Published: {new Date(course.createdAt).toLocaleDateString('en-PH', { month: 'long', day: '2-digit', year: 'numeric' })}</span>
+                                                            <div className="mt-1 mb-0 text-muted small">
+                                                                <span>Date Published: {new Date(module?.createdAt).toLocaleDateString('en-PH', { month: 'long', day: '2-digit', year: 'numeric' })}</span>
                                                             </div>
-                                                            <div className="mb-2 text-muted small">
-                                                                <span>Language: {course.language}</span>
+                                                            <div className="mt-1 mb-0 text-muted small">
+                                                                <span>Language: {module.language}</span>
                                                             </div>
-                                                            <hr />
-                                                            <Typography variant='body2'>
-                                                                {course.description}
-                                                            </Typography>
                                                         </MDBCol>
                                                         <MDBCol
                                                             md="6"
@@ -280,13 +292,7 @@ const Courses = () => {
                                                             className="border-sm-start-none border-start"
                                                         >
                                                             <div className="d-flex flex-column mt-4">
-                                                                {/* <Button color="primary" variant='contained' size="small">
-                                                                    Details
-                                                                </Button> */}
-                                                                <CourseDetail />
-                                                                <Button variant='outlined' color="primary" size="small" sx={{ mt: 1 }}>
-                                                                    Apply Course
-                                                                </Button>
+                                                                <ModuleDetail moduleId={module._id} />
                                                             </div>
                                                         </MDBCol>
                                                     </MDBRow>
@@ -304,4 +310,4 @@ const Courses = () => {
     )
 }
 
-export default Courses;
+export default Modules;

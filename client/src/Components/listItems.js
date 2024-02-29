@@ -4,7 +4,7 @@ import ListItemIcon from '@mui/material/ListItemIcon';
 import ListItemText from '@mui/material/ListItemText';
 import HomeIcon from '@mui/icons-material/Home';
 import { Link } from 'react-router-dom';
-import GolfCourseIcon from '@mui/icons-material/GolfCourse';
+import ViewModuleIcon from '@mui/icons-material/ViewModule';
 
 export const mainListItems = (
     <React.Fragment>
@@ -14,11 +14,11 @@ export const mainListItems = (
             </ListItemIcon>
             <ListItemText primary="Home" />
         </ListItemButton>
-        <ListItemButton component={Link} to="/courses">
+        <ListItemButton component={Link} to="/modules">
             <ListItemIcon>
-                <GolfCourseIcon />
+                <ViewModuleIcon />
             </ListItemIcon>
-            <ListItemText primary="Courses" />
+            <ListItemText primary="Learning Modules" />
         </ListItemButton>
     </React.Fragment>
 );

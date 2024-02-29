@@ -8,7 +8,7 @@ import ForgotPassword from './Components/User/ForgotPassword';
 import ProtectedRoute from './Components/Route/ProtectedRoute';
 import ClassDetails from './Components/Class/ClassDetails';
 import ClassworkDetails from './Components/Classworks/ClassworkDetails';
-import Courses from './Components/Courses/Courses';
+import Modules from './Components/Module/Modules';
 
 function App() {
   return (
@@ -23,7 +23,7 @@ function App() {
           <Route path="/password/forgot" element={<ForgotPassword />} exact />
           <Route path="/class/classwork/:id" element={<ProtectedRoute><ClassworkDetails /></ProtectedRoute>} exact />
 
-          <Route path="/courses" element={<ProtectedRoute><Courses /></ProtectedRoute>} exact />
+          <Route path="/modules" element={<ProtectedRoute><Modules /></ProtectedRoute>} exact />
         </Routes>
       </Router>
     </div>
