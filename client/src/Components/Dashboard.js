@@ -5,7 +5,7 @@ import { Menu as MenuIcon, ChevronLeft as ChevronLeftIcon } from '@mui/icons-mat
 import AddIcon from '@mui/icons-material/Add';
 import LogoutIcon from '@mui/icons-material/Logout';
 import { useNavigate } from 'react-router-dom';
-import { mainListItems } from './listItems';
+import MainListItems from './listItems';
 import { getUser, logout } from '../utils/helpers';
 import { toast } from 'react-toastify';
 import MetaData from './Layout/Metadata';
@@ -358,7 +358,7 @@ const Dashboard = () => {
                     </Toolbar>
                     <Divider />
                     <List component="nav">
-                        {mainListItems}
+                        <MainListItems />
                     </List>
                 </Drawer>
                 <Box

@@ -49,7 +49,6 @@ const EditPost = ({ postId, getClassPosts }) => {
             for (let i = 0; i < values.attachments.length; i++) {
                 formData.append('attachments', values.attachments[i]);
             }
-
             UpdatePost(postId, formData)
         },
     });
@@ -86,7 +85,6 @@ const EditPost = ({ postId, getClassPosts }) => {
 
         const { data: { post } } = await axios.get(`http://localhost:4003/api/v1/class/post/details/${postId}`, config);
 
-        // console.log(data)
         formik.setFieldValue('contents', post?.contents);
         formik.setFieldValue('attachments', post?.attachments);
         setPost(post)
@@ -94,7 +92,6 @@ const EditPost = ({ postId, getClassPosts }) => {
 
     useEffect(() => {
         setUser(getUser());
-        // getSinglePost(id);
     }, [])
 
     return (

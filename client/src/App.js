@@ -9,6 +9,7 @@ import ProtectedRoute from './Components/Route/ProtectedRoute';
 import ClassDetails from './Components/Class/ClassDetails';
 import ClassworkDetails from './Components/Classworks/ClassworkDetails';
 import Modules from './Components/Module/Modules';
+import ClassroomList from './Components/Admin/ClassroomList';
 
 function App() {
   return (
@@ -24,6 +25,7 @@ function App() {
           <Route path="/class/classwork/:id" element={<ProtectedRoute><ClassworkDetails /></ProtectedRoute>} exact />
 
           <Route path="/modules" element={<ProtectedRoute><Modules /></ProtectedRoute>} exact />
+          <Route path="/admin/classrooms" element={<ProtectedRoute><ClassroomList /></ProtectedRoute>} exact />
         </Routes>
       </Router>
     </div>

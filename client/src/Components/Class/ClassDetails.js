@@ -5,7 +5,7 @@ import { InputLabel, TextField, Button, Grid, Paper, CardMedia, Menu, MenuItem, 
 import { Menu as MenuIcon, ChevronLeft as ChevronLeftIcon } from '@mui/icons-material';
 import LogoutIcon from '@mui/icons-material/Logout';
 import { useNavigate } from 'react-router-dom';
-import { mainListItems } from '../listItems';
+import MainListItems from '../listItems';
 import { getUser, logout } from '../../utils/helpers';
 import MetaData from '../Layout/Metadata';
 import { getToken } from '../../utils/helpers';
@@ -293,7 +293,7 @@ const ClassDetails = () => {
                     </Toolbar>
                     <Divider />
                     <List component="nav">
-                        {mainListItems}
+                        <MainListItems />
                     </List>
                 </Drawer>
                 <Box

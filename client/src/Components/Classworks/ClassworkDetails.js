@@ -8,7 +8,6 @@ import { getToken, getUser, isUserTeacher, logout } from '../../utils/helpers';
 import { useParams } from 'react-router';
 import MetaData from '../Layout/Metadata';
 import LogoutIcon from '@mui/icons-material/Logout';
-import mainListItems from '../listItems';
 import AssignmentIcon from '@mui/icons-material/Assignment';
 import CloudUploadIcon from '@mui/icons-material/CloudUpload';
 import Assignment from '@mui/icons-material/Assignment';
@@ -19,6 +18,7 @@ import TurnedInIcon from '@mui/icons-material/TurnedIn';
 import ReturnClasswork from './ReturnClasswork';
 import { Loader } from '../Loader';
 import EditGrade from './EditGrade';
+import MainListItems from '../listItems';
 
 const drawerWidth = 240;
 
@@ -386,7 +386,7 @@ const ClassworkDetails = () => {
                         </Toolbar>
                         <Divider />
                         <List component="nav">
-                            <mainListItems />
+                            <MainListItems />
                         </List>
                     </Drawer>
                     <Box

@@ -6,7 +6,7 @@ import { Menu as MenuIcon, ChevronLeft as ChevronLeftIcon, MoreVert } from '@mui
 import MetaData from '../Layout/Metadata';
 import { getToken, getUser, isUserTeacher, logout } from '../../utils/helpers';
 import LogoutIcon from '@mui/icons-material/Logout';
-import { mainListItems } from '../listItems';
+import MainListItems from '../listItems';
 import axios from 'axios';
 import {
     MDBContainer,
@@ -226,7 +226,7 @@ const Modules = () => {
                         </Toolbar>
                         <Divider />
                         <List component="nav">
-                            {mainListItems}
+                            <MainListItems />
                         </List>
                     </Drawer>
                     <Box

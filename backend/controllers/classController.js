@@ -27,13 +27,13 @@ exports.newClass = async (req, res, next) => {
     })
 }
 
-exports.getClass = async (req, res, next) => {
+exports.getClassrooms = async (req, res, next) => {
 
-    const classRoom = await Class.find();
+    const classrooms = await Class.find();
 
     res.status(200).json({
         success: true,
-        classRoom
+        classrooms: classrooms
     })
 }
 
@@ -135,7 +135,6 @@ exports.joinClass = async (req, res, next) => {
 
     try {
         const foundClass = await Class.findOne({ classCode: enteredCode });
-        // console.log(foundClass)
         if (!foundClass) {
             return res.status(404).json({ message: "Class not found." });
         }
