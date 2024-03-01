@@ -18,6 +18,8 @@ import CreateClasswork from '../Classworks/CreateClasswork';
 import EditClassDetails from './EditClassDetails';
 import ClassworkList from '../Classworks/ClassworkList';
 import { Loader } from '../Loader';
+import ClassMembers from './ClassMembers';
+import EditProfile from '../User/EditProfile';
 
 const validationSchema = Yup.object({
     contents: Yup.string().required('Content is required'),
@@ -210,6 +212,8 @@ const ClassDetails = () => {
         return classRoom?.joinedUsers?.find((joinedUser) => joinedUser.user === getUser()?._id).role === 'teacher';
     };
 
+    console.log(classRoom)
+
     return (
         <ThemeProvider theme={defaultTheme}>
             <MetaData title={classRoom.subject} />
@@ -268,6 +272,7 @@ const ClassDetails = () => {
                             open={Boolean(profileaAnchorEl)}
                             onClose={handleProfileMenuClose}
                         >
+                            <EditProfile />
                             <MenuItem onClick={logoutHandler}><LogoutIcon style={{ marginRight: 10 }} /> Logout</MenuItem>
                         </Menu>
                     </Toolbar>
@@ -442,22 +447,23 @@ const ClassDetails = () => {
                                             <ClassworkList />
                                         </Paper>
 
+                                        <ClassMembers classroom={classRoom} />
                                         <CreateClasswork />
                                         <EditClassDetails />
                                     </>
                                     : <>
+                                        <ClassMembers classroom={classRoom} />
                                         <Paper
                                             sx={{
                                                 p: 2,
                                                 display: 'flex',
                                                 flexDirection: 'column',
                                                 height: 'auto',
-                                                marginBottom: 2
+                                                mt: 2
                                             }}
                                         >
                                             <Typography variant='subtitle1'>Classworks: </Typography>
                                             <ClassworkList />
-                                            {/* <ClassworkDetails /> */}
                                         </Paper>
                                     </>
                                 }

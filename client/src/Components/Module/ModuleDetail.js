@@ -18,6 +18,7 @@ import CloseIcon from '@mui/icons-material/Close';
 import { getToken } from '../../utils/helpers';
 import PageviewIcon from '@mui/icons-material/Pageview';
 import axios from 'axios';
+import { Loader } from '../Loader';
 
 const Transition = React.forwardRef(function Transition(props, ref) {
     return <Slide direction="up" ref={ref} {...props} />;
@@ -26,19 +27,19 @@ const Transition = React.forwardRef(function Transition(props, ref) {
 const ModuleDetail = ({ moduleId }) => {
     const [open, setOpen] = useState(false);
     const [module, setModule] = useState({});
-
-    // let { id } = useParams();
+    const [loader, setLoader] = useState(true);
 
     const handleClickOpen = () => {
+        moduleDetails(moduleId);
         setOpen(true);
     };
 
     const handleClose = () => {
         setOpen(false);
     };
-    
-    const moduleDetails = async () => {
-        // setLoader(true)
+
+    const moduleDetails = async (moduleId) => {
+        setLoader(true)
         try {
             const config = {
                 headers: {
@@ -49,17 +50,17 @@ const ModuleDetail = ({ moduleId }) => {
 
             const { data: { module } } = await axios.get(`http://localhost:4003/api/v1/module/${moduleId}`, config);
 
-            // setLoader(false)
+            setLoader(false)
             setModule(module)
         } catch (error) {
-            // setLoader(false)
+            setLoader(false)
             alert('Error Occurred')
         }
     }
 
-    useEffect(() => {
-        moduleDetails(moduleId);
-    }, [])
+    // useEffect(() => {
+    //     moduleDetails(moduleId);
+    // }, [])
 
 
     return (
@@ -89,6 +90,7 @@ const ModuleDetail = ({ moduleId }) => {
                     </Toolbar>
                 </AppBar>
                 <Container maxWidth="xl">
+                    <Loader open={loader} />
                     <Grid container spacing={10}>
                         <Grid item xs={12} sx={{ display: 'flex', flexDirection: 'column', justifyContent: 'center', alignItems: 'center' }}>
                             <CardMedia
@@ -97,7 +99,7 @@ const ModuleDetail = ({ moduleId }) => {
                             />
                         </Grid>
 
-                        <Grid item xs={12} md={12} lg={6} sx={{ display: 'flex', flexDirection: 'column', justifyContent: 'center' }}>
+                        <Grid item xs={12} md={12} lg={6} sx={{ display: 'flex', flexDirection: 'column' }}>
                             <Typography variant='h3' sx={{ mb: 2 }}>{module?.title}</Typography>
                             <div className="d-flex flex-start">
                                 <Avatar alt={module?.creator?.name} src={module?.creator?.avatar.url} sx={{ width: 60, height: 60, mr: 2 }} />
@@ -105,10 +107,9 @@ const ModuleDetail = ({ moduleId }) => {
                                     <Typography variant='body2' >Created By: {module?.creator?.name}</Typography>
                                     <Typography variant='body2' >Date Published: {new Date(module?.createdAt).toLocaleDateString('en-PH', { month: 'long', day: '2-digit', year: 'numeric' })}</Typography>
                                     <Typography variant='body2' >Language: {module?.language}</Typography>
-
                                 </div>
                             </div>
-                            <Typography variant='subtitle1' sx={{ my: 2 }}>{module?.description}</Typography>
+                            <Typography variant='subtitle1' sx={{ mt: 5 }}>{module?.description}</Typography>
                         </Grid>
                         <Grid item xs={12} md={12} lg={6} sx={{ paddingLeft: 2, display: 'flex', alignItems: 'center', mb: 5 }}> {/* Add paddingLeft for space */}
                             <iframe

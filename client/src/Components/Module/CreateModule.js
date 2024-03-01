@@ -7,6 +7,7 @@ import { useFormik } from 'formik';
 import axios from 'axios';
 import Language from 'language-list';
 import CloseIcon from '@mui/icons-material/Close';
+import { Loader } from '../Loader';
 
 const validationSchema = Yup.object({
     title: Yup.string().required('Learning module title is required'),
@@ -23,7 +24,7 @@ const CreateModule = ({ getModules }) => {
     const [open, setOpen] = useState(false);
     const [thumbnail, setThumbnail] = useState('')
     const [thumbnailPreview, setThumbnailPreview] = useState('')
-
+    const [loader, setLoader] = useState(true);
     const languages = Language();
 
     const displayLanguages = languages.getData().map(language => {
@@ -62,12 +63,12 @@ const CreateModule = ({ getModules }) => {
             formData.set('language', values.language);
             formData.append('contents', values.contents[0]);
 
-            // console.log(values.coverImage)
             NewModule(formData)
         },
     });
 
     const NewModule = async (formData) => {
+        setLoader(true)
         try {
             const config = {
                 headers: {
@@ -78,11 +79,13 @@ const CreateModule = ({ getModules }) => {
 
             const { data } = await axios.post(`http://localhost:4003/api/v1/module/new`, formData, config)
 
+            setLoader(false)
             setOpen(false);
             getModules();
             formik.resetForm();
             alert('Module successfully created!')
         } catch (error) {
+            setLoader(false)
             alert('Error Occurred')
         }
     }
@@ -156,7 +159,7 @@ const CreateModule = ({ getModules }) => {
                             <Grid container spacing={2}>
                                 <Grid item sm={12}>
                                     <CardMedia
-                                        sx={{ height: '500', width: '500' }}
+                                        sx={{ height: 400, width: 850, mb: 2 }}
                                         image={thumbnailPreview}
                                         title="green iguana"
                                     />

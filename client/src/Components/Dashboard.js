@@ -16,6 +16,7 @@ import { getToken } from '../utils/helpers';
 import * as Yup from 'yup';
 import { useFormik } from 'formik';
 import { Loader } from './Loader';
+import EditProfile from './User/EditProfile';
 
 const validationSchema = Yup.object({
     className: Yup.string().required('Class Name is required'),
@@ -336,6 +337,7 @@ const Dashboard = () => {
                             open={Boolean(profileaAnchorEl)}
                             onClose={handleProfileMenuClose}
                         >
+                            <EditProfile />
                             <MenuItem onClick={logoutHandler}><LogoutIcon style={{ marginRight: 10 }} /> Logout</MenuItem>
                         </Menu>
                     </Toolbar>

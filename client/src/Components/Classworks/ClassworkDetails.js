@@ -8,7 +8,7 @@ import { getToken, getUser, isUserTeacher, logout } from '../../utils/helpers';
 import { useParams } from 'react-router';
 import MetaData from '../Layout/Metadata';
 import LogoutIcon from '@mui/icons-material/Logout';
-import { mainListItems } from '../listItems';
+import mainListItems from '../listItems';
 import AssignmentIcon from '@mui/icons-material/Assignment';
 import CloudUploadIcon from '@mui/icons-material/CloudUpload';
 import Assignment from '@mui/icons-material/Assignment';
@@ -386,7 +386,7 @@ const ClassworkDetails = () => {
                         </Toolbar>
                         <Divider />
                         <List component="nav">
-                            {mainListItems}
+                            <mainListItems />
                         </List>
                     </Drawer>
                     <Box

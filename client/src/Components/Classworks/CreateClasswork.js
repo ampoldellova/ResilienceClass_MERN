@@ -92,7 +92,7 @@ const CustomizedDialogs = () => {
 
     return (
         <React.Fragment>
-            <Button variant="contained" fullWidth onClick={handleClickOpen} sx={{ marginBottom: 2 }}>
+            <Button variant="contained" fullWidth onClick={handleClickOpen} sx={{ mt: 1 }}>
                 Create Classworks
             </Button>
 

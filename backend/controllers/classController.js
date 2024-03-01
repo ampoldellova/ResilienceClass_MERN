@@ -2,6 +2,7 @@ const Class = require('../models/class');
 const APIFeatures = require('../utils/apiFeatures');
 const cloudinary = require('cloudinary');
 const generateString = require('../utils/codeGenerator')
+const user = require('../models/user');
 
 exports.newClass = async (req, res, next) => {
     // console.log(req.user)
@@ -101,12 +102,31 @@ exports.getSingleClass = async (req, res, next) => {
     if (!classRoom) {
         return res.status(404).json({
             success: false,
-            message: 'Class Room not found'
+            message: 'Classroom not found'
         })
     }
     res.status(200).json({
         success: true,
-        classRoom
+        classRoom: classRoom
+    })
+}
+
+exports.getClassMembers = async (req, res, next) => {
+    const classRoom = await Class.findById(req.params.id).populate({
+        path: 'joinedUsers.user',
+        model: user
+    })
+
+    if (!classRoom) {
+        return res.status(404).json({
+            success: false,
+            message: 'Class Members not found'
+        })
+    }
+
+    res.status(200).json({
+        success: true,
+        classMembers: classRoom.joinedUsers
     })
 }
 

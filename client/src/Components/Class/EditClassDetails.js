@@ -94,7 +94,7 @@ const EditClassDetails = () => {
 
     return (
         <div>
-            <Button variant='contained' onClick={toggle} fullWidth>
+            <Button variant='contained' onClick={toggle} fullWidth sx={{ mt: 1 }}>
                 Edit Class
             </Button>
 

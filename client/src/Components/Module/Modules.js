@@ -22,6 +22,7 @@ import {
 import CreateModule from './CreateModule';
 import { Loader } from '../Loader';
 import ModuleDetail from './ModuleDetail';
+import EditProfile from '../User/EditProfile';
 
 const drawerWidth = 240;
 
@@ -204,6 +205,7 @@ const Modules = () => {
                                 open={Boolean(profileaAnchorEl)}
                                 onClose={handleProfileMenuClose}
                             >
+                                <EditProfile />
                                 <MenuItem onClick={logoutHandler}><LogoutIcon style={{ marginRight: 10 }} /> Logout</MenuItem>
                             </Menu>
                         </Toolbar>
