@@ -1,13 +1,13 @@
 import React, { useState } from 'react';
-import { Box, Button, Dialog, CardMedia, Container, DialogContent, DialogContentText, DialogTitle, Grid, TextField, Autocomplete, ListItemText, ListItemButton, List, Divider, AppBar, Toolbar, IconButton, Typography, Slide, InputLabel } from '@mui/material';
+import { Box, Button, Dialog, CardMedia, Container, DialogContent, Grid, TextField, Autocomplete, AppBar, Toolbar, IconButton, Typography, Slide, InputLabel } from '@mui/material';
 import AddIcon from '@mui/icons-material/Add';
-import { getToken } from '../../utils/helpers';
+import { getToken } from '../../../utils/helpers';
 import * as Yup from 'yup';
 import { useFormik } from 'formik';
 import axios from 'axios';
 import Language from 'language-list';
 import CloseIcon from '@mui/icons-material/Close';
-import { Loader } from '../Loader';
+import { Loader } from '../../Loader';
 
 const validationSchema = Yup.object({
     title: Yup.string().required('Learning module title is required'),
@@ -20,16 +20,16 @@ const Transition = React.forwardRef(function Transition(props, ref) {
     return <Slide direction="up" ref={ref} {...props} />;
 });
 
-const CreateModule = ({ getModules }) => {
+const CreateAdminModule = ({ getAdminModules }) => {
     const [open, setOpen] = useState(false);
-    const [thumbnail, setThumbnail] = useState('')
-    const [thumbnailPreview, setThumbnailPreview] = useState('')
+    const [thumbnail, setThumbnail] = useState('');
+    const [thumbnailPreview, setThumbnailPreview] = useState('');
     const [loader, setLoader] = useState(false);
     const languages = Language();
 
     const displayLanguages = languages.getData().map(language => {
         return language.language
-    })
+    });
 
     const inputRef = React.useRef();
 
@@ -63,11 +63,11 @@ const CreateModule = ({ getModules }) => {
             formData.set('language', values.language);
             formData.append('contents', values.contents[0]);
 
-            NewModule(formData)
+            NewAdminModule(formData)
         },
     });
 
-    const NewModule = async (formData) => {
+    const NewAdminModule = async (formData) => {
         setLoader(true)
         try {
             const config = {
@@ -81,8 +81,8 @@ const CreateModule = ({ getModules }) => {
 
             setLoader(false)
             setOpen(false);
-            getModules();
             formik.resetForm();
+            getAdminModules();
             alert('Module successfully created!')
         } catch (error) {
             setLoader(false)
@@ -121,12 +121,8 @@ const CreateModule = ({ getModules }) => {
     return (
         <React.Fragment>
             <Box sx={{ display: 'flex', justifyContent: 'center' }}>
-                <Button
-                    onClick={handleClickOpen}
-                    variant='contained'
-                    startIcon={<AddIcon />}
-                    sx={{ borderRadius: 5, mb: 2 }}>
-                    Create
+                <Button variant="outlined" onClick={handleClickOpen} startIcon={<AddIcon />}>
+                    Create a Module
                 </Button>
             </Box>
             <Dialog
@@ -147,7 +143,7 @@ const CreateModule = ({ getModules }) => {
                                 <CloseIcon />
                             </IconButton>
                             <Typography sx={{ ml: 2, flex: 1 }} variant="h6" component="div">
-                                Share your knowledge
+                                Create a Module
                             </Typography>
                             <Button type="submit" autoFocus color="inherit">
                                 Create
@@ -255,4 +251,4 @@ const CreateModule = ({ getModules }) => {
     );
 }
 
-export default CreateModule;
+export default CreateAdminModule;

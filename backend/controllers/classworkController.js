@@ -47,7 +47,7 @@ exports.newClasswork = async (req, res, next) => {
         classwork: classwork,
         message: 'Classwork added'
     })
-}
+};
 
 exports.getClassworks = async (req, res, next) => {
     const classwork = await Classwork.find({ class: req.params.id })
@@ -56,7 +56,7 @@ exports.getClassworks = async (req, res, next) => {
         success: true,
         classwork
     })
-}
+};
 
 exports.getSingleClasswork = async (req, res, next) => {
     const classwork = await Classwork.findById(req.params.id).populate({
@@ -84,7 +84,7 @@ exports.getSingleClasswork = async (req, res, next) => {
         classwork,
         submission
     })
-}
+};
 
 exports.attachFile = async (req, res, next) => {
     try {
@@ -142,7 +142,7 @@ exports.attachFile = async (req, res, next) => {
             success: false
         })
     }
-}
+};
 
 exports.removeFile = async (req, res, next) => {
     try {
@@ -166,7 +166,7 @@ exports.removeFile = async (req, res, next) => {
             error: error.message
         });
     }
-}
+};
 
 exports.updateClasswork = async (req, res, next) => {
     let classwork = await Classwork.findById(req.params.id)
@@ -229,7 +229,7 @@ exports.updateClasswork = async (req, res, next) => {
         success: true,
         classwork
     })
-}
+};
 
 exports.submitClasswork = async (req, res, next) => {
     try {
@@ -283,7 +283,7 @@ exports.deleteClasswork = async (req, res, next) => {
         success: true,
         message: 'Classwork deleted'
     })
-}
+};
 
 exports.returnClasswork = async (req, res, next) => {
 
@@ -305,7 +305,7 @@ exports.returnClasswork = async (req, res, next) => {
             success: false
         });
     }
-}
+};
 
 exports.getAllClassworks = async (req, res, next) => {
     const classworks = await Classwork.find().populate({
@@ -323,4 +323,4 @@ exports.getAllClassworks = async (req, res, next) => {
         success: true,
         classworks: classworks
     })
-}
+};

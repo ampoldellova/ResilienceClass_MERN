@@ -4,15 +4,17 @@ import { styled, createTheme, ThemeProvider } from '@mui/material/styles';
 import { CardMedia, CardContent, Button, Grid, Paper, Menu, MenuItem, CssBaseline, Drawer as MuiDrawer, Box, AppBar as MuiAppBar, Toolbar, List, Typography, Divider, IconButton, Container, Avatar, TextField } from '@mui/material';
 import { Menu as MenuIcon, ChevronLeft as ChevronLeftIcon } from '@mui/icons-material';
 import MetaData from '../../Layout/Metadata';
-import { getToken, getUser, isUserTeacher, logout } from '../../../utils/helpers';
+// import { getToken, getUser, isUserTeacher, logout } from '../../utils/helpers';
+import { getToken, getUser, logout } from '../../../utils/helpers';
 import LogoutIcon from '@mui/icons-material/Logout';
 import MainListItems from '../../listItems';
-import axios from 'axios';
+
 import { Loader } from '../../Loader';
 import EditProfile from '../../User/EditProfile';
-import { DataGrid } from '@mui/x-data-grid';
-import EditIcon from '@mui/icons-material/Edit';
-import DeleteIcon from '@mui/icons-material/Delete';
+import Chart from './Chart';
+import Deposits from './Deposits';
+import Orders from './Orders';
+import axios, { Axios } from 'axios';
 
 const drawerWidth = 240;
 
@@ -62,14 +64,14 @@ const Drawer = styled(MuiDrawer, { shouldForwardProp: (prop) => prop !== 'open' 
 
 const defaultTheme = createTheme();
 
-const AdminClassworkList = () => {
+const AnalyticsBoard = () => {
     const navigate = useNavigate()
+    const [AnalyticsBoard, setAnalyticsBoard] = useState([]);
+    const [filteredAnalyticsBoard, setFilteredAnalyticsBoard] = useState([]);
     const [user, setUser] = useState('')
-    const [classworks, setClassworks] = useState([])
     const menuId = 'primary-search-account-menu';
     const [open, setOpen] = React.useState(true);
     const [profileaAnchorEl, setProfileAnchorEl] = React.useState(null);
-    const [isDeleted, setIsDeleted] = useState(false)
     const [loader, setLoader] = useState(true);
 
     const logoutUser = async () => {
@@ -100,158 +102,46 @@ const AdminClassworkList = () => {
         setProfileAnchorEl(null);
     };
 
-    const deleteClassworkHandler = (id) => {
-        deleteClasswork(id)
-    }
-
-    const getAdminClassworks = async () => {
+    const getAnalyticsBoard = async () => {
         setLoader(true)
         try {
 
             const config = {
                 headers: {
-                    'Content-Type': 'multipart/form-data',
                     'Authorization': `Bearer ${getToken()}`
                 }
             }
 
-            const { data: { classworks } } = await axios.get(`http://localhost:4003/api/v1/admin/classworks`, config)
+            const { data: { AnalyticsBoard } } = await axios.get(`http://localhost:4003/api/v1/AnalyticsBoard`, config)
 
             setLoader(false)
-            console.log(classworks)
-            setClassworks(classworks)
+            setAnalyticsBoard(AnalyticsBoard)
+            setFilteredAnalyticsBoard(AnalyticsBoard)
         } catch (error) {
             setLoader(false)
             alert('Error Occurred')
         }
     }
 
-    const deleteClasswork = async (id) => {
-        setLoader(true)
-        try {
-            const config = {
-                headers: {
-                    'Content-Type': 'multipart/form-data',
-                    'Authorization': `Bearer ${getToken()}`
-                }
-            }
-            const { data } = await axios.delete(`http://localhost:4003/api/v1/admin/class/classwork/delete/${id}`, config)
-
-            setLoader(false)
-            setIsDeleted(data.success)
-            getAdminClassworks();
-            alert('Classwork Successfully Deleted!')
-        } catch (error) {
-            setLoader(false)
-            alert('Error Occurred')
-        }
+    const handleSearch = (e) => {
+        const keyword = e.target.value;
+        const regex = new RegExp(keyword, 'i');
+        const filteredAnalyticsBoard = AnalyticsBoard.filter(module => regex.test(module.title) ||
+            regex.test(module.language) ||
+            regex.test(module.description) ||
+            regex.test(module.creator.name));
+        setFilteredAnalyticsBoard(filteredAnalyticsBoard);
     }
 
     useEffect(() => {
         setUser(getUser());
-        getAdminClassworks();
+        getAnalyticsBoard();
     }, [])
-
-    const ClassworkList = () => {
-        const data = {
-            columns: [
-                {
-                    headerName: 'Classwork Title',
-                    field: 'title',
-                    width: 250,
-                    align: 'center',
-                    headerAlign: 'center'
-                },
-                {
-                    headerName: 'Class Subject',
-                    field: 'class',
-                    width: 250,
-                    align: 'center',
-                    headerAlign: 'center'
-                },
-                {
-                    headerName: 'Points',
-                    field: 'points',
-                    width: 100,
-                    align: 'center',
-                    headerAlign: 'center'
-                },
-                {
-                    headerName: 'Deadline',
-                    field: 'deadline',
-                    width: 300,
-                    align: 'center',
-                    headerAlign: 'center',
-                    renderCell: ({ value }) => (
-                        // console.log(value)
-                        <Container style={{
-                            display: 'flex',
-                            justifyContent: 'center',
-                            alignItems: 'center'
-                        }}>
-                            <Typography>
-                                {new Date(value).toLocaleDateString('en-PH', { month: 'long', day: '2-digit', year: 'numeric' }) +
-                                    ' at ' +
-                                    new Date(value).toLocaleTimeString('en-PH', { hour: '2-digit', minute: '2-digit' })}
-                            </Typography>
-                        </Container>
-                    ),
-                },
-                {
-                    headerName: 'Actions',
-                    field: 'actions',
-                    width: 200,
-                    headerAlign: 'center',
-                    renderCell: ({ value }) => (
-                        <Container style={{
-                            display: 'flex',
-                            justifyContent: 'center',
-                            alignItems: 'center'
-                        }}>
-                            {/* <Link to={`/admin/brand/${value}`}> */}
-                            <Button
-                                variant='contained'
-                                sx={{
-                                    color: 'white'
-                                }}>
-                                <EditIcon />
-                            </Button>
-                            {/* </Link> */}
-                            <Button
-                                variant='contained'
-                                sx={{
-                                    color: 'white',
-                                    backgroundColor: 'red',
-                                    marginLeft: 1
-                                }}
-                                onClick={() => deleteClassworkHandler(value)}
-                            >
-                                <DeleteIcon />
-                            </Button>
-                        </Container>
-                    ),
-                },
-            ],
-            rows: []
-        }
-
-        classworks.forEach(classwork => {
-            data.rows.push({
-                id: classwork._id,
-                class: classwork.class.subject,
-                title: classwork.title,
-                points: classwork.points,
-                deadline: classwork.deadline,
-                actions: classwork._id
-            })
-        })
-        return data;
-    }
 
     return (
         <>
             <ThemeProvider theme={defaultTheme}>
-                <MetaData title={'Classwork List'} />
+                <MetaData title={'Learning AnalyticsBoard'} />
                 <Loader open={loader} />
                 <Box sx={{ display: 'flex' }}>
                     <CssBaseline />
@@ -346,21 +236,40 @@ const AdminClassworkList = () => {
                     >
                         <Toolbar />
                         <Container maxWidth="lg" sx={{ mt: 4, mb: 4 }}>
-                            <div style={{ width: '100%' }}>
-                                <Box textAlign="center" style={{ margin: 20 }}>
-                                    <Typography variant='h3' style={{ fontWeight: 1000 }}>List of Classworks</Typography>
-                                </Box>
-                                <DataGrid
-                                    rows={ClassworkList().rows}
-                                    columns={ClassworkList().columns}
-                                    initialState={{
-                                        pagination: {
-                                            paginationModel: { page: 0, pageSize: 10 },
-                                        },
-                                    }}
-                                    pageSizeOptions={[10, 20]}
-                                />
-                            </div>
+                            <Grid container spacing={3}>
+                                {/* Chart */}
+                                <Grid item xs={12} md={8} lg={9}>
+                                    <Paper
+                                        sx={{
+                                            p: 2,
+                                            display: 'flex',
+                                            flexDirection: 'column',
+                                            height: 240,
+                                        }}
+                                    >
+                                        <Chart />
+                                    </Paper>
+                                </Grid>
+                                {/* Recent Deposits */}
+                                <Grid item xs={12} md={4} lg={3}>
+                                    <Paper
+                                        sx={{
+                                            p: 2,
+                                            display: 'flex',
+                                            flexDirection: 'column',
+                                            height: 240,
+                                        }}
+                                    >
+                                        <Deposits />
+                                    </Paper>
+                                </Grid>
+                                {/* Recent Orders */}
+                                <Grid item xs={12}>
+                                    <Paper sx={{ p: 2, display: 'flex', flexDirection: 'column' }}>
+                                        <Orders />
+                                    </Paper>
+                                </Grid>
+                            </Grid>
                         </Container>
                     </Box>
                 </Box>
@@ -369,4 +278,4 @@ const AdminClassworkList = () => {
     )
 }
 
-export default AdminClassworkList;
+export default AnalyticsBoard;

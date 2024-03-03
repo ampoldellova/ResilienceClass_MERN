@@ -16,6 +16,7 @@ import LogoutIcon from '@mui/icons-material/Logout';
 import MainListItems from '../../listItems';
 import { profileHead } from '../../../utils/userAvatar';
 import { width } from '@mui/system';
+import CreateClassroom from './CreateClassroom';
 
 const drawerWidth = 240;
 
@@ -162,7 +163,7 @@ const ClassroomList = () => {
                 {
                     headerName: '',
                     field: 'teacherImage',
-                    width: 250,
+                    width: 150,
                     align: 'center',
                     headerAlign: 'center',
                     renderCell: ({ value }) => (
@@ -171,8 +172,7 @@ const ClassroomList = () => {
                             justifyContent: 'center',
                             alignItems: 'center'
                         }}>
-                            {/* <Avatar src={value} sx={{ height: 100, width: 100 }} /> */}
-                            {profileHead(value, '100px', '100px')}
+                            <Avatar src={value} sx={{ height: 100, width: 100 }} />
                         </Container>
                     ),
                 },
@@ -221,7 +221,7 @@ const ClassroomList = () => {
                 {
                     headerName: 'Actions',
                     field: 'actions',
-                    width: 300,
+                    width: 200,
                     headerAlign: 'center',
                     renderCell: ({ value }) => (
                         <Container style={{
@@ -259,7 +259,7 @@ const ClassroomList = () => {
         classrooms.forEach(classroom => {
             data.rows.push({
                 id: classroom._id,
-                teacherImage: classroom.joinedUsers.find(user => user.role === "teacher").user,
+                teacherImage: classroom.joinedUsers.find(user => user.role === "teacher").user.avatar.url,
                 classTeacher: classroom.joinedUsers.find(user => user.role === "teacher").user.name,
                 className: classroom.className,
                 classCode: classroom.classCode,
@@ -369,38 +369,22 @@ const ClassroomList = () => {
                 >
                     <Toolbar />
                     <Container maxWidth="lg" sx={{ mt: 4, mb: 4 }}>
-                        <Loader open={loader} />
-                        <Box sx={{ display: 'flex' }}>
-                            <Box
-                                component="main"
-                                sx={{
-                                    backgroundColor: (theme) =>
-                                        theme.palette.mode === 'light'
-                                            ? theme.palette.grey[100]
-                                            : theme.palette.grey[900],
-                                    flexGrow: 1,
-                                    overflow: 'auto',
-                                }}
-                            >
-                                <Container>
-                                    <div style={{ width: '100%' }}>
-                                        <Box textAlign="center" style={{ margin: 20 }}>
-                                            <Typography variant='h3' style={{ fontWeight: 1000 }}>List of Classroom</Typography>
-                                        </Box>
-                                        <DataGrid
-                                            rows={ClassroomList().rows}
-                                            columns={ClassroomList().columns}
-                                            initialState={{
-                                                pagination: {
-                                                    paginationModel: { page: 0, pageSize: 10 },
-                                                },
-                                            }}
-                                            pageSizeOptions={[10, 20]}
-                                        />
-                                    </div>
-                                </Container>
+                        <div style={{ width: '100%' }}>
+                            <Box textAlign="center" style={{ margin: 20 }}>
+                                <Typography variant='h3' style={{ fontWeight: 1000 }}>List of Classrooms</Typography>
+                                <CreateClassroom getAdminClassrooms={getAdminClassrooms} />
                             </Box>
-                        </Box>
+                            <DataGrid
+                                rows={ClassroomList().rows}
+                                columns={ClassroomList().columns}
+                                initialState={{
+                                    pagination: {
+                                        paginationModel: { page: 0, pageSize: 10 },
+                                    },
+                                }}
+                                pageSizeOptions={[10, 20]}
+                            />
+                        </div>
                     </Container>
                 </Box>
             </Box>

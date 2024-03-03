@@ -42,7 +42,7 @@ const MainListItems = () => {
                     </ListItemButton>
                     <Collapse in={open} timeout="auto" unmountOnExit>
                         <List component="div" disablePadding>
-                            <ListItemButton sx={{ pl: 4 }}>
+                            <ListItemButton sx={{ pl: 4 }} component={Link} to="/admin/dashboard">
                                 <ListItemIcon>
                                     <AnalyticsIcon />
                                 </ListItemIcon>

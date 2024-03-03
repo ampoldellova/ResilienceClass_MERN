@@ -14,6 +14,8 @@ import EditIcon from '@mui/icons-material/Edit';
 import DeleteIcon from '@mui/icons-material/Delete';
 import { DataGrid } from '@mui/x-data-grid';
 import { profileHead } from '../../../utils/userAvatar';
+import CreateAdminModule from './CreateAdminModule';
+// import ViewModule from './ViewModule';
 
 const drawerWidth = 240;
 
@@ -158,7 +160,7 @@ const ModuleList = () => {
             columns: [
                 {
                     headerName: '',
-                    field: 'creatorImage',
+                    field: 'coverImage',
                     width: 250,
                     align: 'center',
                     headerAlign: 'center',
@@ -168,14 +170,14 @@ const ModuleList = () => {
                             justifyContent: 'center',
                             alignItems: 'center'
                         }}>
-                            <Avatar src={value} sx={{ height: 100, width: 100 }} />
+                            <CardMedia image={value} sx={{ height: 100, width: 200 }} />
                         </Container>
                     ),
                 },
                 {
                     headerName: 'Creator',
                     field: 'creator',
-                    width: 250,
+                    width: 150,
                     align: 'center',
                     headerAlign: 'center'
                 },
@@ -196,7 +198,7 @@ const ModuleList = () => {
                 {
                     headerName: 'Attachment',
                     field: 'contents',
-                    width: 250,
+                    width: 150,
                     align: 'center',
                     headerAlign: 'center',
                     renderCell: ({ value }) => (
@@ -230,7 +232,7 @@ const ModuleList = () => {
                 {
                     headerName: 'Actions',
                     field: 'actions',
-                    width: 300,
+                    width: 200,
                     headerAlign: 'center',
                     renderCell: ({ value }) => (
                         <Container style={{
@@ -238,6 +240,7 @@ const ModuleList = () => {
                             justifyContent: 'center',
                             alignItems: 'center'
                         }}>
+                            {/* <ViewModule moduleId={{ value }} /> */}
                             {/* <Link to={`/admin/brand/${value}`}> */}
                             <Button
                                 variant='contained'
@@ -268,7 +271,8 @@ const ModuleList = () => {
         modules.forEach(module => {
             data.rows.push({
                 id: module._id,
-                creatorImage: module.creator.avatar.url,
+                // creatorImage: module.creator.avatar.url,
+                coverImage: module.coverImage.url,
                 creator: module.creator.name,
                 title: module.title,
                 language: module.language,
@@ -378,9 +382,10 @@ const ModuleList = () => {
                     >
                         <Toolbar />
                         <Container maxWidth="lg" sx={{ mt: 4, mb: 4 }}>
-                            <div style={{ height: 'auto', width: '100%', marginTop: 100 }}>
+                            <div style={{ width: '100%' }}>
                                 <Box textAlign="center" style={{ margin: 20 }}>
                                     <Typography variant='h3' style={{ fontWeight: 1000 }}>List of Learning Modules</Typography>
+                                    <CreateAdminModule getAdminModules={getAdminModules} />
                                 </Box>
                                 <DataGrid
                                     rows={ModuleList().rows}

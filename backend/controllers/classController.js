@@ -173,3 +173,21 @@ exports.deleteClassroom = async (req, res, next) => {
         message: 'Classroom deleted'
     })
 }
+
+exports.newAdminClass = async (req, res, next) => {
+    const randomCode = generateString(6);
+    req.body.classCode = randomCode.trim();
+
+    const classRoom = await Class.create(req.body);
+    if (!classRoom)
+        return res.status(400).json({
+            success: false,
+            message: 'Classroom has not been created'
+        })
+
+    res.status(201).json({
+        success: true,
+        message: 'Classroom has been created!',
+        classRoom
+    })
+};

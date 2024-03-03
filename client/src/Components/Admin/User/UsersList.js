@@ -187,7 +187,7 @@ const UserList = () => {
                 {
                     headerName: 'User Role',
                     field: 'role',
-                    width: 250,
+                    width: 100,
                     align: 'center',
                     headerAlign: 'center'
                 },
@@ -340,7 +340,7 @@ const UserList = () => {
                     >
                         <Toolbar />
                         <Container maxWidth="lg" sx={{ mt: 4, mb: 4 }}>
-                            <div style={{ height: 'auto', width: '100%', marginTop: 100 }}>
+                            <div style={{ width: '100%' }}>
                                 <Box textAlign="center" style={{ margin: 20 }}>
                                     <Typography variant='h3' style={{ fontWeight: 1000 }}>List of Users</Typography>
                                 </Box>
