@@ -16,5 +16,6 @@ router.put('/class/classwork/:id/update', isAuthenticatedUser, upload.array('att
 router.delete('/class/classwork/:id/delete', isAuthenticatedUser, deleteClasswork);
 router.put('/class/classwork/:id/return', isAuthenticatedUser, returnClasswork);
 router.get('/admin/classworks', isAuthenticatedUser, authorizeRoles('admin'), getAllClassworks);
+router.delete('/admin/class/classwork/delete/:id', isAuthenticatedUser, deleteClasswork);
 
 module.exports = router;

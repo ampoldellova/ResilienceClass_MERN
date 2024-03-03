@@ -73,3 +73,18 @@ exports.getSingleModule = async (req, res, next) => {
         module: module
     })
 }
+
+exports.deleteModule = async (req, res, next) => {
+    const module = await Module.findByIdAndDelete(req.params.id);
+    if (!module) {
+        return res.status(404).json({
+            success: false,
+            message: 'Learning Module not found'
+        })
+    }
+
+    res.status(200).json({
+        success: true,
+        message: 'Learning Module deleted'
+    })
+}

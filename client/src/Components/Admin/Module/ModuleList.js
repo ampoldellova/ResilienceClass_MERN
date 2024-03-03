@@ -1,8 +1,8 @@
 import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { styled, createTheme, ThemeProvider } from '@mui/material/styles';
-import { CardMedia, CardContent, Button, Grid, Paper, Menu, MenuItem, CssBaseline, Drawer as MuiDrawer, Box, AppBar as MuiAppBar, Toolbar, List, Typography, Divider, IconButton, Container, Avatar, TextField } from '@mui/material';
-import { Menu as MenuIcon, ChevronLeft as ChevronLeftIcon } from '@mui/icons-material';
+import { CardMedia, CardContent, Button, Grid, Paper, Menu, MenuItem, CssBaseline, Drawer as MuiDrawer, Box, AppBar as MuiAppBar, Toolbar, List, Typography, Divider, IconButton, Container, Avatar, TextField, Card } from '@mui/material';
+import { Menu as MenuIcon, ChevronLeft as ChevronLeftIcon, Assignment } from '@mui/icons-material';
 import MetaData from '../../Layout/Metadata';
 import { getToken, getUser, isUserTeacher, logout } from '../../../utils/helpers';
 import LogoutIcon from '@mui/icons-material/Logout';
@@ -10,6 +10,10 @@ import MainListItems from '../../listItems';
 import axios from 'axios';
 import { Loader } from '../../Loader';
 import EditProfile from '../../User/EditProfile';
+import EditIcon from '@mui/icons-material/Edit';
+import DeleteIcon from '@mui/icons-material/Delete';
+import { DataGrid } from '@mui/x-data-grid';
+import { profileHead } from '../../../utils/userAvatar';
 
 const drawerWidth = 240;
 
@@ -60,12 +64,14 @@ const Drawer = styled(MuiDrawer, { shouldForwardProp: (prop) => prop !== 'open' 
 const defaultTheme = createTheme();
 
 const ModuleList = () => {
-    const navigate = useNavigate()
-    const [user, setUser] = useState('')
+    const navigate = useNavigate();
+    const [user, setUser] = useState('');
+    const [modules, setModules] = useState([]);
     const menuId = 'primary-search-account-menu';
     const [open, setOpen] = React.useState(true);
     const [profileaAnchorEl, setProfileAnchorEl] = React.useState(null);
     const [loader, setLoader] = useState(true);
+    const [isDeleted, setIsDeleted] = useState(false)
 
     const logoutUser = async () => {
         try {
@@ -95,10 +101,184 @@ const ModuleList = () => {
         setProfileAnchorEl(null);
     };
 
+    const deleteModuleHandler = (id) => {
+        deleteModule(id)
+    }
+
+    const getAdminModules = async () => {
+        setLoader(true)
+        try {
+
+            const config = {
+                headers: {
+                    'Content-Type': 'multipart/form-data',
+                    'Authorization': `Bearer ${getToken()}`
+                }
+            }
+
+            const { data: { modules } } = await axios.get(`http://localhost:4003/api/v1/admin/modules`, config)
+
+            setLoader(false)
+            console.log(modules)
+            setModules(modules)
+        } catch (error) {
+            setLoader(false)
+            alert('Error Occurred')
+        }
+    }
+
+    const deleteModule = async (id) => {
+        setLoader(true)
+        try {
+            const config = {
+                headers: {
+                    'Content-Type': 'multipart/form-data',
+                    'Authorization': `Bearer ${getToken()}`
+                }
+            }
+            const { data } = await axios.delete(`http://localhost:4003/api/v1/admin/module/delete/${id}`, config)
+
+            setLoader(false)
+            setIsDeleted(data.success)
+            getAdminModules();
+            alert('Learning Module Successfully Deleted!')
+        } catch (error) {
+            setLoader(false)
+            alert('Error Occurred')
+        }
+    }
 
     useEffect(() => {
         setUser(getUser());
+        getAdminModules();
     }, [])
+
+    const ModuleList = () => {
+        const data = {
+            columns: [
+                {
+                    headerName: '',
+                    field: 'creatorImage',
+                    width: 250,
+                    align: 'center',
+                    headerAlign: 'center',
+                    renderCell: ({ value }) => (
+                        <Container style={{
+                            display: 'flex',
+                            justifyContent: 'center',
+                            alignItems: 'center'
+                        }}>
+                            <Avatar src={value} sx={{ height: 100, width: 100 }} />
+                        </Container>
+                    ),
+                },
+                {
+                    headerName: 'Creator',
+                    field: 'creator',
+                    width: 250,
+                    align: 'center',
+                    headerAlign: 'center'
+                },
+                {
+                    headerName: 'Content Title',
+                    field: 'title',
+                    width: 250,
+                    align: 'center',
+                    headerAlign: 'center'
+                },
+                {
+                    headerName: 'Language',
+                    field: 'language',
+                    width: 150,
+                    align: 'center',
+                    headerAlign: 'center'
+                },
+                {
+                    headerName: 'Attachment',
+                    field: 'contents',
+                    width: 250,
+                    align: 'center',
+                    headerAlign: 'center',
+                    renderCell: ({ value }) => (
+                        <Container style={{
+                            display: 'flex',
+                            justifyContent: 'center',
+                            alignItems: 'center'
+                        }}>
+
+                            <div className="d-flex flex-start">
+                                <Assignment color='primary' sx={{ width: 30, height: 30 }} />
+                                <Typography sx={{ my: 'auto' }}>
+                                    <a
+                                        href={value}
+                                        target="_blank"
+                                        rel="noopener noreferrer"
+                                        style={{
+                                            display: 'inline-block',
+                                            maxWidth: '18ch',
+                                            overflow: 'hidden',
+                                            textOverflow: 'ellipsis',
+                                            whiteSpace: 'nowrap',
+                                        }}>
+                                        content
+                                    </a>
+                                </Typography>
+                            </div>
+                        </Container>
+                    ),
+                },
+                {
+                    headerName: 'Actions',
+                    field: 'actions',
+                    width: 300,
+                    headerAlign: 'center',
+                    renderCell: ({ value }) => (
+                        <Container style={{
+                            display: 'flex',
+                            justifyContent: 'center',
+                            alignItems: 'center'
+                        }}>
+                            {/* <Link to={`/admin/brand/${value}`}> */}
+                            <Button
+                                variant='contained'
+                                sx={{
+                                    color: 'white'
+                                }}>
+                                <EditIcon />
+                            </Button>
+                            {/* </Link> */}
+                            <Button
+                                variant='contained'
+                                sx={{
+                                    color: 'white',
+                                    backgroundColor: 'red',
+                                    marginLeft: 1
+                                }}
+                                onClick={() => deleteModuleHandler(value)}
+                            >
+                                <DeleteIcon />
+                            </Button>
+                        </Container>
+                    ),
+                },
+            ],
+            rows: []
+        }
+
+        modules.forEach(module => {
+            data.rows.push({
+                id: module._id,
+                creatorImage: module.creator.avatar.url,
+                creator: module.creator.name,
+                title: module.title,
+                language: module.language,
+                contents: module.contents.url,
+                actions: module._id
+            })
+        })
+        return data;
+    }
+
 
     return (
         <>
@@ -198,7 +378,21 @@ const ModuleList = () => {
                     >
                         <Toolbar />
                         <Container maxWidth="lg" sx={{ mt: 4, mb: 4 }}>
-
+                            <div style={{ height: 'auto', width: '100%', marginTop: 100 }}>
+                                <Box textAlign="center" style={{ margin: 20 }}>
+                                    <Typography variant='h3' style={{ fontWeight: 1000 }}>List of Learning Modules</Typography>
+                                </Box>
+                                <DataGrid
+                                    rows={ModuleList().rows}
+                                    columns={ModuleList().columns}
+                                    initialState={{
+                                        pagination: {
+                                            paginationModel: { page: 0, pageSize: 10 },
+                                        },
+                                    }}
+                                    pageSizeOptions={[10, 20]}
+                                />
+                            </div>
                         </Container>
                     </Box>
                 </Box>

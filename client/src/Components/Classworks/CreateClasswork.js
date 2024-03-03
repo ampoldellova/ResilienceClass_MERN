@@ -85,6 +85,7 @@ const CustomizedDialogs = () => {
 
             setOpen(false)
             setSuccess(data.success);
+            window.location.reload();
         } catch (error) {
             setError(error.response.data.message)
         }

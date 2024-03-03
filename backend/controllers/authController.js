@@ -153,3 +153,18 @@ exports.getAllUsers = async (req, res, next) => {
         users
     })
 }
+
+exports.deleteUser = async (req, res, next) => {
+    const user = await User.findById(req.params.id);
+
+    if (!user) {
+        return res.status(401).json({ message: `User does not found with id: ${req.params.id}` })
+    }
+
+    const image_id = user.avatar.public_id;
+    await cloudinary.v2.uploader.destroy(image_id);
+    await User.findByIdAndRemove(req.params.id);
+    return res.status(200).json({
+        success: true,
+    })
+}

@@ -11,6 +11,8 @@ import axios from 'axios';
 import { Loader } from '../../Loader';
 import EditProfile from '../../User/EditProfile';
 import { DataGrid } from '@mui/x-data-grid';
+import EditIcon from '@mui/icons-material/Edit';
+import DeleteIcon from '@mui/icons-material/Delete';
 
 const drawerWidth = 240;
 
@@ -67,6 +69,7 @@ const AdminClassworkList = () => {
     const menuId = 'primary-search-account-menu';
     const [open, setOpen] = React.useState(true);
     const [profileaAnchorEl, setProfileAnchorEl] = React.useState(null);
+    const [isDeleted, setIsDeleted] = useState(false)
     const [loader, setLoader] = useState(true);
 
     const logoutUser = async () => {
@@ -97,6 +100,10 @@ const AdminClassworkList = () => {
         setProfileAnchorEl(null);
     };
 
+    const deleteClassworkHandler = (id) => {
+        deleteClasswork(id)
+    }
+
     const getAdminClassworks = async () => {
         setLoader(true)
         try {
@@ -119,6 +126,26 @@ const AdminClassworkList = () => {
         }
     }
 
+    const deleteClasswork = async (id) => {
+        setLoader(true)
+        try {
+            const config = {
+                headers: {
+                    'Content-Type': 'multipart/form-data',
+                    'Authorization': `Bearer ${getToken()}`
+                }
+            }
+            const { data } = await axios.delete(`http://localhost:4003/api/v1/admin/class/classwork/delete/${id}`, config)
+
+            setLoader(false)
+            setIsDeleted(data.success)
+            getAdminClassworks();
+            alert('Classwork Successfully Deleted!')
+        } catch (error) {
+            setLoader(false)
+            alert('Error Occurred')
+        }
+    }
 
     useEffect(() => {
         setUser(getUser());
@@ -128,19 +155,10 @@ const AdminClassworkList = () => {
     const ClassworkList = () => {
         const data = {
             columns: [
-                // {
-                //     headerName: 'Classwork ID',
-                //     field: 'id',
-                //     width: 250,
-                //     sort: 'asc',
-                //     align: 'center',
-                //     headerAlign: 'center'
-                // },
                 {
                     headerName: 'Classwork Title',
                     field: 'title',
                     width: 250,
-                    sort: 'asc',
                     align: 'center',
                     headerAlign: 'center'
                 },
@@ -148,15 +166,6 @@ const AdminClassworkList = () => {
                     headerName: 'Class Subject',
                     field: 'class',
                     width: 250,
-                    sort: 'asc',
-                    align: 'center',
-                    headerAlign: 'center'
-                },
-                {
-                    headerName: 'Teacher',
-                    field: 'teacher',
-                    width: 150,
-                    sort: 'asc',
                     align: 'center',
                     headerAlign: 'center'
                 },
@@ -164,7 +173,6 @@ const AdminClassworkList = () => {
                     headerName: 'Points',
                     field: 'points',
                     width: 150,
-                    sort: 'asc',
                     align: 'center',
                     headerAlign: 'center'
                 },
@@ -200,15 +208,15 @@ const AdminClassworkList = () => {
                             justifyContent: 'center',
                             alignItems: 'center'
                         }}>
-                            {/* <Link to={`/admin/brand/${value}`}>
-                                <Button
-                                    variant='contained'
-                                    sx={{
-                                        color: 'white'
-                                    }}>
-                                    <EditIcon />
-                                </Button>
-                            </Link>
+                            {/* <Link to={`/admin/brand/${value}`}> */}
+                            <Button
+                                variant='contained'
+                                sx={{
+                                    color: 'white'
+                                }}>
+                                <EditIcon />
+                            </Button>
+                            {/* </Link> */}
                             <Button
                                 variant='contained'
                                 sx={{
@@ -216,10 +224,10 @@ const AdminClassworkList = () => {
                                     backgroundColor: 'red',
                                     marginLeft: 1
                                 }}
-                                onClick={() => deletebrandHandler(value)}
+                                onClick={() => deleteClassworkHandler(value)}
                             >
                                 <DeleteIcon />
-                            </Button> */}
+                            </Button>
                         </Container>
                     ),
                 },
@@ -231,13 +239,10 @@ const AdminClassworkList = () => {
             data.rows.push({
                 id: classwork._id,
                 class: classwork.class.subject,
-                teacher: classwork.teacher.name,
                 title: classwork.title,
-                // attachments: classwork.attachments.url,
                 points: classwork.points,
                 deadline: classwork.deadline,
-                // coverPhoto: classroom.coverPhoto.url,
-                // actions: brand._id
+                actions: classwork._id
             })
         })
         return data;

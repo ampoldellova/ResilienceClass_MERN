@@ -29,7 +29,10 @@ exports.newClass = async (req, res, next) => {
 
 exports.getClassrooms = async (req, res, next) => {
 
-    const classrooms = await Class.find();
+    const classrooms = await Class.find().populate({
+        path: 'joinedUsers.user',
+        model: user
+    });
 
     res.status(200).json({
         success: true,
@@ -154,4 +157,19 @@ exports.joinClass = async (req, res, next) => {
         console.error(error);
         res.status(500).json({ message: "Internal Server Error." });
     }
+}
+
+exports.deleteClassroom = async (req, res, next) => {
+    const classroom = await Class.findByIdAndDelete(req.params.id);
+    if (!classroom) {
+        return res.status(404).json({
+            success: false,
+            message: 'Classroom not found'
+        })
+    }
+
+    res.status(200).json({
+        success: true,
+        message: 'Classroom deleted'
+    })
 }

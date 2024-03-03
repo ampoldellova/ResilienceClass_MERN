@@ -14,6 +14,8 @@ import { Loader } from '../../Loader';
 import EditProfile from '../../User/EditProfile';
 import LogoutIcon from '@mui/icons-material/Logout';
 import MainListItems from '../../listItems';
+import { profileHead } from '../../../utils/userAvatar';
+import { width } from '@mui/system';
 
 const drawerWidth = 240;
 
@@ -70,6 +72,7 @@ const ClassroomList = () => {
     const [loader, setLoader] = useState(true);
     const menuId = 'primary-search-account-menu';
     const [profileaAnchorEl, setProfileAnchorEl] = React.useState(null);
+    const [isDeleted, setIsDeleted] = useState(false)
     const navigate = useNavigate()
 
 
@@ -101,6 +104,10 @@ const ClassroomList = () => {
         setProfileAnchorEl(null);
     };
 
+    const deleteClassroomHandler = (id) => {
+        deleteClassroom(id)
+    }
+
     const getAdminClassrooms = async () => {
         setLoader(true)
         try {
@@ -123,6 +130,27 @@ const ClassroomList = () => {
         }
     }
 
+    const deleteClassroom = async (id) => {
+        setLoader(true)
+        try {
+            const config = {
+                headers: {
+                    'Content-Type': 'multipart/form-data',
+                    'Authorization': `Bearer ${getToken()}`
+                }
+            }
+            const { data } = await axios.delete(`http://localhost:4003/api/v1/admin/classroom/delete/${id}`, config)
+
+            setLoader(false)
+            setIsDeleted(data.success)
+            getAdminClassrooms()
+            alert('Classroom Successfully Deleted!')
+        } catch (error) {
+            setLoader(false)
+            alert('Error Occurred')
+        }
+    }
+
     useEffect(() => {
         setUser(getUser());
         getAdminClassrooms()
@@ -133,9 +161,25 @@ const ClassroomList = () => {
             columns: [
                 {
                     headerName: '',
-                    field: 'id',
+                    field: 'teacherImage',
                     width: 250,
-                    sort: 'asc',
+                    align: 'center',
+                    headerAlign: 'center',
+                    renderCell: ({ value }) => (
+                        <Container style={{
+                            display: 'flex',
+                            justifyContent: 'center',
+                            alignItems: 'center'
+                        }}>
+                            {/* <Avatar src={value} sx={{ height: 100, width: 100 }} /> */}
+                            {profileHead(value, '100px', '100px')}
+                        </Container>
+                    ),
+                },
+                {
+                    headerName: 'Teacher',
+                    field: 'classTeacher',
+                    width: 250,
                     align: 'center',
                     headerAlign: 'center'
                 },
@@ -143,7 +187,6 @@ const ClassroomList = () => {
                     headerName: 'Subject',
                     field: 'subject',
                     width: 250,
-                    sort: 'asc',
                     align: 'center',
                     headerAlign: 'center'
                 },
@@ -151,7 +194,6 @@ const ClassroomList = () => {
                     headerName: 'Classroom Code',
                     field: 'classCode',
                     width: 150,
-                    sort: 'asc',
                     align: 'center',
                     headerAlign: 'center'
                 },
@@ -159,7 +201,6 @@ const ClassroomList = () => {
                     headerName: 'Classroom Name',
                     field: 'className',
                     width: 150,
-                    sort: 'asc',
                     align: 'center',
                     headerAlign: 'center'
                 },
@@ -167,7 +208,6 @@ const ClassroomList = () => {
                     headerName: 'Section',
                     field: 'section',
                     width: 150,
-                    sort: 'asc',
                     align: 'center',
                     headerAlign: 'center'
                 },
@@ -175,11 +215,9 @@ const ClassroomList = () => {
                     headerName: 'Room Number',
                     field: 'roomNumber',
                     width: 150,
-                    sort: 'asc',
                     align: 'center',
                     headerAlign: 'center'
                 },
-
                 {
                     headerName: 'Actions',
                     field: 'actions',
@@ -191,15 +229,15 @@ const ClassroomList = () => {
                             justifyContent: 'center',
                             alignItems: 'center'
                         }}>
-                            {/* <Link to={`/admin/brand/${value}`}>
-                                <Button
-                                    variant='contained'
-                                    sx={{
-                                        color: 'white'
-                                    }}>
-                                    <EditIcon />
-                                </Button>
-                            </Link>
+                            {/* <Link to={`/admin/brand/${value}`}> */}
+                            <Button
+                                variant='contained'
+                                sx={{
+                                    color: 'white'
+                                }}>
+                                <EditIcon />
+                            </Button>
+                            {/* </Link> */}
                             <Button
                                 variant='contained'
                                 sx={{
@@ -207,10 +245,10 @@ const ClassroomList = () => {
                                     backgroundColor: 'red',
                                     marginLeft: 1
                                 }}
-                                onClick={() => deletebrandHandler(value)}
+                                onClick={() => deleteClassroomHandler(value)}
                             >
                                 <DeleteIcon />
-                            </Button> */}
+                            </Button>
                         </Container>
                     ),
                 },
@@ -221,13 +259,14 @@ const ClassroomList = () => {
         classrooms.forEach(classroom => {
             data.rows.push({
                 id: classroom._id,
+                teacherImage: classroom.joinedUsers.find(user => user.role === "teacher").user,
+                classTeacher: classroom.joinedUsers.find(user => user.role === "teacher").user.name,
                 className: classroom.className,
                 classCode: classroom.classCode,
                 section: classroom.section,
                 subject: classroom.subject,
                 roomNumber: classroom.roomNumber,
-                // coverPhoto: classroom.coverPhoto.url,
-                // actions: brand._id
+                actions: classroom._id
             })
         })
         return data;
@@ -340,12 +379,11 @@ const ClassroomList = () => {
                                             ? theme.palette.grey[100]
                                             : theme.palette.grey[900],
                                     flexGrow: 1,
-                                    height: '100vh',
                                     overflow: 'auto',
                                 }}
                             >
                                 <Container>
-                                    <div style={{ height: 'auto', width: '100%', marginTop: 100 }}>
+                                    <div style={{ width: '100%' }}>
                                         <Box textAlign="center" style={{ margin: 20 }}>
                                             <Typography variant='h3' style={{ fontWeight: 1000 }}>List of Classroom</Typography>
                                         </Box>
