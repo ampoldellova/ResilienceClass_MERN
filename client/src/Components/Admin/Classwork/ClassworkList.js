@@ -2,27 +2,15 @@ import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { styled, createTheme, ThemeProvider } from '@mui/material/styles';
 import { CardMedia, CardContent, Button, Grid, Paper, Menu, MenuItem, CssBaseline, Drawer as MuiDrawer, Box, AppBar as MuiAppBar, Toolbar, List, Typography, Divider, IconButton, Container, Avatar, TextField } from '@mui/material';
-import { Menu as MenuIcon, ChevronLeft as ChevronLeftIcon} from '@mui/icons-material';
-import MetaData from '../Layout/Metadata';
-import { getToken, getUser, isUserTeacher, logout } from '../../utils/helpers';
+import { Menu as MenuIcon, ChevronLeft as ChevronLeftIcon } from '@mui/icons-material';
+import MetaData from '../../Layout/Metadata';
+import { getToken, getUser, isUserTeacher, logout } from '../../../utils/helpers';
 import LogoutIcon from '@mui/icons-material/Logout';
-import MainListItems from '../listItems';
+import MainListItems from '../../listItems';
 import axios from 'axios';
-import {
-    MDBContainer,
-    MDBRow,
-    MDBCol,
-    MDBCard,
-    MDBCardBody,
-    MDBCardImage,
-    MDBIcon,
-    MDBRipple,
-    MDBBtn,
-} from "mdb-react-ui-kit";
-import CreateModule from './CreateModule';
-import { Loader } from '../Loader';
-import ModuleDetail from './ModuleDetail';
-import EditProfile from '../User/EditProfile';
+import { Loader } from '../../Loader';
+import EditProfile from '../../User/EditProfile';
+import { DataGrid } from '@mui/x-data-grid';
 
 const drawerWidth = 240;
 
@@ -72,11 +60,10 @@ const Drawer = styled(MuiDrawer, { shouldForwardProp: (prop) => prop !== 'open' 
 
 const defaultTheme = createTheme();
 
-const Modules = () => {
+const AdminClassworkList = () => {
     const navigate = useNavigate()
-    const [modules, setModules] = useState([]);
-    const [filteredModules, setFilteredModules] = useState([]);
     const [user, setUser] = useState('')
+    const [classworks, setClassworks] = useState([])
     const menuId = 'primary-search-account-menu';
     const [open, setOpen] = React.useState(true);
     const [profileaAnchorEl, setProfileAnchorEl] = React.useState(null);
@@ -110,46 +97,156 @@ const Modules = () => {
         setProfileAnchorEl(null);
     };
 
-    const getModules = async () => {
+    const getAdminClassworks = async () => {
         setLoader(true)
         try {
 
             const config = {
                 headers: {
+                    'Content-Type': 'multipart/form-data',
                     'Authorization': `Bearer ${getToken()}`
                 }
             }
 
-            const { data: { modules } } = await axios.get(`http://localhost:4003/api/v1/modules`, config)
+            const { data: { classworks } } = await axios.get(`http://localhost:4003/api/v1/admin/classworks`, config)
 
             setLoader(false)
-            setModules(modules)
-            setFilteredModules(modules)
+            console.log(classworks)
+            setClassworks(classworks)
         } catch (error) {
             setLoader(false)
             alert('Error Occurred')
         }
     }
 
-    const handleSearch = (e) => {
-        const keyword = e.target.value;
-        const regex = new RegExp(keyword, 'i');
-        const filteredModules = modules.filter(module => regex.test(module.title) ||
-            regex.test(module.language) ||
-            regex.test(module.description) ||
-            regex.test(module.creator.name));
-        setFilteredModules(filteredModules);
-    }
 
     useEffect(() => {
         setUser(getUser());
-        getModules();
+        getAdminClassworks();
     }, [])
+
+    const ClassworkList = () => {
+        const data = {
+            columns: [
+                // {
+                //     headerName: 'Classwork ID',
+                //     field: 'id',
+                //     width: 250,
+                //     sort: 'asc',
+                //     align: 'center',
+                //     headerAlign: 'center'
+                // },
+                {
+                    headerName: 'Classwork Title',
+                    field: 'title',
+                    width: 250,
+                    sort: 'asc',
+                    align: 'center',
+                    headerAlign: 'center'
+                },
+                {
+                    headerName: 'Class Subject',
+                    field: 'class',
+                    width: 250,
+                    sort: 'asc',
+                    align: 'center',
+                    headerAlign: 'center'
+                },
+                {
+                    headerName: 'Teacher',
+                    field: 'teacher',
+                    width: 150,
+                    sort: 'asc',
+                    align: 'center',
+                    headerAlign: 'center'
+                },
+                {
+                    headerName: 'Points',
+                    field: 'points',
+                    width: 150,
+                    sort: 'asc',
+                    align: 'center',
+                    headerAlign: 'center'
+                },
+                {
+                    headerName: 'Deadline',
+                    field: 'deadline',
+                    width: 250,
+                    align: 'center',
+                    headerAlign: 'center',
+                    renderCell: ({ value }) => (
+                        // console.log(value)
+                        <Container style={{
+                            display: 'flex',
+                            justifyContent: 'center',
+                            alignItems: 'center'
+                        }}>
+                            <Typography>
+                                {new Date(value).toLocaleDateString('en-PH', { month: 'long', day: '2-digit', year: 'numeric' }) +
+                                    ' at ' +
+                                    new Date(value).toLocaleTimeString('en-PH', { hour: '2-digit', minute: '2-digit' })}
+                            </Typography>
+                        </Container>
+                    ),
+                },
+                {
+                    headerName: 'Actions',
+                    field: 'actions',
+                    width: 300,
+                    headerAlign: 'center',
+                    renderCell: ({ value }) => (
+                        <Container style={{
+                            display: 'flex',
+                            justifyContent: 'center',
+                            alignItems: 'center'
+                        }}>
+                            {/* <Link to={`/admin/brand/${value}`}>
+                                <Button
+                                    variant='contained'
+                                    sx={{
+                                        color: 'white'
+                                    }}>
+                                    <EditIcon />
+                                </Button>
+                            </Link>
+                            <Button
+                                variant='contained'
+                                sx={{
+                                    color: 'white',
+                                    backgroundColor: 'red',
+                                    marginLeft: 1
+                                }}
+                                onClick={() => deletebrandHandler(value)}
+                            >
+                                <DeleteIcon />
+                            </Button> */}
+                        </Container>
+                    ),
+                },
+            ],
+            rows: []
+        }
+
+        classworks.forEach(classwork => {
+            data.rows.push({
+                id: classwork._id,
+                class: classwork.class.subject,
+                teacher: classwork.teacher.name,
+                title: classwork.title,
+                // attachments: classwork.attachments.url,
+                points: classwork.points,
+                deadline: classwork.deadline,
+                // coverPhoto: classroom.coverPhoto.url,
+                // actions: brand._id
+            })
+        })
+        return data;
+    }
 
     return (
         <>
             <ThemeProvider theme={defaultTheme}>
-                <MetaData title={'Learning Modules'} />
+                <MetaData title={'Classwork List'} />
                 <Loader open={loader} />
                 <Box sx={{ display: 'flex' }}>
                     <CssBaseline />
@@ -244,66 +341,21 @@ const Modules = () => {
                     >
                         <Toolbar />
                         <Container maxWidth="lg" sx={{ mt: 4, mb: 4 }}>
-                            <Container maxWidth="md">
-                                <Box sx={{ display: 'flex' }}>
-                                    <CreateModule getModules={getModules} />
-                                    <TextField
-                                        fullWidth
-                                        variant='outlined'
-                                        label='Search'
-                                        onChange={handleSearch}
-                                        size='small'
-                                        sx={{ ml: 2 }} />
+                            <div style={{ height: 'auto', width: '100%', marginTop: 100 }}>
+                                <Box textAlign="center" style={{ margin: 20 }}>
+                                    <Typography variant='h3' style={{ fontWeight: 1000 }}>List of Classworks</Typography>
                                 </Box>
-                            </Container>
-                            {filteredModules && filteredModules.map(module => {
-                                return <MDBContainer fluid>
-                                    <MDBRow className="justify-content-center mb-0">
-                                        <MDBCol md="12" xl="10">
-                                            <MDBCard className="shadow-0 border rounded-3 mt-2 mb-2">
-                                                <MDBCardBody>
-                                                    <MDBRow>
-                                                        <MDBCol md="12" lg="3" className="mb-4 mb-lg-0">
-                                                            <MDBRipple
-                                                                rippleColor="light"
-                                                                rippleTag="div"
-                                                                className="bg-image rounded hover-zoom hover-overlay"
-                                                            >
-                                                                <MDBCardImage
-                                                                    src={module.coverImage.url}
-                                                                    fluid
-                                                                    className="w-100"
-                                                                />
-                                                            </MDBRipple>
-                                                        </MDBCol>
-                                                        <MDBCol md="6">
-                                                            <h5>{module.title}</h5>
-                                                            <div className="mt-1 mb-0 text-muted small">
-                                                                <span>Created By: {module.creator.name}</span>
-                                                            </div>
-                                                            <div className="mt-1 mb-0 text-muted small">
-                                                                <span>Date Published: {new Date(module?.createdAt).toLocaleDateString('en-PH', { month: 'long', day: '2-digit', year: 'numeric' })}</span>
-                                                            </div>
-                                                            <div className="mt-1 mb-0 text-muted small">
-                                                                <span>Language: {module.language}</span>
-                                                            </div>
-                                                        </MDBCol>
-                                                        <MDBCol
-                                                            md="6"
-                                                            lg="3"
-                                                            className="border-sm-start-none border-start"
-                                                        >
-                                                            <div className="d-flex flex-column mt-4">
-                                                                <ModuleDetail moduleId={module._id} />
-                                                            </div>
-                                                        </MDBCol>
-                                                    </MDBRow>
-                                                </MDBCardBody>
-                                            </MDBCard>
-                                        </MDBCol>
-                                    </MDBRow>
-                                </MDBContainer>
-                            })}
+                                <DataGrid
+                                    rows={ClassworkList().rows}
+                                    columns={ClassworkList().columns}
+                                    initialState={{
+                                        pagination: {
+                                            paginationModel: { page: 0, pageSize: 10 },
+                                        },
+                                    }}
+                                    pageSizeOptions={[10, 20]}
+                                />
+                            </div>
                         </Container>
                     </Box>
                 </Box>
@@ -312,4 +364,4 @@ const Modules = () => {
     )
 }
 
-export default Modules;
+export default AdminClassworkList;

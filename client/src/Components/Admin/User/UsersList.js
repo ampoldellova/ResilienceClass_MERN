@@ -2,27 +2,14 @@ import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { styled, createTheme, ThemeProvider } from '@mui/material/styles';
 import { CardMedia, CardContent, Button, Grid, Paper, Menu, MenuItem, CssBaseline, Drawer as MuiDrawer, Box, AppBar as MuiAppBar, Toolbar, List, Typography, Divider, IconButton, Container, Avatar, TextField } from '@mui/material';
-import { Menu as MenuIcon, ChevronLeft as ChevronLeftIcon} from '@mui/icons-material';
-import MetaData from '../Layout/Metadata';
-import { getToken, getUser, isUserTeacher, logout } from '../../utils/helpers';
+import { Menu as MenuIcon, ChevronLeft as ChevronLeftIcon } from '@mui/icons-material';
+import MetaData from '../../Layout/Metadata';
+import { getToken, getUser, isUserTeacher, logout } from '../../../utils/helpers';
 import LogoutIcon from '@mui/icons-material/Logout';
-import MainListItems from '../listItems';
+import MainListItems from '../../listItems';
 import axios from 'axios';
-import {
-    MDBContainer,
-    MDBRow,
-    MDBCol,
-    MDBCard,
-    MDBCardBody,
-    MDBCardImage,
-    MDBIcon,
-    MDBRipple,
-    MDBBtn,
-} from "mdb-react-ui-kit";
-import CreateModule from './CreateModule';
-import { Loader } from '../Loader';
-import ModuleDetail from './ModuleDetail';
-import EditProfile from '../User/EditProfile';
+import { Loader } from '../../Loader';
+import EditProfile from '../../User/EditProfile';
 
 const drawerWidth = 240;
 
@@ -72,10 +59,8 @@ const Drawer = styled(MuiDrawer, { shouldForwardProp: (prop) => prop !== 'open' 
 
 const defaultTheme = createTheme();
 
-const Modules = () => {
+const UserList = () => {
     const navigate = useNavigate()
-    const [modules, setModules] = useState([]);
-    const [filteredModules, setFilteredModules] = useState([]);
     const [user, setUser] = useState('')
     const menuId = 'primary-search-account-menu';
     const [open, setOpen] = React.useState(true);
@@ -110,46 +95,15 @@ const Modules = () => {
         setProfileAnchorEl(null);
     };
 
-    const getModules = async () => {
-        setLoader(true)
-        try {
-
-            const config = {
-                headers: {
-                    'Authorization': `Bearer ${getToken()}`
-                }
-            }
-
-            const { data: { modules } } = await axios.get(`http://localhost:4003/api/v1/modules`, config)
-
-            setLoader(false)
-            setModules(modules)
-            setFilteredModules(modules)
-        } catch (error) {
-            setLoader(false)
-            alert('Error Occurred')
-        }
-    }
-
-    const handleSearch = (e) => {
-        const keyword = e.target.value;
-        const regex = new RegExp(keyword, 'i');
-        const filteredModules = modules.filter(module => regex.test(module.title) ||
-            regex.test(module.language) ||
-            regex.test(module.description) ||
-            regex.test(module.creator.name));
-        setFilteredModules(filteredModules);
-    }
 
     useEffect(() => {
         setUser(getUser());
-        getModules();
     }, [])
 
     return (
         <>
             <ThemeProvider theme={defaultTheme}>
-                <MetaData title={'Learning Modules'} />
+                <MetaData title={'User List'} />
                 <Loader open={loader} />
                 <Box sx={{ display: 'flex' }}>
                     <CssBaseline />
@@ -244,66 +198,7 @@ const Modules = () => {
                     >
                         <Toolbar />
                         <Container maxWidth="lg" sx={{ mt: 4, mb: 4 }}>
-                            <Container maxWidth="md">
-                                <Box sx={{ display: 'flex' }}>
-                                    <CreateModule getModules={getModules} />
-                                    <TextField
-                                        fullWidth
-                                        variant='outlined'
-                                        label='Search'
-                                        onChange={handleSearch}
-                                        size='small'
-                                        sx={{ ml: 2 }} />
-                                </Box>
-                            </Container>
-                            {filteredModules && filteredModules.map(module => {
-                                return <MDBContainer fluid>
-                                    <MDBRow className="justify-content-center mb-0">
-                                        <MDBCol md="12" xl="10">
-                                            <MDBCard className="shadow-0 border rounded-3 mt-2 mb-2">
-                                                <MDBCardBody>
-                                                    <MDBRow>
-                                                        <MDBCol md="12" lg="3" className="mb-4 mb-lg-0">
-                                                            <MDBRipple
-                                                                rippleColor="light"
-                                                                rippleTag="div"
-                                                                className="bg-image rounded hover-zoom hover-overlay"
-                                                            >
-                                                                <MDBCardImage
-                                                                    src={module.coverImage.url}
-                                                                    fluid
-                                                                    className="w-100"
-                                                                />
-                                                            </MDBRipple>
-                                                        </MDBCol>
-                                                        <MDBCol md="6">
-                                                            <h5>{module.title}</h5>
-                                                            <div className="mt-1 mb-0 text-muted small">
-                                                                <span>Created By: {module.creator.name}</span>
-                                                            </div>
-                                                            <div className="mt-1 mb-0 text-muted small">
-                                                                <span>Date Published: {new Date(module?.createdAt).toLocaleDateString('en-PH', { month: 'long', day: '2-digit', year: 'numeric' })}</span>
-                                                            </div>
-                                                            <div className="mt-1 mb-0 text-muted small">
-                                                                <span>Language: {module.language}</span>
-                                                            </div>
-                                                        </MDBCol>
-                                                        <MDBCol
-                                                            md="6"
-                                                            lg="3"
-                                                            className="border-sm-start-none border-start"
-                                                        >
-                                                            <div className="d-flex flex-column mt-4">
-                                                                <ModuleDetail moduleId={module._id} />
-                                                            </div>
-                                                        </MDBCol>
-                                                    </MDBRow>
-                                                </MDBCardBody>
-                                            </MDBCard>
-                                        </MDBCol>
-                                    </MDBRow>
-                                </MDBContainer>
-                            })}
+
                         </Container>
                     </Box>
                 </Box>
@@ -312,4 +207,4 @@ const Modules = () => {
     )
 }
 
-export default Modules;
+export default UserList;

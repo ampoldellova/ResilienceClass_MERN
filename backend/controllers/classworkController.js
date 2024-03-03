@@ -306,3 +306,21 @@ exports.returnClasswork = async (req, res, next) => {
         });
     }
 }
+
+exports.getAllClassworks = async (req, res, next) => {
+    const classworks = await Classwork.find().populate({
+        path: 'teacher',
+        model: user
+    }).populate({
+        path: 'submissions.user',
+        model: user
+    }).populate({
+        path: 'class',
+        model: Class
+    })
+
+    res.status(200).json({
+        success: true,
+        classworks: classworks
+    })
+}

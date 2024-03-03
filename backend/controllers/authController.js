@@ -145,3 +145,11 @@ exports.forgotPassword = async (req, res, next) => {
         return res.status(500).json({ error: error.message })
     }
 }
+
+exports.getAllUsers = async (req, res, next) => {
+    const users = await User.find();
+    res.status(200).json({
+        success: true,
+        users
+    })
+}

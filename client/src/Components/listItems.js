@@ -58,7 +58,7 @@ const MainListItems = () => {
                             </ListItemButton>
                         </List>
                         <List component="div" disablePadding>
-                            <ListItemButton sx={{ pl: 4 }}>
+                            <ListItemButton sx={{ pl: 4 }} component={Link} to="/admin/classworks">
                                 <ListItemIcon>
                                     <AssignmentIcon />
                                 </ListItemIcon>
@@ -66,7 +66,7 @@ const MainListItems = () => {
                             </ListItemButton>
                         </List>
                         <List component="div" disablePadding>
-                            <ListItemButton sx={{ pl: 4 }}>
+                            <ListItemButton sx={{ pl: 4 }} component={Link} to="/admin/modules">
                                 <ListItemIcon>
                                     <ViewModuleIcon />
                                 </ListItemIcon>
@@ -74,7 +74,7 @@ const MainListItems = () => {
                             </ListItemButton>
                         </List>
                         <List component="div" disablePadding>
-                            <ListItemButton sx={{ pl: 4 }}>
+                            <ListItemButton sx={{ pl: 4 }} component={Link} to="/admin/users">
                                 <ListItemIcon>
                                     <GroupIcon />
                                 </ListItemIcon>
