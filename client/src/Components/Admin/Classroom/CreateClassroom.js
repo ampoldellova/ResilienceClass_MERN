@@ -86,7 +86,7 @@ const CreateClassroom = ({ getAdminClassrooms }) => {
         <React.Fragment>
             {/* <Loader open={loader} /> */}
             <Button variant="outlined" onClick={handleClickOpen} startIcon={<AddIcon />}>
-                Create a Classroom
+                Add a Classroom
             </Button>
             <Dialog
                 open={open}

@@ -122,7 +122,7 @@ const CreateAdminModule = ({ getAdminModules }) => {
         <React.Fragment>
             <Box sx={{ display: 'flex', justifyContent: 'center' }}>
                 <Button variant="outlined" onClick={handleClickOpen} startIcon={<AddIcon />}>
-                    Create a Module
+                    Add a Learning Module
                 </Button>
             </Box>
             <Dialog

@@ -13,6 +13,8 @@ import EditProfile from '../../User/EditProfile';
 import EditIcon from '@mui/icons-material/Edit';
 import DeleteIcon from '@mui/icons-material/Delete';
 import { DataGrid } from '@mui/x-data-grid';
+import CreateUser from './CreateUser';
+import UpdateUser from './UpdateUser';
 
 const drawerWidth = 240;
 
@@ -203,14 +205,12 @@ const UserList = () => {
                             alignItems: 'center'
                         }}>
                             {/* <Link to={`/admin/brand/${value}`}> */}
-                            <Button
-                                variant='contained'
-                                sx={{
-                                    color: 'white'
-                                }}>
+                            {/* <Button
+                                variant='contained'>
                                 <EditIcon />
-                            </Button>
+                            </Button> */}
                             {/* </Link> */}
+                            <UpdateUser userId={value} getAllUsers={getAllUsers} />
                             <Button
                                 variant='contained'
                                 sx={{
@@ -245,7 +245,7 @@ const UserList = () => {
     return (
         <>
             <ThemeProvider theme={defaultTheme}>
-                <MetaData title={'User List'} />
+                <MetaData title={'List of Users'} />
                 <Loader open={loader} />
                 <Box sx={{ display: 'flex' }}>
                     <CssBaseline />
@@ -343,6 +343,7 @@ const UserList = () => {
                             <div style={{ width: '100%' }}>
                                 <Box textAlign="center" style={{ margin: 20 }}>
                                     <Typography variant='h3' style={{ fontWeight: 1000 }}>List of Users</Typography>
+                                    <CreateUser getAllUsers={getAllUsers} />
                                 </Box>
                                 <DataGrid
                                     rows={UserList().rows}

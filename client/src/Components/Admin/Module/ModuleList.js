@@ -287,7 +287,7 @@ const ModuleList = () => {
     return (
         <>
             <ThemeProvider theme={defaultTheme}>
-                <MetaData title={'Module List'} />
+                <MetaData title={'List of Learning Modules'} />
                 <Loader open={loader} />
                 <Box sx={{ display: 'flex' }}>
                     <CssBaseline />

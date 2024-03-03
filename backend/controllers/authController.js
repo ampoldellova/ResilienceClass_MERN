@@ -79,7 +79,7 @@ exports.updateProfile = async (req, res, next) => {
 
         // const image_id = user.avatar.public_id;
         const result = await cloudinary.v2.uploader.upload(req.body.avatar, {
-            folder: 'avatars',
+            folder: 'ResilienceClass/Avatars',
             width: 150,
             crop: "scale"
         });
@@ -166,5 +166,52 @@ exports.deleteUser = async (req, res, next) => {
     await User.findByIdAndRemove(req.params.id);
     return res.status(200).json({
         success: true,
+    })
+}
+
+exports.updateUser = async (req, res, next) => {
+    const newUserData = {
+        name: req.body.name,
+        email: req.body.email,
+        role: req.body.role
+    }
+
+    if (req.body.avatar !== '') {
+        const user = await User.findById(req.body.id);
+
+        // const image_id = user.avatar.public_id;
+        const result = await cloudinary.v2.uploader.upload(req.body.avatar, {
+            folder: 'ResilienceClass/Avatars',
+            width: 150,
+            crop: "scale"
+        });
+
+        newUserData.avatar = {
+            public_id: result.public_id,
+            url: result.secure_url
+        };
+    }
+
+    const user = await User.findByIdAndUpdate(req.params.id, newUserData, {
+        new: true,
+        runValidators: true,
+    })
+
+    return res.status(200).json({
+        success: true,
+        user: user
+    })
+}
+
+exports.getUserDetails = async (req, res, next) => {
+    const user = await User.findById(req.params.id);
+
+    if (!user) {
+        return res.status(400).json({ message: `User does not found with id: ${req.params.id}` })
+    }
+
+    res.status(200).json({
+        success: true,
+        user
     })
 }
