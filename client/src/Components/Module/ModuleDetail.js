@@ -58,10 +58,25 @@ const ModuleDetail = ({ moduleId }) => {
         }
     }
 
-    // useEffect(() => {
-    //     moduleDetails(moduleId);
-    // }, [])
-
+    const disablePrintAndSave = () => {
+        // Wait for iframe content to load, then apply script to disable print and save
+        window.disablePrintAndSave = function () {
+            const iframe = document.querySelector('iframe[title="contents"]');
+            const iframeWindow = iframe.contentWindow;
+            iframeWindow.print = function () {
+                alert("Printing is disabled for this content.");
+            };
+            iframeWindow.document.addEventListener('contextmenu', function (e) {
+                e.preventDefault();
+            });
+            iframeWindow.document.addEventListener('keydown', function (e) {
+                if ((e.ctrlKey || e.metaKey) && e.keyCode === 83) { // Ctrl + S
+                    e.preventDefault();
+                    alert("Saving is disabled for this content.");
+                }
+            });
+        };
+    }
 
     return (
         <React.Fragment>
@@ -118,6 +133,8 @@ const ModuleDetail = ({ moduleId }) => {
                                 height="800"
                                 controls
                                 src={module?.contents?.url}
+                                sandbox="allow-scripts allow-same-origin"
+                                onLoad={disablePrintAndSave()}
                             />
                         </Grid>
                     </Grid>

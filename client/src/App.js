@@ -12,7 +12,6 @@ import Modules from './Components/Module/Modules';
 import ClassroomList from './Components/Admin/Classroom/ClassroomList';
 import UserList from './Components/Admin/User/UsersList';
 import ModuleList from './Components/Admin/Module/ModuleList';
-import AdminClassworkList from './Components/Admin/Classwork/ClassworkList';
 import AnalyticsBoard from './Components/Admin/Analytics/AnalyticsBoard';
 
 function App() {
@@ -30,7 +29,6 @@ function App() {
 
           <Route path="/modules" element={<ProtectedRoute><Modules /></ProtectedRoute>} exact />
           <Route path="/admin/classrooms" element={<ProtectedRoute><ClassroomList /></ProtectedRoute>} exact />
-          <Route path="/admin/classworks" element={<ProtectedRoute><AdminClassworkList /></ProtectedRoute>} exact />
           <Route path="/admin/users" element={<ProtectedRoute><UserList /></ProtectedRoute>} exact />
           <Route path="/admin/modules" element={<ProtectedRoute><ModuleList /></ProtectedRoute>} exact />
           <Route path="/admin/dashboard" element={<ProtectedRoute><AnalyticsBoard /></ProtectedRoute>} exact />

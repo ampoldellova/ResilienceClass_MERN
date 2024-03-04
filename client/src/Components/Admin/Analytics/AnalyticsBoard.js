@@ -2,7 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { styled, createTheme, ThemeProvider } from '@mui/material/styles';
 import { CardMedia, CardContent, Button, Grid, Paper, Menu, MenuItem, CssBaseline, Drawer as MuiDrawer, Box, AppBar as MuiAppBar, Toolbar, List, Typography, Divider, IconButton, Container, Avatar, TextField } from '@mui/material';
-import { Menu as MenuIcon, ChevronLeft as ChevronLeftIcon } from '@mui/icons-material';
+import { Menu as MenuIcon, ChevronLeft as ChevronLeftIcon, Title } from '@mui/icons-material';
 import MetaData from '../../Layout/Metadata';
 // import { getToken, getUser, isUserTeacher, logout } from '../../utils/helpers';
 import { getToken, getUser, logout } from '../../../utils/helpers';
@@ -11,10 +11,9 @@ import MainListItems from '../../listItems';
 
 import { Loader } from '../../Loader';
 import EditProfile from '../../User/EditProfile';
-import Chart from './Chart';
-import Deposits from './Deposits';
-import Orders from './Orders';
-import axios, { Axios } from 'axios';
+import { BarChart, Bar, LineChart, Line, XAxis, YAxis, CartesianGrid, Tooltip, Legend, ResponsiveContainer } from 'recharts';
+
+import axios from 'axios';
 
 const drawerWidth = 240;
 
@@ -66,13 +65,13 @@ const defaultTheme = createTheme();
 
 const AnalyticsBoard = () => {
     const navigate = useNavigate()
-    const [AnalyticsBoard, setAnalyticsBoard] = useState([]);
-    const [filteredAnalyticsBoard, setFilteredAnalyticsBoard] = useState([]);
     const [user, setUser] = useState('')
     const menuId = 'primary-search-account-menu';
     const [open, setOpen] = React.useState(true);
     const [profileaAnchorEl, setProfileAnchorEl] = React.useState(null);
     const [loader, setLoader] = useState(true);
+    const [data, setData] = useState([]);
+    const [attendanceData, setAttendanceData] = useState([]);
 
     const logoutUser = async () => {
         try {
@@ -102,40 +101,33 @@ const AnalyticsBoard = () => {
         setProfileAnchorEl(null);
     };
 
-    const getAnalyticsBoard = async () => {
-        setLoader(true)
-        try {
 
-            const config = {
-                headers: {
-                    'Authorization': `Bearer ${getToken()}`
-                }
-            }
-
-            const { data: { AnalyticsBoard } } = await axios.get(`http://localhost:4003/api/v1/AnalyticsBoard`, config)
-
-            setLoader(false)
-            setAnalyticsBoard(AnalyticsBoard)
-            setFilteredAnalyticsBoard(AnalyticsBoard)
-        } catch (error) {
-            setLoader(false)
-            alert('Error Occurred')
-        }
-    }
-
-    const handleSearch = (e) => {
-        const keyword = e.target.value;
-        const regex = new RegExp(keyword, 'i');
-        const filteredAnalyticsBoard = AnalyticsBoard.filter(module => regex.test(module.title) ||
-            regex.test(module.language) ||
-            regex.test(module.description) ||
-            regex.test(module.creator.name));
-        setFilteredAnalyticsBoard(filteredAnalyticsBoard);
-    }
 
     useEffect(() => {
         setUser(getUser());
-        getAnalyticsBoard();
+        const fetchData = async () => {
+            try {
+                const res = await axios.get('http://localhost:4003/api/v1/admin/userRegistrations');
+                setData(res.data);
+                setLoader(false);
+            } catch (err) {
+                console.error(err);
+                setLoader(false);
+            }
+        };
+
+        const fetchAttendance = async () => {
+            try {
+                const response = await axios.get('http://localhost:4003/api/v1/admin/classrooms/attendance-analysis');
+                setAttendanceData(response.data.attendanceAnalysis);
+            } catch (error) {
+                console.error('Error fetching data:', error);
+            }
+        };
+
+
+        fetchData();
+        fetchAttendance();
     }, [])
 
     return (
@@ -237,8 +229,10 @@ const AnalyticsBoard = () => {
                         <Toolbar />
                         <Container maxWidth="lg" sx={{ mt: 4, mb: 4 }}>
                             <Grid container spacing={3}>
-                                {/* Chart */}
                                 <Grid item xs={12} md={8} lg={9}>
+                                    <Typography component="h2" variant="h6" color="primary" gutterBottom>
+                                        Attendance Rate
+                                    </Typography>
                                     <Paper
                                         sx={{
                                             p: 2,
@@ -247,11 +241,24 @@ const AnalyticsBoard = () => {
                                             height: 240,
                                         }}
                                     >
-                                        <Chart />
+                                        <ResponsiveContainer width="100%" height={220}>
+                                            <BarChart data={attendanceData}>
+                                                <CartesianGrid strokeDasharray="3 3" />
+                                                <XAxis dataKey="className" />
+                                                <YAxis />
+                                                <Tooltip />
+                                                <Legend />
+                                                <Bar dataKey="attendanceRate" fill="#8884d8" />
+                                            </BarChart>
+                                        </ResponsiveContainer>
+
                                     </Paper>
                                 </Grid>
-                                {/* Recent Deposits */}
+
                                 <Grid item xs={12} md={4} lg={3}>
+                                    <Typography component="h2" variant="h6" color="primary" gutterBottom>
+                                        Registration Count
+                                    </Typography>
                                     <Paper
                                         sx={{
                                             p: 2,
@@ -260,16 +267,28 @@ const AnalyticsBoard = () => {
                                             height: 240,
                                         }}
                                     >
-                                        <Deposits />
+
                                     </Paper>
                                 </Grid>
-                                {/* Recent Orders */}
                                 <Grid item xs={12}>
+                                    <Typography component="h2" variant="h6" color="primary" gutterBottom>
+                                        Registration Count
+                                    </Typography>
                                     <Paper sx={{ p: 2, display: 'flex', flexDirection: 'column' }}>
-                                        <Orders />
+                                        <ResponsiveContainer width="100%" height={220}>
+                                            <LineChart data={data} margin={{ top: 20, right: 30, left: 20, bottom: 5 }}>
+                                                <CartesianGrid strokeDasharray="3 3" />
+                                                <XAxis dataKey="date" />
+                                                <YAxis />
+                                                <Tooltip />
+                                                <Legend />
+                                                <Line type="monotone" dataKey="count" stroke="#8884d8" activeDot={{ r: 8 }} />
+                                            </LineChart>
+                                        </ResponsiveContainer>
                                     </Paper>
                                 </Grid>
                             </Grid>
+
                         </Container>
                     </Box>
                 </Box>

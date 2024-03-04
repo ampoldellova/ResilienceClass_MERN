@@ -105,9 +105,9 @@ const ClassroomList = () => {
         setProfileAnchorEl(null);
     };
 
-    const deleteClassroomHandler = (id) => {
-        deleteClassroom(id)
-    }
+    // const deleteClassroomHandler = (id) => {
+    //     deleteClassroom(id)
+    // }
 
     const getAdminClassrooms = async () => {
         setLoader(true)
@@ -131,26 +131,26 @@ const ClassroomList = () => {
         }
     }
 
-    const deleteClassroom = async (id) => {
-        setLoader(true)
-        try {
-            const config = {
-                headers: {
-                    'Content-Type': 'multipart/form-data',
-                    'Authorization': `Bearer ${getToken()}`
-                }
-            }
-            const { data } = await axios.delete(`http://localhost:4003/api/v1/admin/classroom/delete/${id}`, config)
+    // const deleteClassroom = async (id) => {
+    //     setLoader(true)
+    //     try {
+    //         const config = {
+    //             headers: {
+    //                 'Content-Type': 'multipart/form-data',
+    //                 'Authorization': `Bearer ${getToken()}`
+    //             }
+    //         }
+    //         const { data } = await axios.delete(`http://localhost:4003/api/v1/admin/classroom/delete/${id}`, config)
 
-            setLoader(false)
-            setIsDeleted(data.success)
-            getAdminClassrooms()
-            alert('Classroom Successfully Deleted!')
-        } catch (error) {
-            setLoader(false)
-            alert('Error Occurred')
-        }
-    }
+    //         setLoader(false)
+    //         setIsDeleted(data.success)
+    //         getAdminClassrooms()
+    //         alert('Classroom Successfully Deleted!')
+    //     } catch (error) {
+    //         setLoader(false)
+    //         alert('Error Occurred')
+    //     }
+    // }
 
     useEffect(() => {
         setUser(getUser());
@@ -238,7 +238,7 @@ const ClassroomList = () => {
                                 <EditIcon />
                             </Button>
                             {/* </Link> */}
-                            <Button
+                            {/* <Button
                                 variant='contained'
                                 sx={{
                                     color: 'white',
@@ -248,7 +248,7 @@ const ClassroomList = () => {
                                 onClick={() => deleteClassroomHandler(value)}
                             >
                                 <DeleteIcon />
-                            </Button>
+                            </Button> */}
                         </Container>
                     ),
                 },

@@ -37,6 +37,7 @@ const ClassMembers = ({ classroom }) => {
     }
 
     const handleClickOpen = () => {
+        // console.log(classroom._id)
         getClassMembers(classroom._id);
         setOpen(true);
     };
@@ -77,15 +78,15 @@ const ClassMembers = ({ classroom }) => {
                     {classMembers && classMembers?.map(member => {
                         return <>
                             <Box sx={{ display: 'flex', alignItems: 'center', my: 2 }}>
-                                <Avatar src={member.user.avatar.url} sx={{ height: 50, width: 50 }} />
+                                <Avatar src={member?.user?.avatar?.url} sx={{ height: 50, width: 50 }} />
                                 <div style={{ marginLeft: '10px' }}>
                                     <Typography variant='h6' sx={{ fontWeight: 1 }}>
-                                        {member.user.name}
+                                        {member?.user?.name}
                                         <Badge
                                             sx={{ marginLeft: 4 }}
 
                                             badgeContent={member.role}
-                                            color={member.role === 'student' ? 'primary' : 'secondary'}
+                                            color={member?.role === 'student' ? 'primary' : 'secondary'}
                                         />
                                     </Typography>
                                 </div>

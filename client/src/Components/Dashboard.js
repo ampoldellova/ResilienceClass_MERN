@@ -93,6 +93,30 @@ const Dashboard = () => {
     const [classroom, setClassroom] = useState([]);
     const [loader, setLoader] = useState(true);
 
+    const classes = [
+        'BETAT-T',
+        'BETChT-T',
+        'BETCT-T',
+        'BETET-T',
+        'BETEMT-T',
+        'BETElxT-T',
+        'BETInCT-T',
+        'BETMT-T',
+        'BETNDTT-T',
+        'BETDMT-T',
+        'BETHVAC/RT-T',
+        'BSCESEP-T',
+        'BSEESEP-T',
+        'BSMESEP-T',
+        'BSIT-T',
+        'BSIS-T',
+        'BSESSDP-T',
+        'BGTAT-T',
+        'BTVTEdET-T',
+        'BTVTEdElxT-T',
+        'BTVTEdICT-T'
+    ]
+
     const toggle = () => {
         setModal(!modal);
         setJoinModal(false);
@@ -410,7 +434,12 @@ const Dashboard = () => {
                                     onChange={formik.handleChange}
                                     error={formik.touched.className && Boolean(formik.errors.className)}
                                     helperText={formik.touched.className && formik.errors.className}
-                                />
+                                    select
+                                >
+                                    {classes.map(classroom => (
+                                        <MenuItem key={classroom} value={classroom} >{classroom}</MenuItem >
+                                    ))}
+                                </TextField>
                             </Grid>
                             <Grid item xs={12} sm={6}>
                                 <TextField

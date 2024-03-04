@@ -147,11 +147,18 @@ exports.forgotPassword = async (req, res, next) => {
 }
 
 exports.getAllUsers = async (req, res, next) => {
-    const users = await User.find();
-    res.status(200).json({
-        success: true,
-        users
-    })
+    try {
+        const users = await User.find();
+        res.status(200).json({
+            success: true,
+            users
+        });
+    } catch (error) {
+        res.status(500).json({
+            success: false,
+            error: error.message
+        });
+    }
 }
 
 exports.deleteUser = async (req, res, next) => {
@@ -215,3 +222,4 @@ exports.getUserDetails = async (req, res, next) => {
         user
     })
 }
+

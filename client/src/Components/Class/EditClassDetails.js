@@ -2,7 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { Modal, ModalHeader, ModalBody } from 'reactstrap';
 import { useParams } from 'react-router-dom'
 import { getUser } from '../../utils/helpers';
-import { Button, Box, Grid, TextField, InputLabel } from '@mui/material';
+import { Button, Box, Grid, TextField, InputLabel, MenuItem } from '@mui/material';
 import { getToken } from '../../utils/helpers';
 import * as Yup from 'yup';
 import { useFormik } from 'formik';
@@ -22,6 +22,30 @@ const EditClassDetails = () => {
     const [success, setSuccess] = useState('')
     const [error, setError] = useState('');
     const [user, setUser] = useState('')
+
+    const classes = [
+        'BETAT-T',
+        'BETChT-T',
+        'BETCT-T',
+        'BETET-T',
+        'BETEMT-T',
+        'BETElxT-T',
+        'BETInCT-T',
+        'BETMT-T',
+        'BETNDTT-T',
+        'BETDMT-T',
+        'BETHVAC/RT-T',
+        'BSCESEP-T',
+        'BSEESEP-T',
+        'BSMESEP-T',
+        'BSIT-T',
+        'BSIS-T',
+        'BSESSDP-T',
+        'BGTAT-T',
+        'BTVTEdET-T',
+        'BTVTEdElxT-T',
+        'BTVTEdICT-T'
+    ]
 
     const toggle = () => setModal(!modal);
 
@@ -115,7 +139,12 @@ const EditClassDetails = () => {
                                     onChange={updateClassFormik.handleChange}
                                     error={updateClassFormik.touched.className && Boolean(updateClassFormik.errors.className)}
                                     helperText={updateClassFormik.touched.className && updateClassFormik.errors.className}
-                                />
+                                    select
+                                >
+                                    {classes.map(classroom => (
+                                        <MenuItem key={classroom} value={classroom} >{classroom}</MenuItem >
+                                    ))}
+                                </TextField>
                             </Grid>
                             <Grid item xs={12} sm={6}>
                                 <TextField
