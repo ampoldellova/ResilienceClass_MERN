@@ -28,6 +28,10 @@ const moduleSchema = new mongoose.Schema({
         type: String,
         required: true
     },
+    category: {
+        type: String,
+        required: true
+    },
     contents: {
         public_id: {
             type: String

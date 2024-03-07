@@ -137,7 +137,8 @@ const Modules = () => {
         const filteredModules = modules.filter(module => regex.test(module.title) ||
             regex.test(module.language) ||
             regex.test(module.description) ||
-            regex.test(module.creator.name));
+            regex.test(module.creator.name) ||
+            regex.test(module.category));
         setFilteredModules(filteredModules);
     }
 

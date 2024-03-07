@@ -88,3 +88,20 @@ exports.deleteModule = async (req, res, next) => {
         message: 'Learning Module deleted'
     })
 }
+
+exports.moduleAnalytics = async (req, res, next) => {
+    try {
+        const modules = await Module.find();
+
+        // Calculate the count of modules per category
+        const modulesPerCategory = modules.reduce((acc, module) => {
+            acc[module.category] = (acc[module.category] || 0) + 1;
+            return acc;
+        }, {});
+
+        res.status(200).json({ modulesPerCategory });
+    } catch (error) {
+        console.error(error);
+        res.status(500).json({ message: 'Internal server error' });
+    }
+};

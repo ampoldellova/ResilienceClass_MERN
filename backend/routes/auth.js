@@ -2,6 +2,7 @@ const express = require('express');
 const router = express.Router();
 const upload = require("../utils/multer");
 const User = require('../models/user');
+const LoginActivity = require('../models/loginActivity');
 
 const { registerUser, loginUser, forgotPassword, logout, getUserProfile, updateProfile, getAllUsers, deleteUser, getUserDetails, updateUser } = require('../controllers/authController');
 const { isAuthenticatedUser, authorizeRoles } = require('../middlewares/auth');
@@ -53,6 +54,25 @@ router.get('/admin/userRegistrations', async (req, res) => {
     } catch (err) {
         console.error(err);
         res.status(500).send('Server Error');
+    }
+});
+router.get('/admin/user-activity', async (req, res) => {
+    try {
+        // Query the database to get user login activity data
+        const activity = await LoginActivity.aggregate([
+            {
+                $group: {
+                    _id: { $dateToString: { format: '%Y-%m-%d', date: '$createdAt' } },
+                    logins: { $sum: 1 }
+                }
+            },
+            { $sort: { _id: 1 } }
+        ]);
+
+        res.status(200).json({ activity });
+    } catch (error) {
+        console.error(error);
+        res.status(500).json({ message: 'Internal server error' });
     }
 });
 

@@ -3,6 +3,7 @@ const sendToken = require('../utils/jwtToken');
 const cloudinary = require('cloudinary')
 const crypto = require('crypto')
 const sendEmail = require('../utils/sendEmail')
+const LoginActivity = require('../models/loginActivity');
 
 exports.registerUser = async (req, res, next) => {
     if (req.file) {
@@ -56,6 +57,7 @@ exports.loginUser = async (req, res, next) => {
     }
 
     sendToken(user, 200, res)
+    await LoginActivity.create({ user: user._id });
 }
 
 exports.getUserProfile = async (req, res, next) => {

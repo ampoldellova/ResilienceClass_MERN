@@ -122,6 +122,7 @@ const ModuleDetail = ({ moduleId }) => {
                                     <Typography variant='body2' >Created By: {module?.creator?.name}</Typography>
                                     <Typography variant='body2' >Date Published: {new Date(module?.createdAt).toLocaleDateString('en-PH', { month: 'long', day: '2-digit', year: 'numeric' })}</Typography>
                                     <Typography variant='body2' >Language: {module?.language}</Typography>
+                                    <Typography variant='body2' >Category: {module?.category}</Typography>
                                 </div>
                             </div>
                             <Typography variant='subtitle1' sx={{ mt: 5 }}>{module?.description}</Typography>

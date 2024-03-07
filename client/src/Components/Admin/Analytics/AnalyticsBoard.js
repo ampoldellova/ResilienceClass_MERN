@@ -11,7 +11,7 @@ import MainListItems from '../../listItems';
 
 import { Loader } from '../../Loader';
 import EditProfile from '../../User/EditProfile';
-import { BarChart, Bar, LineChart, Line, XAxis, YAxis, CartesianGrid, Tooltip, Legend, ResponsiveContainer } from 'recharts';
+import { PieChart, Pie, BarChart, Bar, LineChart, Line, XAxis, YAxis, CartesianGrid, Tooltip, Legend, ResponsiveContainer } from 'recharts';
 
 import axios from 'axios';
 
@@ -72,6 +72,8 @@ const AnalyticsBoard = () => {
     const [loader, setLoader] = useState(true);
     const [data, setData] = useState([]);
     const [attendanceData, setAttendanceData] = useState([]);
+    const [activityData, setActivityData] = useState([]);
+    const [categoryDistribution, setCategoryDistribution] = useState([]);
 
     const logoutUser = async () => {
         try {
@@ -125,9 +127,29 @@ const AnalyticsBoard = () => {
             }
         };
 
+        const fetchLoginActivity = async () => {
+            try {
+                const response = await axios.get('http://localhost:4003/api/v1/admin/user-activity');
+                setActivityData(response.data.activity);
+            } catch (error) {
+                console.error(error);
+            }
+        };
+
+        const fetchCategoryDistribution = async () => {
+            try {
+                const response = await axios.get('http://localhost:4003/api/v1/admin/module-distribution');
+                setCategoryDistribution(Object.entries(response.data.modulesPerCategory).map(([category, count]) => ({ category, count })));
+            } catch (error) {
+                console.error(error);
+            }
+        };
+
 
         fetchData();
         fetchAttendance();
+        fetchLoginActivity();
+        fetchCategoryDistribution();
     }, [])
 
     return (
@@ -267,7 +289,11 @@ const AnalyticsBoard = () => {
                                             height: 240,
                                         }}
                                     >
-
+                                        <PieChart>
+                                            <Pie data={categoryDistribution} dataKey="count" nameKey="category" cx="50%" cy="50%" outerRadius={100} fill="#8884d8" label />
+                                            <Tooltip />
+                                            <Legend />
+                                        </PieChart>
                                     </Paper>
                                 </Grid>
                                 <Grid item xs={12}>
@@ -276,13 +302,14 @@ const AnalyticsBoard = () => {
                                     </Typography>
                                     <Paper sx={{ p: 2, display: 'flex', flexDirection: 'column' }}>
                                         <ResponsiveContainer width="100%" height={220}>
-                                            <LineChart data={data} margin={{ top: 20, right: 30, left: 20, bottom: 5 }}>
+                                            <LineChart margin={{ top: 20, right: 30, left: 20, bottom: 5 }}>
                                                 <CartesianGrid strokeDasharray="3 3" />
                                                 <XAxis dataKey="date" />
                                                 <YAxis />
                                                 <Tooltip />
                                                 <Legend />
-                                                <Line type="monotone" dataKey="count" stroke="#8884d8" activeDot={{ r: 8 }} />
+                                                <Line data={data} type="monotone" dataKey="count" stroke="#8884d8" activeDot={{ r: 8 }} />
+                                                <Line data={activityData} type="monotone" dataKey="logins" stroke="#82ca9d" />
                                             </LineChart>
                                         </ResponsiveContainer>
                                     </Paper>
