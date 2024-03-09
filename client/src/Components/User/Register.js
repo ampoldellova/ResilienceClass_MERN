@@ -5,13 +5,15 @@ import { useNavigate } from 'react-router-dom';
 import Metadata from '../Layout/Metadata';
 import Box from '@mui/material/Box';
 import axios from 'axios'
+import { Loader } from '../Loader';
 
 import { useFormik } from 'formik';
 import * as Yup from 'yup';
+import { authenticate } from '../../utils/helpers';
 
 const validationSchema = Yup.object({
     name: Yup.string().required('Name is required'),
-    email: Yup.string().email('Invalid email address').required('Email is required'),
+    email: Yup.string().email('Invalid email address').matches(/^[A-Za-z0-9._%+-]+@tup\.edu\.ph$/, 'Email must be from @tup.edu.ph domain').required('Email is required to register'),
     password: Yup.string().required('Password is required'),
 });
 
@@ -28,6 +30,7 @@ const Register = () => {
     const [avatarPreview, setAvatarPreview] = useState('/images/default_avatar.jpg')
     const [isAuthenticated, setIsAuthenticated] = useState(false)
     const [error, setError] = useState('')
+    const [loader, setLoader] = useState(false);
 
     const formik = useFormik({
         initialValues: {
@@ -53,7 +56,7 @@ const Register = () => {
     let navigate = useNavigate()
     useEffect(() => {
         if (isAuthenticated) {
-            navigate('/')
+            navigate('/verification')
         }
         if (error) {
             console.log(error)
@@ -83,6 +86,7 @@ const Register = () => {
     }
 
     const register = async (userData) => {
+        setLoader(true)
         try {
             const config = {
                 headers: {
@@ -91,12 +95,17 @@ const Register = () => {
             }
 
             const { data } = await axios.post(`http://localhost:4003/api/v1/register`, userData, config)
+
             console.log(data.user)
+            setLoader(false)
             setIsAuthenticated(true)
             setUser(data.user)
-            navigate('/')
+            authenticate(data, () => {
+                navigate("/verification")
+            });
 
         } catch (error) {
+            setLoader(false)
             setIsAuthenticated(false)
             setUser(null)
             setError(error.response.data.message)
@@ -108,6 +117,7 @@ const Register = () => {
         <Fragment>
             <Metadata title={'Register'} />
             <ThemeProvider theme={defaultTheme}>
+                <Loader open={loader} />
                 <Container component="main" maxWidth="xs">
                     <CssBaseline />
                     <Box

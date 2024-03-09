@@ -13,6 +13,6 @@ router.get('/modules', isAuthenticatedUser, getAllModules);
 router.get('/module/:id', isAuthenticatedUser, getSingleModule);
 router.get('/admin/modules', isAuthenticatedUser, authorizeRoles('admin'), getAllModules);
 router.delete('/admin/module/delete/:id', isAuthenticatedUser, authorizeRoles('admin'), deleteModule);
-router.get('/admin/module-distribution', isAuthenticatedUser, authorizeRoles('admin'), moduleAnalytics);
+router.get('/admin/module-categories', isAuthenticatedUser, authorizeRoles('admin'), moduleAnalytics);
 
 module.exports = router;

@@ -13,6 +13,7 @@ import ClassroomList from './Components/Admin/Classroom/ClassroomList';
 import UserList from './Components/Admin/User/UsersList';
 import ModuleList from './Components/Admin/Module/ModuleList';
 import AnalyticsBoard from './Components/Admin/Analytics/AnalyticsBoard';
+import Verification from './Components/User/Verification';
 
 function App() {
   return (
@@ -24,6 +25,7 @@ function App() {
           <Route path="/class/:id" element={<ProtectedRoute><ClassDetails /></ProtectedRoute>} exact />
           <Route path="/login" element={<Login />} exact />
           <Route path="/register" element={<Register />} exact />
+          <Route path="/verification" element={<Verification />} exact />
           <Route path="/password/forgot" element={<ForgotPassword />} exact />
           <Route path="/class/classwork/:id" element={<ProtectedRoute><ClassworkDetails /></ProtectedRoute>} exact />
 

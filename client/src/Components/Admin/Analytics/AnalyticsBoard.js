@@ -136,20 +136,20 @@ const AnalyticsBoard = () => {
             }
         };
 
-        const fetchCategoryDistribution = async () => {
-            try {
-                const response = await axios.get('http://localhost:4003/api/v1/admin/module-distribution');
-                setCategoryDistribution(Object.entries(response.data.modulesPerCategory).map(([category, count]) => ({ category, count })));
-            } catch (error) {
-                console.error(error);
-            }
-        };
+        // const fetchCategoryDistribution = async () => {
+        //     try {
+        //         const response = await axios.get('http://localhost:4003/api/v1/admin/module-distribution');
+        //         setCategoryDistribution(Object.entries(response.data.modulesPerCategory).map(([category, count]) => ({ category, count })));
+        //     } catch (error) {
+        //         console.error(error);
+        //     }
+        // };
 
 
         fetchData();
         fetchAttendance();
         fetchLoginActivity();
-        fetchCategoryDistribution();
+        // fetchCategoryDistribution();
     }, [])
 
     return (
@@ -289,16 +289,12 @@ const AnalyticsBoard = () => {
                                             height: 240,
                                         }}
                                     >
-                                        <PieChart>
-                                            <Pie data={categoryDistribution} dataKey="count" nameKey="category" cx="50%" cy="50%" outerRadius={100} fill="#8884d8" label />
-                                            <Tooltip />
-                                            <Legend />
-                                        </PieChart>
+
                                     </Paper>
                                 </Grid>
                                 <Grid item xs={12}>
                                     <Typography component="h2" variant="h6" color="primary" gutterBottom>
-                                        Registration Count
+                                        Registration and Login Count
                                     </Typography>
                                     <Paper sx={{ p: 2, display: 'flex', flexDirection: 'column' }}>
                                         <ResponsiveContainer width="100%" height={220}>

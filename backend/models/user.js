@@ -3,6 +3,7 @@ const validator = require('validator');
 const bcrypt = require('bcryptjs');
 const jwt = require('jsonwebtoken');
 const crypto = require('crypto')
+const generateCode = require('../utils/codeGenerator')
 
 const userSchema = new mongoose.Schema({
     name: {
@@ -36,10 +37,18 @@ const userSchema = new mongoose.Schema({
         type: String,
         default: 'user'
     },
+    isEmailVerified: {
+        type: Boolean,
+        default: false,
+    },
+    emailCodeVerification: {
+        type: String,
+    },
     createdAt: {
         type: Date,
         default: Date.now
     },
+    emailCodeExpire: Date,
     resetPasswordToken: String,
     resetPasswordExpire: Date
 })
@@ -70,7 +79,13 @@ userSchema.methods.getResetPasswordToken = function () {
     // Set token expire time
     this.resetPasswordExpire = Date.now() + 30 * 60 * 1000
     return resetToken
+}
 
+userSchema.methods.getEmailCodeVerification = async function () {
+    const code = generateCode(6);
+    this.emailCodeVerification = code.trim();
+    this.emailCodeExpire = Date.now() + 5 * 60 * 1000;
+    return code;
 }
 
 module.exports = mongoose.model('User', userSchema);

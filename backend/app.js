@@ -9,7 +9,13 @@ const posts = require('./routes/post');
 const classwork = require('./routes/classwork');
 const modules = require('./routes/module')
 
-app.use(cors())
+// app.use(cors())
+const corsOptions = {
+    origin: 'http://localhost:3000', //included origin as true
+    credentials: true, //included credentials as true
+};
+
+app.use(cors(corsOptions));
 app.use(express.json({ limit: '50mb' }));
 app.use(express.urlencoded({ limit: "50mb", extended: true }));
 app.use(cookieParser());

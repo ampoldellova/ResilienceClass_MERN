@@ -2,7 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { styled, createTheme, ThemeProvider } from '@mui/material/styles';
 import { CardMedia, CardContent, Button, Grid, Paper, Menu, MenuItem, CssBaseline, Drawer as MuiDrawer, Box, AppBar as MuiAppBar, Toolbar, List, Typography, Divider, IconButton, Container, Avatar, TextField } from '@mui/material';
-import { Menu as MenuIcon, ChevronLeft as ChevronLeftIcon} from '@mui/icons-material';
+import { Menu as MenuIcon, ChevronLeft as ChevronLeftIcon } from '@mui/icons-material';
 import MetaData from '../Layout/Metadata';
 import { getToken, getUser, isUserTeacher, logout } from '../../utils/helpers';
 import LogoutIcon from '@mui/icons-material/Logout';
@@ -82,6 +82,21 @@ const Modules = () => {
     const [profileaAnchorEl, setProfileAnchorEl] = React.useState(null);
     const [loader, setLoader] = useState(true);
 
+    const categories = [
+        'Computer Science',
+        'Data Science',
+        'Health',
+        'Language Learning',
+        'Information Technology',
+        'Physical Science',
+        'Engineering',
+        'Arts and Humanities',
+        'Personal Development',
+        'Business',
+        'Social Sciences',
+        'Math and Logic'
+    ]
+
     const logoutUser = async () => {
         try {
             await axios.get(`http://localhost:4003/api/v1/logout`)
@@ -139,6 +154,13 @@ const Modules = () => {
             regex.test(module.description) ||
             regex.test(module.creator.name) ||
             regex.test(module.category));
+        setFilteredModules(filteredModules);
+    }
+
+    const handleClick = (e) => {
+        const keyword = e.target.value;
+        const regex = new RegExp(keyword, 'i');
+        const filteredModules = modules.filter(module => regex.test(module.category));
         setFilteredModules(filteredModules);
     }
 
@@ -257,6 +279,18 @@ const Modules = () => {
                                         sx={{ ml: 2 }} />
                                 </Box>
                             </Container>
+                            {categories.map(category => (
+                                <Button
+                                    variant='outlined'
+                                    size='small'
+                                    sx={{ mr: 2, mb: 2 }}
+                                    key={category}
+                                    value={category}
+                                    onClick={handleClick}
+                                >
+                                    {category}
+                                </Button >
+                            ))}
                             {filteredModules && filteredModules.map(module => {
                                 return <MDBContainer fluid>
                                     <MDBRow className="justify-content-center mb-0">

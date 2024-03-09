@@ -4,6 +4,7 @@ const cloudinary = require('cloudinary')
 const crypto = require('crypto')
 const sendEmail = require('../utils/sendEmail')
 const LoginActivity = require('../models/loginActivity');
+const { sendCodeToEmail, verifyAccount, verifyEmailCode } = require('../utils/verification')
 
 exports.registerUser = async (req, res, next) => {
     if (req.file) {
@@ -27,13 +28,42 @@ exports.registerUser = async (req, res, next) => {
         },
     })
 
+    const newUser = await User.findById(user._id);
+    const emailCode = await newUser.getEmailCodeVerification()
+    newUser.save({ validateBeforeSave: false });
+    sendCodeToEmail(newUser, emailCode);
+
     if (!user) {
         return res.status(500).json({
             success: false,
             message: 'user not created'
         })
     }
+    console.log(43)
     sendToken(user, 200, res)
+}
+
+exports.verifyCode = async (req, res, next) => {
+
+    const { emailCodeVerification } = req.body;
+    
+    const user = await User.findById(req.user._id);
+
+    const isVerified = verifyEmailCode(user, req, res, next);
+
+    if (!isVerified) {
+        return;
+    }
+
+    if (user.emailCodeVerification === emailCodeVerification) {
+        const verifiedUser = await verifyAccount(user)
+        sendToken(verifiedUser, 200, res);
+    } else {
+        res.status(500).json({
+            success: false,
+            message: 'Error occured, please try again later'
+        })
+    }
 
 }
 
