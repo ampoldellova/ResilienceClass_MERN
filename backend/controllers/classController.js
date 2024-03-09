@@ -191,3 +191,17 @@ exports.newAdminClass = async (req, res, next) => {
         classRoom
     })
 };
+
+exports.promoteStudent = async (req, res, next) => {
+    console.log(req.query)
+
+    const classroom = await Class.findById(req.query.classId)
+    // console.log(classroom)
+    // console.log(classroom.joinedUsers.find(user => user.user.toString() === req.query.userId))
+    classroom.joinedUsers.find(user => user.user.toString() === req.query.userId).role = 'teacher'
+    classroom.save()
+
+    return res.status(200).json({
+        success: true,
+    })
+};

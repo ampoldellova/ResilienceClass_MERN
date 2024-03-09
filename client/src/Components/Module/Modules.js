@@ -279,18 +279,24 @@ const Modules = () => {
                                         sx={{ ml: 2 }} />
                                 </Box>
                             </Container>
-                            {categories.map(category => (
-                                <Button
-                                    variant='outlined'
-                                    size='small'
-                                    sx={{ mr: 2, mb: 2 }}
-                                    key={category}
-                                    value={category}
-                                    onClick={handleClick}
-                                >
-                                    {category}
-                                </Button >
-                            ))}
+                            <MDBContainer fluid>
+                                <MDBRow className="justify-content-center mb-0">
+                                    <MDBCol md="12" xl="10" style={{ textAlign: 'center' }}>
+                                        {categories.map(category => (
+                                            <Button
+                                                variant='outlined'
+                                                size='small'
+                                                sx={{ mr: 1, mb: 1 }}
+                                                key={category}
+                                                value={category}
+                                                onClick={handleClick}
+                                            >
+                                                {category}
+                                            </Button >
+                                        ))}
+                                    </MDBCol>
+                                </MDBRow>
+                            </MDBContainer>
                             {filteredModules && filteredModules.map(module => {
                                 return <MDBContainer fluid>
                                     <MDBRow className="justify-content-center mb-0">

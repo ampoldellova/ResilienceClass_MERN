@@ -1,10 +1,12 @@
 import React, { useState } from 'react';
-import { Badge, Box, Avatar, Button, Dialog, ListItemText, ListItemButton, List, Divider, AppBar, Toolbar, IconButton, Typography, Container } from '@mui/material';
+import { Badge, Box, Avatar, Button, Dialog, ListItemText, ListItemButton, List, Divider, AppBar, Toolbar, IconButton, Typography, Container, Menu, MenuItem } from '@mui/material';
 import CloseIcon from '@mui/icons-material/Close';
 import Slide from '@mui/material/Slide';
-import { getToken } from '../../utils/helpers';
+import { getToken, isUserTeacher } from '../../utils/helpers';
 import axios from 'axios';
 import { Loader } from '../Loader';
+import { MoreVert } from '@mui/icons-material';
+import PromoteStudentModal from './PromoteStudentModal';
 
 const Transition = React.forwardRef(function Transition(props, ref) {
     return <Slide direction="up" ref={ref} {...props} />;
@@ -14,7 +16,17 @@ const ClassMembers = ({ classroom }) => {
     const [open, setOpen] = useState(false);
     const [classMembers, setClassMembers] = useState([]);
     const [loader, setLoader] = useState(true);
+    const [menuAnchorEl, setMenuAnchorEl] = useState(null);
+    const [userId, setUserId] = useState();
 
+    const handleMenuOpen = (event, userId) => {
+        setMenuAnchorEl(event.currentTarget);
+        setUserId(userId)
+    };
+
+    const handleMenuClose = () => {
+        setMenuAnchorEl(null);
+    };
 
     const getClassMembers = async (id) => {
         setLoader(true)
@@ -90,11 +102,43 @@ const ClassMembers = ({ classroom }) => {
                                         />
                                     </Typography>
                                 </div>
+
+                                {isUserTeacher(classroom) ?
+                                    <>
+                                        <IconButton
+                                            sx={{ ml: 'auto' }}
+                                            onClick={(e) => handleMenuOpen(e, member.user._id)}
+                                        >
+                                            <MoreVert />
+                                        </IconButton>
+                                    </> : <>
+                                    </>
+                                }
+
                             </Box>
                             <Divider fullWidth />
                         </>
                     })}
                 </Container >
+                <Menu
+                    id="menu"
+                    anchorEl={menuAnchorEl}
+                    anchorOrigin={{
+                        vertical: 'bottom',
+                        horizontal: 'right',
+                    }}
+                    keepMounted
+                    transformOrigin={{
+                        vertical: 'top',
+                        horizontal: 'right',
+                    }}
+                    open={Boolean(menuAnchorEl)}
+                    onClose={handleMenuClose}
+                >
+                    <MenuItem>Demote as a Student</MenuItem>
+                    <PromoteStudentModal key={userId} userId={userId} classId={classroom._id} />
+                    <MenuItem>Remove Student</MenuItem>
+                </Menu>
             </Dialog>
         </>
     );
