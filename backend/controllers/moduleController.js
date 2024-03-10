@@ -1,4 +1,5 @@
 const Module = require('../models/module');
+const ArchivedModules = require('../models/archivedModules')
 const APIFeatures = require('../utils/apiFeatures');
 const cloudinary = require('cloudinary');
 const User = require('../models/user');
@@ -56,6 +57,18 @@ exports.getAllModules = async (req, res, next) => {
     })
 }
 
+exports.getAllArchivedModules = async (req, res, next) => {
+    const archivedModules = await ArchivedModules.find().populate({
+        path: 'creator',
+        model: User
+    });
+
+    res.status(200).json({
+        success: true,
+        archivedModules
+    })
+}
+
 exports.getSingleModule = async (req, res, next) => {
     const module = await Module.findById(req.params.id).populate({
         path: 'creator',
@@ -74,20 +87,20 @@ exports.getSingleModule = async (req, res, next) => {
     })
 }
 
-exports.deleteModule = async (req, res, next) => {
-    const module = await Module.findByIdAndDelete(req.params.id);
-    if (!module) {
-        return res.status(404).json({
-            success: false,
-            message: 'Learning Module not found'
-        })
-    }
+// exports.deleteModule = async (req, res, next) => {
+//     const module = await Module.findByIdAndDelete(req.params.id);
+//     if (!module) {
+//         return res.status(404).json({
+//             success: false,
+//             message: 'Learning Module not found'
+//         })
+//     }
 
-    res.status(200).json({
-        success: true,
-        message: 'Learning Module deleted'
-    })
-}
+//     res.status(200).json({
+//         success: true,
+//         message: 'Learning Module deleted'
+//     })
+// }
 
 exports.moduleAnalytics = async (req, res, next) => {
     try {
@@ -100,6 +113,60 @@ exports.moduleAnalytics = async (req, res, next) => {
         }, {});
 
         res.status(200).json({ modulesPerCategory });
+    } catch (error) {
+        console.error(error);
+        res.status(500).json({ message: 'Internal server error' });
+    }
+};
+
+exports.softDeleteModule = async (req, res, next) => {
+    try {
+        const module = await Module.findById(req.params.id);
+        if (!module) {
+            return res.status(404).json({
+                success: false,
+                message: 'Module not found'
+            });
+        }
+
+        // Move module to ArchivedModules schema
+        const archivedModule = await ArchivedModules.create(module.toObject());
+
+        // Delete module from Module schema
+        await Module.findByIdAndDelete(req.params.id);
+
+        res.status(200).json({
+            success: true,
+            message: 'Module soft deleted and moved to ArchivedModules',
+            archivedModule
+        });
+    } catch (error) {
+        console.error(error);
+        res.status(500).json({ message: 'Internal server error' });
+    }
+};
+
+exports.restoreModule = async (req, res, next) => {
+    try {
+        const archivedModule = await ArchivedModules.findById(req.params.id);
+        if (!archivedModule) {
+            return res.status(404).json({
+                success: false,
+                message: 'Archived Module not found'
+            });
+        }
+
+        // Create module in Module schema
+        const module = await Module.create(archivedModule.toObject());
+
+        // Delete module from ArchivedModules schema
+        await ArchivedModules.findByIdAndDelete(req.params.id);
+
+        res.status(200).json({
+            success: true,
+            message: 'Module restored from ArchivedModules',
+            module
+        });
     } catch (error) {
         console.error(error);
         res.status(500).json({ message: 'Internal server error' });

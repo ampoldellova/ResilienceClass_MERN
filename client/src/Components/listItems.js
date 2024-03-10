@@ -13,9 +13,9 @@ import ExpandMore from '@mui/icons-material/ExpandMore';
 import Collapse from '@mui/material/Collapse';
 import List from '@mui/material/List';
 import ClassIcon from '@mui/icons-material/Class';
-import AssignmentIcon from '@mui/icons-material/Assignment';
 import GroupIcon from '@mui/icons-material/Group';
 import AnalyticsIcon from '@mui/icons-material/Analytics';
+import ArchiveIcon from '@mui/icons-material/Archive';
 
 const MainListItems = () => {
     const [open, setOpen] = React.useState(true);
@@ -63,6 +63,14 @@ const MainListItems = () => {
                                     <ViewModuleIcon />
                                 </ListItemIcon>
                                 <ListItemText primary="Modules" />
+                            </ListItemButton>
+                        </List>
+                        <List component="div" disablePadding>
+                            <ListItemButton sx={{ pl: 4 }} component={Link} to="/admin/archive/modules">
+                                <ListItemIcon>
+                                    <ArchiveIcon />
+                                </ListItemIcon>
+                                <ListItemText primary="Archived Modules" />
                             </ListItemButton>
                         </List>
                         <List component="div" disablePadding>
