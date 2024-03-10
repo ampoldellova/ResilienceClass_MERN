@@ -103,7 +103,7 @@ const ClassMembers = ({ classroom }) => {
                                     </Typography>
                                 </div>
 
-                                {isUserTeacher(classroom) ?
+                                {isUserTeacher(classroom) && member.role === 'student' ?
                                     <>
                                         <IconButton
                                             sx={{ ml: 'auto' }}
@@ -135,7 +135,6 @@ const ClassMembers = ({ classroom }) => {
                     open={Boolean(menuAnchorEl)}
                     onClose={handleMenuClose}
                 >
-                    <MenuItem>Demote as a Student</MenuItem>
                     <PromoteStudentModal key={userId} userId={userId} classId={classroom._id} />
                     <MenuItem>Remove Student</MenuItem>
                 </Menu>

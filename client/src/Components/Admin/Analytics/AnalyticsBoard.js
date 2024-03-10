@@ -1,17 +1,16 @@
 import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { styled, createTheme, ThemeProvider } from '@mui/material/styles';
-import { CardMedia, CardContent, Button, Grid, Paper, Menu, MenuItem, CssBaseline, Drawer as MuiDrawer, Box, AppBar as MuiAppBar, Toolbar, List, Typography, Divider, IconButton, Container, Avatar, TextField } from '@mui/material';
-import { Menu as MenuIcon, ChevronLeft as ChevronLeftIcon, Title } from '@mui/icons-material';
+import { Grid, Paper, Menu, MenuItem, CssBaseline, Drawer as MuiDrawer, Box, AppBar as MuiAppBar, Toolbar, List, Typography, Divider, IconButton, Container, Avatar, TextField } from '@mui/material';
+import { Menu as MenuIcon, ChevronLeft as ChevronLeftIcon } from '@mui/icons-material';
 import MetaData from '../../Layout/Metadata';
-// import { getToken, getUser, isUserTeacher, logout } from '../../utils/helpers';
-import { getToken, getUser, logout } from '../../../utils/helpers';
+import { getUser, logout } from '../../../utils/helpers';
 import LogoutIcon from '@mui/icons-material/Logout';
 import MainListItems from '../../listItems';
 
 import { Loader } from '../../Loader';
 import EditProfile from '../../User/EditProfile';
-import { PieChart, Pie, BarChart, Bar, LineChart, Line, XAxis, YAxis, CartesianGrid, Tooltip, Legend, ResponsiveContainer } from 'recharts';
+import { BarChart, Bar, LineChart, Line, XAxis, YAxis, CartesianGrid, Tooltip, Legend, ResponsiveContainer } from 'recharts';
 
 import axios from 'axios';
 
@@ -304,7 +303,7 @@ const AnalyticsBoard = () => {
                                                 <YAxis />
                                                 <Tooltip />
                                                 <Legend />
-                                                <Line data={data} type="monotone" dataKey="count" stroke="#8884d8" activeDot={{ r: 8 }} />
+                                                <Line data={data} type="monotone" dataKey="registry" stroke="#8884d8" activeDot={{ r: 8 }} />
                                                 <Line data={activityData} type="monotone" dataKey="logins" stroke="#82ca9d" />
                                             </LineChart>
                                         </ResponsiveContainer>

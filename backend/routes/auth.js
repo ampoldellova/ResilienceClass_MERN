@@ -28,7 +28,7 @@ router.get('/admin/userRegistrations', async (req, res) => {
                         month: { $month: '$createdAt' },
                         day: { $dayOfMonth: '$createdAt' }
                     },
-                    count: { $sum: 1 }
+                    registry: { $sum: 1 }
                 }
             },
             {
@@ -40,7 +40,7 @@ router.get('/admin/userRegistrations', async (req, res) => {
                             day: '$_id.day'
                         }
                     },
-                    count: 1,
+                    registry: 1,
                     _id: 0
                 }
             }
@@ -48,7 +48,7 @@ router.get('/admin/userRegistrations', async (req, res) => {
 
         const formattedData = userRegistrations.map(entry => ({
             date: new Date(entry.date).toLocaleDateString('en-PH', { month: '2-digit', day: '2-digit', year: '2-digit' }),
-            count: entry.count
+            registry: entry.registry
         }));
 
         res.json(formattedData);

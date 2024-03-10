@@ -128,7 +128,7 @@ const ModuleDetail = ({ moduleId }) => {
                             <Typography variant='subtitle1' sx={{ mt: 5 }}>{module?.description}</Typography>
                         </Grid>
                         <Grid item xs={12} md={12} lg={6} sx={{ paddingLeft: 2, display: 'flex', alignItems: 'center', mb: 5 }}> {/* Add paddingLeft for space */}
-                            <iframe
+                            {/* <iframe
                                 title='contents'
                                 width="100%"
                                 height="800"
@@ -136,7 +136,14 @@ const ModuleDetail = ({ moduleId }) => {
                                 src={module?.contents?.url}
                                 sandbox="allow-scripts allow-same-origin"
                                 onLoad={disablePrintAndSave()}
-                            />
+                            /> */}
+                            <object data={module?.contents?.url} type="application/pdf" width="600" height="800">
+                                <p>PDF cannot be displayed</p>
+                                {/* Hide download button */}
+                                <param name="toolbar" value="0" />
+                                <param name="navpanes" value="0" />
+                                <param name="scrollbar" value="0" />
+                            </object>
                         </Grid>
                     </Grid>
 

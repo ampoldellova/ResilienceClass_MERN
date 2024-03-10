@@ -2,7 +2,7 @@ import React, { useState, useEffect, Fragment } from 'react';
 import { styled, createTheme, ThemeProvider, Box, Button, Typography, Container, CssBaseline, Toolbar, IconButton, Avatar, AppBar as MuiAppBar, Drawer as MuiDrawer, Menu, MenuItem, Divider, List } from '@mui/material';
 import { Link, useNavigate } from 'react-router-dom';
 import { DataGrid } from '@mui/x-data-grid';
-import { Menu as MenuIcon, ChevronLeft as ChevronLeftIcon } from '@mui/icons-material';
+import { Menu as MenuIcon, ChevronLeft as ChevronLeftIcon, Visibility } from '@mui/icons-material';
 import AddCircleIcon from '@mui/icons-material/AddCircle';
 import EditIcon from '@mui/icons-material/Edit';
 import DeleteIcon from '@mui/icons-material/Delete';
@@ -234,8 +234,10 @@ const ClassroomList = () => {
                                 variant='contained'
                                 sx={{
                                     color: 'white'
-                                }}>
-                                <EditIcon />
+                                }}
+                                startIcon={<Visibility />}
+                            >
+                                View
                             </Button>
                             {/* </Link> */}
                             {/* <Button

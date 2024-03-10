@@ -27,7 +27,7 @@ const Register = () => {
         password: '',
     })
     const [avatar, setAvatar] = useState('')
-    const [avatarPreview, setAvatarPreview] = useState('/images/default_avatar.jpg')
+    const [avatarPreview, setAvatarPreview] = useState('/user.jpg')
     const [isAuthenticated, setIsAuthenticated] = useState(false)
     const [error, setError] = useState('')
     const [loader, setLoader] = useState(false);

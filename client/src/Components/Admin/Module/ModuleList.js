@@ -240,16 +240,6 @@ const ModuleList = () => {
                             justifyContent: 'center',
                             alignItems: 'center'
                         }}>
-                            {/* <ViewModule moduleId={{ value }} /> */}
-                            {/* <Link to={`/admin/brand/${value}`}> */}
-                            <Button
-                                variant='contained'
-                                sx={{
-                                    color: 'white'
-                                }}>
-                                <EditIcon />
-                            </Button>
-                            {/* </Link> */}
                             <Button
                                 variant='contained'
                                 sx={{
