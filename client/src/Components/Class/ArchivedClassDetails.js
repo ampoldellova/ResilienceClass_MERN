@@ -76,13 +76,13 @@ const Drawer = styled(MuiDrawer, { shouldForwardProp: (prop) => prop !== 'open' 
 
 const defaultTheme = createTheme();
 
-const ClassDetails = () => {
+const ArchivedClassDetails = () => {
     const [open, setOpen] = React.useState(true);
     const [user, setUser] = useState('')
     const navigate = useNavigate()
     const menuId = 'primary-search-account-menu';
     const [error, setError] = useState('');
-    const [classRoom, setClass] = useState({});
+    const [archivedClassroom, setArchivedClassroom] = useState({});
     const [success, setSuccess] = useState('')
     const [modal, setModal] = useState(false);
     const [profileaAnchorEl, setProfileAnchorEl] = React.useState(null);
@@ -123,7 +123,7 @@ const ClassDetails = () => {
         alert("Logged out")
     }
 
-    const classDetails = async (id) => {
+    const archivedClassDetails = async (id) => {
         setLoader(true)
         try {
             const config = {
@@ -133,10 +133,30 @@ const ClassDetails = () => {
                 }
             }
 
-            const { data: { classRoom } } = await axios.get(`http://localhost:4003/api/v1/class/${id}`, config);
+            const { data: { archiveClass } } = await axios.get(`http://localhost:4003/api/v1/class/detail/archive/${id}`, config);
 
             setLoader(false)
-            setClass(classRoom)
+            console.log(archiveClass)
+            setArchivedClassroom(archiveClass)
+        } catch (error) {
+            setLoader(false)
+            alert('Error Occurred')
+        }
+    }
+
+    const restoreClassroom = async () => {
+        setLoader(true)
+        try {
+            const config = {
+                headers: {
+                    'Authorization': `Bearer ${getToken()}`
+                }
+            }
+            const { data } = await axios.put(`http://localhost:4003/api/v1/class/archive/${id}/restore`, {}, config)
+
+            setLoader(false)
+            alert('Classroom Successfully Restored!')
+            navigate("/archive/classrooms")
         } catch (error) {
             setLoader(false)
             alert('Error Occurred')
@@ -147,7 +167,6 @@ const ClassDetails = () => {
         initialValues: {
             contents: '',
             attachments: [],
-            // deadline: '',
         },
         validationSchema: validationSchema,
         onSubmit: (values) => {
@@ -158,8 +177,7 @@ const ClassDetails = () => {
             for (let i = 0; i < values.attachments.length; i++) {
                 formData.append('attachments', values.attachments[i]);
             }
-            // formData.set('deadline', values.deadline);
-            // console.log(values)
+
             NewPost(formData)
         },
     });
@@ -205,19 +223,17 @@ const ClassDetails = () => {
 
     useEffect(() => {
         setUser(getUser());
-        classDetails(id);
+        archivedClassDetails(id);
         getClassPosts(id);
     }, [])
 
     const isUserTeacher = () => {
-        return classRoom?.joinedUsers?.find((joinedUser) => joinedUser.user === getUser()?._id).role === 'teacher';
+        return archivedClassroom?.joinedUsers?.find((joinedUser) => joinedUser.user === getUser()?._id).role === 'teacher';
     };
-
-    console.log(classRoom)
 
     return (
         <ThemeProvider theme={defaultTheme}>
-            <MetaData title={classRoom.subject} />
+            <MetaData title={archivedClassroom?.subject} />
             <Loader open={loader} />
             <Box sx={{ display: 'flex' }}>
                 <CssBaseline />
@@ -315,7 +331,7 @@ const ClassDetails = () => {
                         <Box position="relative" sx={{ mb: 3 }}>
                             <CardMedia
                                 sx={{ height: 300, borderRadius: 2 }}
-                                image={classRoom?.coverPhoto?.url}
+                                image={archivedClassroom?.coverPhoto?.url}
                             />
                             <Typography
                                 variant="h3"
@@ -327,7 +343,7 @@ const ClassDetails = () => {
                                     padding: '8px',
                                 }}
                             >
-                                {classRoom?.subject}
+                                {archivedClassroom?.subject}
                             </Typography>
                             <Typography
                                 variant="h6"
@@ -339,7 +355,7 @@ const ClassDetails = () => {
                                     padding: '8px',
                                 }}
                             >
-                                Room: {classRoom?.roomNumber}
+                                Room: {archivedClassroom?.roomNumber}
                             </Typography>
                         </Box>
                         <Grid container spacing={3}>
@@ -366,7 +382,7 @@ const ClassDetails = () => {
                                         <Typography variant='h3' sx={{ textAlign: 'center', fontWeight: 1 }}> No posts yet.</Typography>
                                     </> : <>
                                         {classPosts && classPosts.map(posts => {
-                                            return <Posts key={posts._id} posts={posts} getClassPosts={getClassPosts} classRoom={classRoom} postId={posts._id} />
+                                            return <Posts key={posts._id} posts={posts} getClassPosts={getClassPosts} classRoom={archivedClassroom} postId={posts._id} />
                                         })}
                                     </>
                                 }
@@ -432,7 +448,7 @@ const ClassDetails = () => {
                                             }}
                                         >
                                             <Typography variant='subtitle1'>Class Code: </Typography>
-                                            <Typography variant='h4' sx={{ textAlign: 'center' }}>{classRoom?.classCode}</Typography>
+                                            <Typography variant='h4' sx={{ textAlign: 'center' }}>{archivedClassroom?.classCode}</Typography>
                                         </Paper>
 
                                         <Paper
@@ -448,13 +464,11 @@ const ClassDetails = () => {
                                             <ClassworkList />
                                         </Paper>
 
-                                        <ClassMembers classroom={classRoom} />
-                                        <CreateClasswork />
-                                        <EditClassDetails />
-                                        <MoveToArchive classId={id} />
+                                        <ClassMembers classroom={archivedClassroom} />
+                                        <Button variant='contained' onClick={restoreClassroom} sx={{ mt: 1 }} fullWidth>Unarchive Classroom</Button>
                                     </>
                                     : <>
-                                        <ClassMembers classroom={classRoom} />
+                                        <ClassMembers classroom={archivedClassroom} />
                                         <Paper
                                             sx={{
                                                 p: 2,
@@ -478,4 +492,4 @@ const ClassDetails = () => {
     );
 };
 
-export default ClassDetails;
+export default ArchivedClassDetails;

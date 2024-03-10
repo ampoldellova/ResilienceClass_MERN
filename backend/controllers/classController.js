@@ -3,6 +3,7 @@ const APIFeatures = require('../utils/apiFeatures');
 const cloudinary = require('cloudinary');
 const generateString = require('../utils/codeGenerator')
 const user = require('../models/user');
+const ArchivedClassrooms = require('../models/archivedClassrooms')
 
 exports.newClass = async (req, res, next) => {
     // console.log(req.user)
@@ -84,8 +85,6 @@ exports.updateClass = async (req, res, next) => {
 exports.userClasses = async (req, res, next) => {
 
     const classRoom = await Class.find();
-    // let classes = []
-
     const classes = classRoom.filter(classOne => {
         for (let index = 0; index < classOne.joinedUsers.length; index++) {
             if (classOne.joinedUsers[index].user.toString() == req.user._id.toString()) {
@@ -96,8 +95,79 @@ exports.userClasses = async (req, res, next) => {
     res.json({
         classRoom: classes
     })
-
 }
+
+exports.softDeleteClassroom = async (req, res, next) => {
+    try {
+        const classroom = await Class.findById(req.params.id);
+        if (!classroom) {
+            return res.status(404).json({
+                success: false,
+                message: 'Classroom not found'
+            });
+        }
+
+        // Move module to ArchivedModules schema
+        const archivedClassroom = await ArchivedClassrooms.create(classroom.toObject());
+
+        // Delete module from Module schema
+        await Class.findByIdAndDelete(req.params.id);
+
+        res.status(200).json({
+            success: true,
+            message: 'Classroom soft deleted and moved to Archived Classrooms',
+            archivedClassroom
+        });
+    } catch (error) {
+        console.error(error);
+        res.status(500).json({ message: 'Internal server error' });
+    }
+};
+
+exports.userArchivedClasses = async (req, res, next) => {
+    try {
+        const archivedClassroom = await ArchivedClassrooms.find();
+
+        const archivedClasses = archivedClassroom.filter(classOne => {
+            for (let index = 0; index < classOne.joinedUsers.length; index++) {
+                if (classOne.joinedUsers[index].user.toString() == req.user._id.toString()) {
+                    return classOne
+                }
+            }
+        })
+
+        res.json({
+            archivedClassroom: archivedClasses
+        })
+    } catch (error) {
+        console.log(error)
+    }
+}
+
+exports.restoreClassroom= async (req, res, next) => {
+    try {
+        const archivedClassroom = await ArchivedClassrooms.findById(req.params.id);
+        if (!archivedClassroom) {
+            return res.status(404).json({
+                success: false,
+                message: 'Archived Classroom not found'
+            });
+        }
+
+        const classroom = await Class.create(archivedClassroom.toObject());
+
+        await ArchivedClassrooms.findByIdAndDelete(req.params.id);
+
+        res.status(200).json({
+            success: true,
+            message: 'Classroom restored from Archived',
+            classroom
+        });
+    } catch (error) {
+        console.error(error);
+        res.status(500).json({ message: 'Internal server error' });
+    }
+};
 
 exports.getSingleClass = async (req, res, next) => {
     const classRoom = await Class.findById(req.params.id)
@@ -111,6 +181,21 @@ exports.getSingleClass = async (req, res, next) => {
     res.status(200).json({
         success: true,
         classRoom: classRoom
+    })
+}
+
+exports.getSingleArchiveClass = async (req, res, next) => {
+    const archiveClass = await ArchivedClassrooms.findById(req.params.id)
+
+    if (!archiveClass) {
+        return res.status(404).json({
+            success: false,
+            message: 'Archived Classroom not found'
+        })
+    }
+    res.status(200).json({
+        success: true,
+        archiveClass: archiveClass
     })
 }
 

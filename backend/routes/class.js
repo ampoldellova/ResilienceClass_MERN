@@ -3,14 +3,19 @@ const router = express.Router();
 const upload = require("../utils/multer");
 const Class = require('../models/class');
 
-const { newClass, userClasses, getSingleClass, joinClass, updateClass, getClassMembers, getClassrooms, deleteClassroom, newAdminClass, promoteStudent } = require('../controllers/classController');
+const { newClass, userClasses, getSingleClass, joinClass, updateClass, getClassMembers, getClassrooms, deleteClassroom, newAdminClass, promoteStudent, softDeleteClassroom, userArchivedClasses, restoreClassroom, getSingleArchiveClass } = require('../controllers/classController');
 const { isAuthenticatedUser, authorizeRoles } = require('../middlewares/auth');
 
 router.post('/class/new', isAuthenticatedUser, newClass);
 router.get('/class/user', isAuthenticatedUser, userClasses);
 router.get('/class/:id', isAuthenticatedUser, getSingleClass);
+router.get('/class/detail/archive/:id', isAuthenticatedUser, getSingleArchiveClass);
 router.post('/class/join', isAuthenticatedUser, joinClass);
-router.put('/class/update/:id', upload.single("coverPhoto"), updateClass);
+router.put('/class/update/:id', isAuthenticatedUser, upload.single("coverPhoto"), updateClass);
+router.delete('/class/archive/:id', isAuthenticatedUser, softDeleteClassroom);
+router.get('/class/user/archives', isAuthenticatedUser, userArchivedClasses);
+router.put('/class/archive/:id/restore', isAuthenticatedUser, restoreClassroom);
+
 router.get('/class/members/:id', isAuthenticatedUser, getClassMembers);
 router.put('/class/member/promote', isAuthenticatedUser, promoteStudent);
 router.get('/admin/classrooms', isAuthenticatedUser, authorizeRoles('admin'), getClassrooms);

@@ -16,6 +16,7 @@ import ClassIcon from '@mui/icons-material/Class';
 import GroupIcon from '@mui/icons-material/Group';
 import AnalyticsIcon from '@mui/icons-material/Analytics';
 import ArchiveIcon from '@mui/icons-material/Archive';
+import { Divider, ListSubheader } from '@mui/material';
 
 const MainListItems = () => {
     const [open, setOpen] = React.useState(true);
@@ -82,6 +83,7 @@ const MainListItems = () => {
                             </ListItemButton>
                         </List>
                     </Collapse>
+                    <Divider fullwidth />
                 </>
             )}
             <ListItemButton component={Link} to="/dashboard">
@@ -95,6 +97,13 @@ const MainListItems = () => {
                     <ViewModuleIcon />
                 </ListItemIcon>
                 <ListItemText primary="Learning Modules" />
+            </ListItemButton>
+            <Divider fullwidth sx={{ mt: 2 }} />
+            <ListItemButton component={Link} to="/archive/classrooms">
+                <ListItemIcon>
+                    <ArchiveIcon />
+                </ListItemIcon>
+                <ListItemText primary="Archived Classes" />
             </ListItemButton>
         </React.Fragment>
     );

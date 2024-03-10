@@ -81,7 +81,7 @@ const VisuallyHiddenInput = styled('input')({
 const defaultTheme = createTheme();
 
 const ClassworkDetails = () => {
-    const [open, setOpen] = React.useState(false);
+    const [open, setOpen] = React.useState(true);
     const [files, setFiles] = useState([]);
     const [attach, setAttach] = useState('');
     const [filesPreview, setFilesPreview] = useState([])

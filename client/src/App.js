@@ -15,6 +15,8 @@ import ModuleList from './Components/Admin/Module/ModuleList';
 import AnalyticsBoard from './Components/Admin/Analytics/AnalyticsBoard';
 import Verification from './Components/User/Verification';
 import ArchivedModules from './Components/Admin/Module/ArchivedModules';
+import ArchivedClass from './Components/Class/ArchivedClass';
+import ArchivedClassDetails from './Components/Class/ArchivedClassDetails';
 
 function App() {
   return (
@@ -23,7 +25,9 @@ function App() {
         <Routes>
           <Route path="/" element={<Home />} exact />
           <Route path="/dashboard" element={<ProtectedRoute><Dashboard /></ProtectedRoute>} exact />
+          <Route path="/archive/classrooms" element={<ProtectedRoute><ArchivedClass /></ProtectedRoute>} exact />
           <Route path="/class/:id" element={<ProtectedRoute><ClassDetails /></ProtectedRoute>} exact />
+          <Route path="/class/detail/archive/:id" element={<ProtectedRoute><ArchivedClassDetails /></ProtectedRoute>} exact />
           <Route path="/login" element={<Login />} exact />
           <Route path="/register" element={<Register />} exact />
           <Route path="/verification" element={<Verification />} exact />
