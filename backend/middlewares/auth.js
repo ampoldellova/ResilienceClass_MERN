@@ -9,7 +9,6 @@ exports.isAuthenticatedUser = async (req, res, next) => {
         token = req.header('Authorization').split(' ')[1];
     }
 
-    console.log(token, 12)
     if (!token) {
         return res.status(401).json({ message: 'Login first to access this resource' })
     }

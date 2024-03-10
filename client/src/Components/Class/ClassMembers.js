@@ -7,6 +7,7 @@ import axios from 'axios';
 import { Loader } from '../Loader';
 import { MoreVert } from '@mui/icons-material';
 import PromoteStudentModal from './PromoteStudentModal';
+import RemoveStudentModal from './RemoveStudentModal';
 
 const Transition = React.forwardRef(function Transition(props, ref) {
     return <Slide direction="up" ref={ref} {...props} />;
@@ -49,7 +50,6 @@ const ClassMembers = ({ classroom }) => {
     }
 
     const handleClickOpen = () => {
-        // console.log(classroom._id)
         getClassMembers(classroom._id);
         setOpen(true);
     };
@@ -136,7 +136,7 @@ const ClassMembers = ({ classroom }) => {
                     onClose={handleMenuClose}
                 >
                     <PromoteStudentModal key={userId} userId={userId} classId={classroom._id} />
-                    <MenuItem>Remove Student</MenuItem>
+                    <RemoveStudentModal userId={userId} classId={classroom._id} />
                 </Menu>
             </Dialog>
         </>

@@ -3,7 +3,7 @@ const router = express.Router();
 const upload = require("../utils/multer");
 const Class = require('../models/class');
 
-const { newClass, userClasses, getSingleClass, joinClass, updateClass, getClassMembers, getClassrooms, deleteClassroom, newAdminClass, promoteStudent, softDeleteClassroom, userArchivedClasses, restoreClassroom, getSingleArchiveClass } = require('../controllers/classController');
+const { newClass, userClasses, getSingleClass, joinClass, updateClass, getClassMembers, getClassrooms, deleteClassroom, newAdminClass, promoteStudent, softDeleteClassroom, userArchivedClasses, restoreClassroom, getSingleArchiveClass, removeUserFromClass } = require('../controllers/classController');
 const { isAuthenticatedUser, authorizeRoles } = require('../middlewares/auth');
 
 router.post('/class/new', isAuthenticatedUser, newClass);
@@ -18,6 +18,8 @@ router.put('/class/archive/:id/restore', isAuthenticatedUser, restoreClassroom);
 
 router.get('/class/members/:id', isAuthenticatedUser, getClassMembers);
 router.put('/class/member/promote', isAuthenticatedUser, promoteStudent);
+router.delete('/class/member/remove', isAuthenticatedUser, removeUserFromClass);
+
 router.get('/admin/classrooms', isAuthenticatedUser, authorizeRoles('admin'), getClassrooms);
 router.delete('/admin/classroom/delete/:id', isAuthenticatedUser, authorizeRoles('admin'), deleteClassroom);
 router.post('/admin/classroom/new', isAuthenticatedUser, authorizeRoles('admin'), newAdminClass);

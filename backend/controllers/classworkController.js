@@ -146,9 +146,6 @@ exports.attachFile = async (req, res, next) => {
 
 exports.removeFile = async (req, res, next) => {
     try {
-        console.log(req.params.id);
-        console.log(req.query.publicId);
-
         const classwork = await Classwork.findById(req.params.id);
 
         const submission = classwork.submissions.find(obj => obj.user.toString() === req.user._id.toString());

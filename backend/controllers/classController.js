@@ -144,7 +144,7 @@ exports.userArchivedClasses = async (req, res, next) => {
     }
 }
 
-exports.restoreClassroom= async (req, res, next) => {
+exports.restoreClassroom = async (req, res, next) => {
     try {
         const archivedClassroom = await ArchivedClassrooms.findById(req.params.id);
         if (!archivedClassroom) {
@@ -278,15 +278,35 @@ exports.newAdminClass = async (req, res, next) => {
 };
 
 exports.promoteStudent = async (req, res, next) => {
-    console.log(req.query)
-
     const classroom = await Class.findById(req.query.classId)
-    // console.log(classroom)
-    // console.log(classroom.joinedUsers.find(user => user.user.toString() === req.query.userId))
     classroom.joinedUsers.find(user => user.user.toString() === req.query.userId).role = 'teacher'
     classroom.save()
 
     return res.status(200).json({
         success: true,
     })
+};
+
+exports.removeUserFromClass = async (req, res, next) => {
+    try {
+        const classRoom = await Class.findById(req.query.classId);
+
+        if (!classRoom) {
+            return res.status(404).json({ success: false, message: 'Classroom not found' });
+        }
+
+        const userIndex = classRoom.joinedUsers.findIndex(item => item.user.toString() === req.query.userId);
+
+        if (userIndex === -1) {
+            return res.status(404).json({ success: false, message: 'User not found in the class' });
+        }
+
+        classRoom.joinedUsers.splice(userIndex, 1);
+        classRoom.save();
+
+        return res.status(200).json({ success: true, message: 'User removed from the class successfully' });
+    } catch (error) {
+        console.error(error);
+        res.status(500).json({ success: false, message: 'Internal server error' });
+    }
 };
