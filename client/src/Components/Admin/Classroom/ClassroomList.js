@@ -73,9 +73,7 @@ const ClassroomList = () => {
     const [loader, setLoader] = useState(true);
     const menuId = 'primary-search-account-menu';
     const [profileaAnchorEl, setProfileAnchorEl] = React.useState(null);
-    const [isDeleted, setIsDeleted] = useState(false)
     const navigate = useNavigate()
-
 
     const logoutUser = async () => {
         try {

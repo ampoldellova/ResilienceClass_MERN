@@ -243,21 +243,6 @@ exports.joinClass = async (req, res, next) => {
     }
 }
 
-exports.deleteClassroom = async (req, res, next) => {
-    const classroom = await Class.findByIdAndDelete(req.params.id);
-    if (!classroom) {
-        return res.status(404).json({
-            success: false,
-            message: 'Classroom not found'
-        })
-    }
-
-    res.status(200).json({
-        success: true,
-        message: 'Classroom deleted'
-    })
-}
-
 exports.newAdminClass = async (req, res, next) => {
     const randomCode = generateString(6);
     req.body.classCode = randomCode.trim();
@@ -347,3 +332,18 @@ exports.getAllDeletedClasses = async (req, res, next) => {
         deletedClasses
     })
 };
+
+exports.deleteClassroom = async (req, res, next) => {
+    const deletedClasses = await DeletedClasses.findByIdAndDelete(req.params.id);
+    if (!deletedClasses) {
+        return res.status(404).json({
+            success: false,
+            message: 'Classroom not found'
+        })
+    }
+
+    res.status(200).json({
+        success: true,
+        message: 'Classroom deleted to database'
+    })
+}

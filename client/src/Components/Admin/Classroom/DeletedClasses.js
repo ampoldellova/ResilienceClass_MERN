@@ -14,6 +14,7 @@ import EditIcon from '@mui/icons-material/Edit';
 import DeleteIcon from '@mui/icons-material/Delete';
 import { DataGrid } from '@mui/x-data-grid';
 import RestoreIcon from '@mui/icons-material/Restore';
+import DeleteModal from './DeleteModal';
 
 const drawerWidth = 240;
 
@@ -126,7 +127,7 @@ const DeletedClasses = () => {
         getDeletedClassrooms()
     }, [])
 
-    const ArchivedClassroomList = () => {
+    const DeletedClassroomList = () => {
         const data = {
             columns: [
                 {
@@ -198,12 +199,7 @@ const DeletedClasses = () => {
                             justifyContent: 'center',
                             alignItems: 'center'
                         }}>
-                            <Button
-                                variant='contained'
-                                color='error'
-                            >
-                                <DeleteIcon />
-                            </Button>
+                            <DeleteModal getDeletedClassrooms={getDeletedClassrooms} classId={value} />
                         </Container>
                     ),
                 },
@@ -327,11 +323,11 @@ const DeletedClasses = () => {
                         <Container maxWidth="lg" sx={{ mt: 4, mb: 4 }}>
                             <div style={{ width: '100%' }}>
                                 <Box textAlign="center" style={{ margin: 20 }}>
-                                    <Typography variant='h3' style={{ fontWeight: 1000 }}>List of Archived Classrooms</Typography>
+                                    <Typography variant='h3' style={{ fontWeight: 1000 }}>List of Deleted Classrooms</Typography>
                                 </Box>
                                 <DataGrid
-                                    rows={ArchivedClassroomList().rows}
-                                    columns={ArchivedClassroomList().columns}
+                                    rows={DeletedClassroomList().rows}
+                                    columns={DeletedClassroomList().columns}
                                     initialState={{
                                         pagination: {
                                             paginationModel: { page: 0, pageSize: 10 },
