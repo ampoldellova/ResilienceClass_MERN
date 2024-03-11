@@ -17,6 +17,7 @@ import MainListItems from '../../listItems';
 import { profileHead } from '../../../utils/userAvatar';
 import { width } from '@mui/system';
 import CreateClassroom from './CreateClassroom';
+import ViewMembers from './ViewMembers';
 
 const drawerWidth = 240;
 
@@ -192,7 +193,7 @@ const ClassroomList = () => {
                     headerAlign: 'center'
                 },
                 {
-                    headerName: 'Actions',
+                    headerName: 'Class Members',
                     field: 'actions',
                     width: 200,
                     headerAlign: 'center',
@@ -202,16 +203,7 @@ const ClassroomList = () => {
                             justifyContent: 'center',
                             alignItems: 'center'
                         }}>
-                            {/* <Link to={`/admin/brand/${value}`}> */}
-                            <Button
-                                variant='contained'
-                                sx={{
-                                    color: 'white'
-                                }}
-                                startIcon={<Visibility />}
-                            >
-                                View
-                            </Button>
+                            <ViewMembers classId={value} />
                         </Container>
                     ),
                 },

@@ -2,7 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { styled, createTheme, ThemeProvider } from '@mui/material/styles';
 import { CardMedia, CardContent, Button, Grid, Paper, Menu, MenuItem, CssBaseline, Drawer as MuiDrawer, Box, AppBar as MuiAppBar, Toolbar, List, Typography, Divider, IconButton, Container, Avatar, TextField, Card } from '@mui/material';
-import { Menu as MenuIcon, ChevronLeft as ChevronLeftIcon, Assignment } from '@mui/icons-material';
+import { Menu as MenuIcon, ChevronLeft as ChevronLeftIcon, Assignment, Archive } from '@mui/icons-material';
 import MetaData from '../../Layout/Metadata';
 import { getToken, getUser, isUserTeacher, logout } from '../../../utils/helpers';
 import LogoutIcon from '@mui/icons-material/Logout';
@@ -143,7 +143,7 @@ const ModuleList = () => {
             setLoader(false)
             setIsDeleted(data.success)
             getAdminModules();
-            alert('Learning Module Successfully Deleted!')
+            alert('Learning Module Moved to Archive!')
         } catch (error) {
             setLoader(false)
             alert('Error Occurred')
@@ -242,14 +242,11 @@ const ModuleList = () => {
                         }}>
                             <Button
                                 variant='contained'
-                                sx={{
-                                    color: 'white',
-                                    backgroundColor: 'red',
-                                    marginLeft: 1
-                                }}
+                                color='success'
                                 onClick={() => deleteModuleHandler(value)}
+                                startIcon={<Archive />}
                             >
-                                <DeleteIcon />
+                                Archive
                             </Button>
                         </Container>
                     ),

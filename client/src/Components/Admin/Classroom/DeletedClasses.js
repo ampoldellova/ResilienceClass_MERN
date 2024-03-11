@@ -322,19 +322,28 @@ const DeletedClasses = () => {
                         <Toolbar />
                         <Container maxWidth="lg" sx={{ mt: 4, mb: 4 }}>
                             <div style={{ width: '100%' }}>
-                                <Box textAlign="center" style={{ margin: 20 }}>
-                                    <Typography variant='h3' style={{ fontWeight: 1000 }}>List of Deleted Classrooms</Typography>
-                                </Box>
-                                <DataGrid
-                                    rows={DeletedClassroomList().rows}
-                                    columns={DeletedClassroomList().columns}
-                                    initialState={{
-                                        pagination: {
-                                            paginationModel: { page: 0, pageSize: 10 },
-                                        },
-                                    }}
-                                    pageSizeOptions={[10, 20]}
-                                />
+                                {deletedClasses && deletedClasses.length === 0 ?
+                                    <>
+                                        <div style={{ display: 'flex', justifyContent: 'center' }}>
+                                            <img className="my-5 img-fluid d-block mx-auto" src="https://res.cloudinary.com/dwkmutbz3/image/upload/v1710180927/ResilienceClass/Empty_Archive_p6b0gj.png" alt="No classroom yet" width="450" height="450" />
+                                        </div>
+                                        <Typography variant='h3' sx={{ textAlign: 'center', fontWeight: 1 }}> Empty Deleted Classes.</Typography>
+                                    </> : <>
+                                        <Box textAlign="center" style={{ margin: 20 }}>
+                                            <Typography variant='h3' style={{ fontWeight: 1000 }}>List of Deleted Classrooms</Typography>
+                                        </Box>
+                                        <DataGrid
+                                            rows={DeletedClassroomList().rows}
+                                            columns={DeletedClassroomList().columns}
+                                            initialState={{
+                                                pagination: {
+                                                    paginationModel: { page: 0, pageSize: 10 },
+                                                },
+                                            }}
+                                            pageSizeOptions={[10, 20]}
+                                        />
+                                    </>
+                                }
                             </div>
                         </Container>
                     </Box>
