@@ -225,7 +225,7 @@ const ArchivedClass = () => {
                         {archivedClassroom && archivedClassroom.length === 0 ?
                             <>
                                 <div style={{ display: 'flex', justifyContent: 'center' }}>
-                                    <img className="my-5 img-fluid d-block mx-auto" src="https://res.cloudinary.com/dwkmutbz3/image/upload/v1708850432/ResilienceClass/Empty_Classroom_ksg63g.png" alt="No classroom yet" width="500" height="500" />
+                                    <img className="my-5 img-fluid d-block mx-auto" src="https://res.cloudinary.com/dwkmutbz3/image/upload/v1710180927/ResilienceClass/Empty_Archive_p6b0gj.png" alt="No classroom yet" width="450" height="450" />
                                 </div>
                                 <Typography variant='h3' sx={{ textAlign: 'center', fontWeight: 1 }}>Empty Classroom Archive.</Typography>
                             </> : <>
