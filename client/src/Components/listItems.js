@@ -4,7 +4,6 @@ import { getUser } from '../utils/helpers';
 import ListItemButton from '@mui/material/ListItemButton';
 import ListItemIcon from '@mui/material/ListItemIcon';
 import ListItemText from '@mui/material/ListItemText';
-import HomeIcon from '@mui/icons-material/Home';
 import { Link } from 'react-router-dom';
 import ViewModuleIcon from '@mui/icons-material/ViewModule';
 import AdminPanelSettingsIcon from '@mui/icons-material/AdminPanelSettings';
@@ -16,14 +15,19 @@ import ClassIcon from '@mui/icons-material/Class';
 import GroupIcon from '@mui/icons-material/Group';
 import AnalyticsIcon from '@mui/icons-material/Analytics';
 import ArchiveIcon from '@mui/icons-material/Archive';
-import { Divider, ListSubheader } from '@mui/material';
+import { Divider } from '@mui/material';
 
 const MainListItems = () => {
     const [open, setOpen] = React.useState(true);
+    const [openArchive, setOpenArchive] = React.useState(false);
     const [user, setUser] = useState('')
 
     const handleClick = () => {
         setOpen(!open);
+    };
+
+    const handleClickArchives = () => {
+        setOpenArchive(!openArchive);
     };
 
     useEffect(() => {
@@ -34,7 +38,7 @@ const MainListItems = () => {
         <React.Fragment>
             {user && user.role === 'admin' && (
                 <>
-                    <ListItemButton component={Link} to="#" onClick={handleClick}>
+                    <ListItemButton onClick={handleClick}>
                         <ListItemIcon>
                             <AdminPanelSettingsIcon />
                         </ListItemIcon>
@@ -74,21 +78,38 @@ const MainListItems = () => {
                                 <ListItemText primary="Users" />
                             </ListItemButton>
                         </List>
-                        <List component="div" disablePadding>
-                            <ListItemButton sx={{ pl: 4 }} component={Link} to="/admin/archive/modules">
-                                <ListItemIcon>
-                                    <ArchiveIcon />
-                                </ListItemIcon>
-                                <ListItemText primary="Archived Modules" />
-                            </ListItemButton>
-                        </List>
+                        <ListItemButton sx={{ pl: 4 }} onClick={handleClickArchives}>
+                            <ListItemIcon>
+                                <ArchiveIcon />
+                            </ListItemIcon>
+                            <ListItemText primary="Archives" />
+                            {openArchive ? <ExpandLess /> : <ExpandMore />}
+                        </ListItemButton>
+                        <Collapse in={openArchive} timeout="auto" unmountOnExit>
+                            <List component="div" disablePadding>
+                                <ListItemButton sx={{ pl: 8 }} component={Link} to="/admin/deleted/classrooms">
+                                    <ListItemIcon>
+                                        <ClassIcon />
+                                    </ListItemIcon>
+                                    <ListItemText primary="Classes" />
+                                </ListItemButton>
+                            </List>
+                            <List component="div" disablePadding>
+                                <ListItemButton sx={{ pl: 8 }} component={Link} to="/admin/archive/modules">
+                                    <ListItemIcon>
+                                        <ViewModuleIcon />
+                                    </ListItemIcon>
+                                    <ListItemText primary="Modules" />
+                                </ListItemButton>
+                            </List>
+                        </Collapse>
                     </Collapse>
                     <Divider fullwidth />
                 </>
             )}
             <ListItemButton component={Link} to="/dashboard">
                 <ListItemIcon>
-                    <HomeIcon />
+                    <ClassIcon />
                 </ListItemIcon>
                 <ListItemText primary="Classrooms" />
             </ListItemButton>

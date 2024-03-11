@@ -3,26 +3,16 @@ const router = express.Router();
 const upload = require("../utils/multer");
 const Class = require('../models/class');
 
-const { newClass, userClasses, getSingleClass, joinClass, updateClass, getClassMembers, getClassrooms, deleteClassroom, newAdminClass, promoteStudent, softDeleteClassroom, userArchivedClasses, restoreClassroom, getSingleArchiveClass, removeUserFromClass } = require('../controllers/classController');
+const { newClass, userClasses, getSingleClass, joinClass, updateClass, getClassMembers, getClassrooms, deleteClassroom, newAdminClass, promoteStudent, softDeleteClassroom, userArchivedClasses, restoreClassroom, getSingleArchiveClass, removeUserFromClass, teacherDeleteClass, getAllDeletedClasses } = require('../controllers/classController');
 const { isAuthenticatedUser, authorizeRoles } = require('../middlewares/auth');
 
-router.post('/class/new', isAuthenticatedUser, newClass);
 router.get('/class/user', isAuthenticatedUser, userClasses);
 router.get('/class/:id', isAuthenticatedUser, getSingleClass);
 router.get('/class/detail/archive/:id', isAuthenticatedUser, getSingleArchiveClass);
-router.post('/class/join', isAuthenticatedUser, joinClass);
-router.put('/class/update/:id', isAuthenticatedUser, upload.single("coverPhoto"), updateClass);
-router.delete('/class/archive/:id', isAuthenticatedUser, softDeleteClassroom);
 router.get('/class/user/archives', isAuthenticatedUser, userArchivedClasses);
-router.put('/class/archive/:id/restore', isAuthenticatedUser, restoreClassroom);
-
 router.get('/class/members/:id', isAuthenticatedUser, getClassMembers);
-router.put('/class/member/promote', isAuthenticatedUser, promoteStudent);
-router.delete('/class/member/remove', isAuthenticatedUser, removeUserFromClass);
-
 router.get('/admin/classrooms', isAuthenticatedUser, authorizeRoles('admin'), getClassrooms);
-router.delete('/admin/classroom/delete/:id', isAuthenticatedUser, authorizeRoles('admin'), deleteClassroom);
-router.post('/admin/classroom/new', isAuthenticatedUser, authorizeRoles('admin'), newAdminClass);
+router.get('/admin/deleted/classrooms', isAuthenticatedUser, authorizeRoles('admin'), getAllDeletedClasses);
 router.get('/admin/classrooms/attendance-analysis', async (req, res) => {
     try {
         const attendanceAnalysis = await Class.aggregate([
@@ -59,6 +49,21 @@ router.get('/admin/classrooms/attendance-analysis', async (req, res) => {
         res.status(500).json({ message: 'Internal Server Error' });
     }
 });
+
+router.post('/class/join', isAuthenticatedUser, joinClass);
+router.post('/class/new', isAuthenticatedUser, newClass);
+router.post('/admin/classroom/new', isAuthenticatedUser, authorizeRoles('admin'), newAdminClass);
+
+router.put('/class/update/:id', isAuthenticatedUser, upload.single("coverPhoto"), updateClass);
+router.put('/class/member/promote', isAuthenticatedUser, promoteStudent);
+router.put('/class/archive/:id/restore', isAuthenticatedUser, restoreClassroom);
+
+router.delete('/class/archive/:id', isAuthenticatedUser, softDeleteClassroom);
+router.delete('/class/delete/:id', isAuthenticatedUser, teacherDeleteClass);
+router.delete('/class/member/remove', isAuthenticatedUser, removeUserFromClass);
+router.delete('/admin/classroom/delete/:id', isAuthenticatedUser, authorizeRoles('admin'), deleteClassroom);
+
+
 
 
 

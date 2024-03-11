@@ -17,6 +17,7 @@ import Verification from './Components/User/Verification';
 import ArchivedModules from './Components/Admin/Module/ArchivedModules';
 import ArchivedClass from './Components/Class/ArchivedClass';
 import ArchivedClassDetails from './Components/Class/ArchivedClassDetails';
+import DeletedClasses from './Components/Admin/Classroom/DeletedClasses';
 
 function App() {
   return (
@@ -40,6 +41,7 @@ function App() {
           <Route path="/admin/modules" element={<ProtectedRoute><ModuleList /></ProtectedRoute>} exact />
           <Route path="/admin/dashboard" element={<ProtectedRoute><AnalyticsBoard /></ProtectedRoute>} exact />
           <Route path="/admin/archive/modules" element={<ProtectedRoute><ArchivedModules /></ProtectedRoute>} exact />
+          <Route path="/admin/deleted/classrooms" element={<ProtectedRoute><DeletedClasses /></ProtectedRoute>} exact />
         </Routes>
       </Router>
     </div>

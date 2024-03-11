@@ -16,7 +16,6 @@ import { DataGrid } from '@mui/x-data-grid';
 import RestoreIcon from '@mui/icons-material/Restore';
 import CreateAdminModule from './CreateAdminModule';
 import DeleteModal from './DeleteModal';
-// import ViewModule from './ViewModule';
 
 const drawerWidth = 240;
 

@@ -2,7 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { styled, createTheme, ThemeProvider } from '@mui/material/styles';
 import { CardMedia, CardContent, Button, Grid, Paper, Menu, MenuItem, CssBaseline, Drawer as MuiDrawer, Box, AppBar as MuiAppBar, Toolbar, List, Typography, Divider, IconButton, Container, Avatar, TextField, Card } from '@mui/material';
-import { Menu as MenuIcon, ChevronLeft as ChevronLeftIcon, Assignment } from '@mui/icons-material';
+import { Menu as MenuIcon, ChevronLeft as ChevronLeftIcon, Assignment, Visibility } from '@mui/icons-material';
 import MetaData from '../../Layout/Metadata';
 import { getToken, getUser, isUserTeacher, logout } from '../../../utils/helpers';
 import LogoutIcon from '@mui/icons-material/Logout';
@@ -13,9 +13,7 @@ import EditProfile from '../../User/EditProfile';
 import EditIcon from '@mui/icons-material/Edit';
 import DeleteIcon from '@mui/icons-material/Delete';
 import { DataGrid } from '@mui/x-data-grid';
-import { profileHead } from '../../../utils/userAvatar';
-import CreateAdminModule from './CreateAdminModule';
-// import ViewModule from './ViewModule';
+import RestoreIcon from '@mui/icons-material/Restore';
 
 const drawerWidth = 240;
 
@@ -65,15 +63,14 @@ const Drawer = styled(MuiDrawer, { shouldForwardProp: (prop) => prop !== 'open' 
 
 const defaultTheme = createTheme();
 
-const ModuleList = () => {
+const DeletedClasses = () => {
     const navigate = useNavigate();
     const [user, setUser] = useState('');
-    const [modules, setModules] = useState([]);
+    const [deletedClasses, setDeletedClasses] = useState([]);
     const menuId = 'primary-search-account-menu';
     const [open, setOpen] = React.useState(true);
     const [profileaAnchorEl, setProfileAnchorEl] = React.useState(null);
     const [loader, setLoader] = useState(true);
-    const [isDeleted, setIsDeleted] = useState(false)
 
     const logoutUser = async () => {
         try {
@@ -103,11 +100,7 @@ const ModuleList = () => {
         setProfileAnchorEl(null);
     };
 
-    const deleteModuleHandler = (id) => {
-        deleteModule(id)
-    }
-
-    const getAdminModules = async () => {
+    const getDeletedClassrooms = async () => {
         setLoader(true)
         try {
 
@@ -118,32 +111,10 @@ const ModuleList = () => {
                 }
             }
 
-            const { data: { modules } } = await axios.get(`http://localhost:4003/api/v1/admin/modules`, config)
+            const { data: { deletedClasses } } = await axios.get(`http://localhost:4003/api/v1/admin/deleted/classrooms`, config)
 
             setLoader(false)
-            console.log(modules)
-            setModules(modules)
-        } catch (error) {
-            setLoader(false)
-            alert('Error Occurred')
-        }
-    }
-
-    const deleteModule = async (id) => {
-        setLoader(true)
-        try {
-            const config = {
-                headers: {
-                    'Content-Type': 'multipart/form-data',
-                    'Authorization': `Bearer ${getToken()}`
-                }
-            }
-            const { data } = await axios.delete(`http://localhost:4003/api/v1/admin/module/delete/${id}`, config)
-
-            setLoader(false)
-            setIsDeleted(data.success)
-            getAdminModules();
-            alert('Learning Module Successfully Deleted!')
+            setDeletedClasses(deletedClasses)
         } catch (error) {
             setLoader(false)
             alert('Error Occurred')
@@ -152,52 +123,15 @@ const ModuleList = () => {
 
     useEffect(() => {
         setUser(getUser());
-        getAdminModules();
+        getDeletedClassrooms()
     }, [])
 
-    const ModuleList = () => {
+    const ArchivedClassroomList = () => {
         const data = {
             columns: [
                 {
                     headerName: '',
-                    field: 'coverImage',
-                    width: 250,
-                    align: 'center',
-                    headerAlign: 'center',
-                    renderCell: ({ value }) => (
-                        <Container style={{
-                            display: 'flex',
-                            justifyContent: 'center',
-                            alignItems: 'center'
-                        }}>
-                            <CardMedia image={value} sx={{ height: 100, width: 200 }} />
-                        </Container>
-                    ),
-                },
-                {
-                    headerName: 'Creator',
-                    field: 'creator',
-                    width: 150,
-                    align: 'center',
-                    headerAlign: 'center'
-                },
-                {
-                    headerName: 'Content Title',
-                    field: 'title',
-                    width: 250,
-                    align: 'center',
-                    headerAlign: 'center'
-                },
-                {
-                    headerName: 'Language',
-                    field: 'language',
-                    width: 150,
-                    align: 'center',
-                    headerAlign: 'center'
-                },
-                {
-                    headerName: 'Attachment',
-                    field: 'contents',
+                    field: 'teacherImage',
                     width: 150,
                     align: 'center',
                     headerAlign: 'center',
@@ -207,27 +141,51 @@ const ModuleList = () => {
                             justifyContent: 'center',
                             alignItems: 'center'
                         }}>
-
-                            <div className="d-flex flex-start">
-                                <Assignment color='primary' sx={{ width: 30, height: 30 }} />
-                                <Typography sx={{ my: 'auto' }}>
-                                    <a
-                                        href={value}
-                                        target="_blank"
-                                        rel="noopener noreferrer"
-                                        style={{
-                                            display: 'inline-block',
-                                            maxWidth: '18ch',
-                                            overflow: 'hidden',
-                                            textOverflow: 'ellipsis',
-                                            whiteSpace: 'nowrap',
-                                        }}>
-                                        content
-                                    </a>
-                                </Typography>
-                            </div>
+                            <Avatar src={value} sx={{ height: 100, width: 100 }} />
                         </Container>
                     ),
+                },
+                {
+                    headerName: 'Teacher',
+                    field: 'classTeacher',
+                    width: 250,
+                    align: 'center',
+                    headerAlign: 'center'
+                },
+                {
+                    headerName: 'Subject',
+                    field: 'subject',
+                    width: 250,
+                    align: 'center',
+                    headerAlign: 'center'
+                },
+                {
+                    headerName: 'Classroom Code',
+                    field: 'classCode',
+                    width: 150,
+                    align: 'center',
+                    headerAlign: 'center'
+                },
+                {
+                    headerName: 'Classroom Name',
+                    field: 'className',
+                    width: 150,
+                    align: 'center',
+                    headerAlign: 'center'
+                },
+                {
+                    headerName: 'Section',
+                    field: 'section',
+                    width: 150,
+                    align: 'center',
+                    headerAlign: 'center'
+                },
+                {
+                    headerName: 'Room Number',
+                    field: 'roomNumber',
+                    width: 150,
+                    align: 'center',
+                    headerAlign: 'center'
                 },
                 {
                     headerName: 'Actions',
@@ -242,12 +200,7 @@ const ModuleList = () => {
                         }}>
                             <Button
                                 variant='contained'
-                                sx={{
-                                    color: 'white',
-                                    backgroundColor: 'red',
-                                    marginLeft: 1
-                                }}
-                                onClick={() => deleteModuleHandler(value)}
+                                color='error'
                             >
                                 <DeleteIcon />
                             </Button>
@@ -258,21 +211,21 @@ const ModuleList = () => {
             rows: []
         }
 
-        modules.forEach(module => {
+        deletedClasses.forEach(classroom => {
             data.rows.push({
-                id: module._id,
-                // creatorImage: module.creator.avatar.url,
-                coverImage: module.coverImage.url,
-                creator: module.creator.name,
-                title: module.title,
-                language: module.language,
-                contents: module.contents.url,
-                actions: module._id
+                id: classroom._id,
+                teacherImage: classroom.joinedUsers.find(user => user.role === "teacher").user.avatar.url,
+                classTeacher: classroom.joinedUsers.find(user => user.role === "teacher").user.name,
+                className: classroom.className,
+                classCode: classroom.classCode,
+                section: classroom.section,
+                subject: classroom.subject,
+                roomNumber: classroom.roomNumber,
+                actions: classroom._id
             })
         })
         return data;
     }
-
 
     return (
         <>
@@ -374,12 +327,11 @@ const ModuleList = () => {
                         <Container maxWidth="lg" sx={{ mt: 4, mb: 4 }}>
                             <div style={{ width: '100%' }}>
                                 <Box textAlign="center" style={{ margin: 20 }}>
-                                    <Typography variant='h3' style={{ fontWeight: 1000 }}>List of Learning Modules</Typography>
-                                    {/* <CreateAdminModule getAdminModules={getAdminModules} /> */}
+                                    <Typography variant='h3' style={{ fontWeight: 1000 }}>List of Archived Classrooms</Typography>
                                 </Box>
                                 <DataGrid
-                                    rows={ModuleList().rows}
-                                    columns={ModuleList().columns}
+                                    rows={ArchivedClassroomList().rows}
+                                    columns={ArchivedClassroomList().columns}
                                     initialState={{
                                         pagination: {
                                             paginationModel: { page: 0, pageSize: 10 },
@@ -396,4 +348,4 @@ const ModuleList = () => {
     )
 }
 
-export default ModuleList;
+export default DeletedClasses;

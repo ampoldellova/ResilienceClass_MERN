@@ -4,6 +4,7 @@ const cloudinary = require('cloudinary');
 const generateString = require('../utils/codeGenerator')
 const user = require('../models/user');
 const ArchivedClassrooms = require('../models/archivedClassrooms')
+const DeletedClasses = require('../models/deletedClasses')
 
 exports.newClass = async (req, res, next) => {
     // console.log(req.user)
@@ -107,10 +108,8 @@ exports.softDeleteClassroom = async (req, res, next) => {
             });
         }
 
-        // Move module to ArchivedModules schema
         const archivedClassroom = await ArchivedClassrooms.create(classroom.toObject());
 
-        // Delete module from Module schema
         await Class.findByIdAndDelete(req.params.id);
 
         res.status(200).json({
@@ -309,4 +308,42 @@ exports.removeUserFromClass = async (req, res, next) => {
         console.error(error);
         res.status(500).json({ success: false, message: 'Internal server error' });
     }
+};
+
+exports.teacherDeleteClass = async (req, res, next) => {
+    try {
+        const archivedClassroom = await ArchivedClassrooms.findById(req.params.id);
+        if (!archivedClassroom) {
+            return res.status(404).json({
+                success: false,
+                message: 'Archived Classroom not found'
+            });
+        }
+
+        const deletedClassroom = await DeletedClasses.create(archivedClassroom.toObject());
+
+        await ArchivedClassrooms.findByIdAndDelete(req.params.id);
+
+        res.status(200).json({
+            success: true,
+            message: 'Classroom Permanently Deleted!',
+            deletedClassroom
+        });
+
+    } catch (error) {
+        console.error(error);
+        res.status(500).json({ message: 'Internal server error' });
+    }
+};
+
+exports.getAllDeletedClasses = async (req, res, next) => {
+    const deletedClasses = await DeletedClasses.find().populate({
+        path: 'joinedUsers.user',
+        model: user
+    });
+
+    res.status(200).json({
+        success: true,
+        deletedClasses
+    })
 };

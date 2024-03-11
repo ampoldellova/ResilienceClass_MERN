@@ -9,6 +9,7 @@ import { useNavigate } from 'react-router-dom';
 import { Loader } from '../Loader';
 import { getToken, isUserTeacher } from '../../utils/helpers';
 import axios from 'axios';
+import DeleteClassModal from './DeleteClassModal';
 
 const Archive = ({ classes, getArchivedClassroom }) => {
     const navigate = useNavigate()
@@ -57,8 +58,11 @@ const Archive = ({ classes, getArchivedClassroom }) => {
                     <CardActions style={{ justifyContent: 'flex-end' }}>
                         {isUserTeacher(classes) ?
                             <>
-                                <Button variant='contained' sx={{ borderRadius: 3 }} onClick={restoreClassroom} size="small">Unarchive</Button>
+
                                 <Button variant='contained' sx={{ borderRadius: 3 }} onClick={() => navigate(`/class/detail/archive/${classes._id}`)} size="small">View Class</Button>
+                                <Button variant='contained' sx={{ borderRadius: 3 }} color='secondary' onClick={restoreClassroom} size="small">Unarchive</Button>
+                                {/* <Button variant='contained' sx={{ borderRadius: 3 }} color='error' size="small">Delete</Button> */}
+                                <DeleteClassModal classId={classes._id} getArchivedClassroom={getArchivedClassroom} />
                             </>
                             : <>
                                 <Button variant='contained' sx={{ borderRadius: 3 }} onClick={() => navigate(`/class/detail/archive/${classes._id}`)} size="small">View Class</Button>

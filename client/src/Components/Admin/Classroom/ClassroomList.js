@@ -105,10 +105,6 @@ const ClassroomList = () => {
         setProfileAnchorEl(null);
     };
 
-    // const deleteClassroomHandler = (id) => {
-    //     deleteClassroom(id)
-    // }
-
     const getAdminClassrooms = async () => {
         setLoader(true)
         try {
@@ -130,27 +126,6 @@ const ClassroomList = () => {
             alert('Error Occurred')
         }
     }
-
-    // const deleteClassroom = async (id) => {
-    //     setLoader(true)
-    //     try {
-    //         const config = {
-    //             headers: {
-    //                 'Content-Type': 'multipart/form-data',
-    //                 'Authorization': `Bearer ${getToken()}`
-    //             }
-    //         }
-    //         const { data } = await axios.delete(`http://localhost:4003/api/v1/admin/classroom/delete/${id}`, config)
-
-    //         setLoader(false)
-    //         setIsDeleted(data.success)
-    //         getAdminClassrooms()
-    //         alert('Classroom Successfully Deleted!')
-    //     } catch (error) {
-    //         setLoader(false)
-    //         alert('Error Occurred')
-    //     }
-    // }
 
     useEffect(() => {
         setUser(getUser());
@@ -239,18 +214,6 @@ const ClassroomList = () => {
                             >
                                 View
                             </Button>
-                            {/* </Link> */}
-                            {/* <Button
-                                variant='contained'
-                                sx={{
-                                    color: 'white',
-                                    backgroundColor: 'red',
-                                    marginLeft: 1
-                                }}
-                                onClick={() => deleteClassroomHandler(value)}
-                            >
-                                <DeleteIcon />
-                            </Button> */}
                         </Container>
                     ),
                 },
@@ -374,7 +337,7 @@ const ClassroomList = () => {
                         <div style={{ width: '100%' }}>
                             <Box textAlign="center" style={{ margin: 20 }}>
                                 <Typography variant='h3' style={{ fontWeight: 1000 }}>List of Classrooms</Typography>
-                                <CreateClassroom getAdminClassrooms={getAdminClassrooms} />
+                                {/* <CreateClassroom getAdminClassrooms={getAdminClassrooms} /> */}
                             </Box>
                             <DataGrid
                                 rows={ClassroomList().rows}
