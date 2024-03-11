@@ -15,6 +15,7 @@ import DeleteIcon from '@mui/icons-material/Delete';
 import { DataGrid } from '@mui/x-data-grid';
 import RestoreIcon from '@mui/icons-material/Restore';
 import CreateAdminModule from './CreateAdminModule';
+import DeleteModal from './DeleteModal';
 // import ViewModule from './ViewModule';
 
 const drawerWidth = 240;
@@ -134,7 +135,6 @@ const ArchivedModules = () => {
         try {
             const config = {
                 headers: {
-                    // 'Content-Type': 'multipart/form-data',
                     'Authorization': `Bearer ${getToken()}`
                 }
             }
@@ -247,6 +247,7 @@ const ArchivedModules = () => {
                             >
                                 <RestoreIcon />
                             </Button>
+                            <DeleteModal moduleId={value} getArchivedModules={getArchivedModules} />
                         </Container>
                     ),
                 },
@@ -257,7 +258,6 @@ const ArchivedModules = () => {
         archivedModules.forEach(module => {
             data.rows.push({
                 id: module._id,
-                // creatorImage: module.creator.avatar.url,
                 coverImage: module.coverImage.url,
                 creator: module.creator.name,
                 title: module.title,

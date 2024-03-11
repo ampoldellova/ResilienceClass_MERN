@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { Box, Button, Dialog, CardMedia, Container, DialogContent, Grid, TextField, Autocomplete, AppBar, Toolbar, IconButton, Typography, Slide, InputLabel } from '@mui/material';
+import { Box, Button, Dialog, CardMedia, Container, DialogContent, Grid, TextField, Autocomplete, AppBar, Toolbar, IconButton, Typography, Slide, InputLabel, MenuItem } from '@mui/material';
 import AddIcon from '@mui/icons-material/Add';
 import { getToken } from '../../../utils/helpers';
 import * as Yup from 'yup';
@@ -10,6 +10,7 @@ import CloseIcon from '@mui/icons-material/Close';
 import { Loader } from '../../Loader';
 
 const validationSchema = Yup.object({
+    category: Yup.string().required('Learning module category is required'),
     title: Yup.string().required('Learning module title is required'),
     description: Yup.string().required('Module description is required'),
     language: Yup.string().required('Module language is required'),
@@ -30,10 +31,23 @@ const CreateAdminModule = ({ getAdminModules }) => {
     const displayLanguages = languages.getData().map(language => {
         return language.language
     });
-
     const inputRef = React.useRef();
-
     const [source, setSource] = React.useState();
+
+    const categories = [
+        'Computer Science',
+        'Data Science',
+        'Health',
+        'Language Learning',
+        'Information Technology',
+        'Physical Science',
+        'Engineering',
+        'Arts and Humanities',
+        'Personal Development',
+        'Business',
+        'Social Sciences',
+        'Math and Logic'
+    ]
 
     const handleFileChange = (event) => {
         const file = event.target.files[0];
@@ -41,13 +55,10 @@ const CreateAdminModule = ({ getAdminModules }) => {
         setSource(url);
     };
 
-    const handleChoose = (event) => {
-        inputRef.current.click();
-    };
-
     const formik = useFormik({
         initialValues: {
             coverImage: '',
+            category: '',
             title: '',
             description: '',
             language: '',
@@ -58,6 +69,7 @@ const CreateAdminModule = ({ getAdminModules }) => {
 
             const formData = new FormData();
             formData.append('coverImage', values.coverImage[0]);
+            formData.set('category', values.category);
             formData.set('title', values.title);
             formData.set('description', values.description);
             formData.set('language', values.language);
@@ -160,6 +172,8 @@ const CreateAdminModule = ({ getAdminModules }) => {
                                         image={thumbnailPreview}
                                         title="green iguana"
                                     />
+                                </Grid>
+                                <Grid item sm={12} md={6}>
                                     <InputLabel>Choose a thumbnail</InputLabel>
                                     <TextField
                                         fullWidth
@@ -171,8 +185,26 @@ const CreateAdminModule = ({ getAdminModules }) => {
                                         onChange={handleInputChange}
                                         error={formik.touched.coverImage && Boolean(formik.errors.coverImage)}
                                         helperText={formik.touched.coverImage && formik.errors.coverImage}
-                                        sx={{ mb: 2 }}
                                     />
+                                </Grid>
+                                <Grid item sm={12} md={6}>
+                                    <InputLabel>Select Category</InputLabel>
+                                    <TextField
+                                        fullWidth
+                                        id="category"
+                                        name='category'
+                                        select
+                                        value={formik.values.category}
+                                        onChange={formik.handleChange}
+                                        error={formik.touched.category && Boolean(formik.errors.category)}
+                                        helperText={formik.touched.category && formik.errors.category}
+                                    >
+                                        {categories.map(category => (
+                                            <MenuItem key={category} value={category} >{category}</MenuItem >
+                                        ))}
+                                    </TextField>
+                                </Grid>
+                                <Grid item sm={12}>
                                     <TextField
                                         fullWidth
                                         id="title"

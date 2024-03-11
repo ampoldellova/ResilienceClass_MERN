@@ -87,37 +87,20 @@ exports.getSingleModule = async (req, res, next) => {
     })
 }
 
-// exports.deleteModule = async (req, res, next) => {
-//     const module = await Module.findByIdAndDelete(req.params.id);
-//     if (!module) {
-//         return res.status(404).json({
-//             success: false,
-//             message: 'Learning Module not found'
-//         })
-//     }
-
-//     res.status(200).json({
-//         success: true,
-//         message: 'Learning Module deleted'
-//     })
-// }
-
-exports.moduleAnalytics = async (req, res, next) => {
-    try {
-        const modules = await Module.find();
-
-        // Calculate the count of modules per category
-        const modulesPerCategory = modules.reduce((acc, module) => {
-            acc[module.category] = (acc[module.category] || 0) + 1;
-            return acc;
-        }, {});
-
-        res.status(200).json({ modulesPerCategory });
-    } catch (error) {
-        console.error(error);
-        res.status(500).json({ message: 'Internal server error' });
+exports.deleteModule = async (req, res, next) => {
+    const archiveModule = await ArchivedModules.findByIdAndDelete(req.params.id);
+    if (!archiveModule) {
+        return res.status(404).json({
+            success: false,
+            message: 'Learning Module not found'
+        })
     }
-};
+
+    res.status(200).json({
+        success: true,
+        message: 'Learning Module deleted'
+    })
+}
 
 exports.softDeleteModule = async (req, res, next) => {
     try {
@@ -129,10 +112,8 @@ exports.softDeleteModule = async (req, res, next) => {
             });
         }
 
-        // Move module to ArchivedModules schema
         const archivedModule = await ArchivedModules.create(module.toObject());
 
-        // Delete module from Module schema
         await Module.findByIdAndDelete(req.params.id);
 
         res.status(200).json({
@@ -156,10 +137,8 @@ exports.restoreModule = async (req, res, next) => {
             });
         }
 
-        // Create module in Module schema
         const module = await Module.create(archivedModule.toObject());
 
-        // Delete module from ArchivedModules schema
         await ArchivedModules.findByIdAndDelete(req.params.id);
 
         res.status(200).json({

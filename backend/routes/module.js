@@ -2,7 +2,7 @@ const express = require('express');
 const router = express.Router();
 const upload = require("../utils/multer");
 
-const { newModule, getAllModules, getSingleModule, moduleAnalytics, softDeleteModule, getAllArchivedModules, restoreModule } = require('../controllers/moduleController');
+const { newModule, getAllModules, getSingleModule, softDeleteModule, getAllArchivedModules, restoreModule, deleteModule } = require('../controllers/moduleController');
 const { isAuthenticatedUser, authorizeRoles } = require('../middlewares/auth');
 
 router.post('/module/new', isAuthenticatedUser, upload.fields([
@@ -14,7 +14,7 @@ router.get('/module/:id', isAuthenticatedUser, getSingleModule);
 router.get('/admin/modules', isAuthenticatedUser, authorizeRoles('admin'), getAllModules);
 router.get('/admin/archive/modules', isAuthenticatedUser, authorizeRoles('admin'), getAllArchivedModules);
 router.delete('/admin/module/delete/:id', isAuthenticatedUser, authorizeRoles('admin'), softDeleteModule);
+router.delete('/admin/module/delete/force/:id', isAuthenticatedUser, authorizeRoles('admin'), deleteModule);
 router.put('/admin/module/restore/:id', isAuthenticatedUser, authorizeRoles('admin'), restoreModule);
-router.get('/admin/module-categories', isAuthenticatedUser, authorizeRoles('admin'), moduleAnalytics);
 
 module.exports = router;
