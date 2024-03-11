@@ -27,14 +27,8 @@ const RemoveStudentModal = ({ userId, classId }) => {
     };
 
     const RemoveStudent = async () => {
-        const formData = {
-            userId: userId,
-            classId: classId
-        }
-
         const config = {
             headers: {
-                // 'Content-Type': 'multipart/form-data',
                 'Authorization': `Bearer ${getToken()}`
             }
         }
