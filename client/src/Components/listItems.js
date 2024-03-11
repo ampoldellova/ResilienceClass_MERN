@@ -67,19 +67,19 @@ const MainListItems = () => {
                             </ListItemButton>
                         </List>
                         <List component="div" disablePadding>
-                            <ListItemButton sx={{ pl: 4 }} component={Link} to="/admin/archive/modules">
-                                <ListItemIcon>
-                                    <ArchiveIcon />
-                                </ListItemIcon>
-                                <ListItemText primary="Archived Modules" />
-                            </ListItemButton>
-                        </List>
-                        <List component="div" disablePadding>
                             <ListItemButton sx={{ pl: 4 }} component={Link} to="/admin/users">
                                 <ListItemIcon>
                                     <GroupIcon />
                                 </ListItemIcon>
                                 <ListItemText primary="Users" />
+                            </ListItemButton>
+                        </List>
+                        <List component="div" disablePadding>
+                            <ListItemButton sx={{ pl: 4 }} component={Link} to="/admin/archive/modules">
+                                <ListItemIcon>
+                                    <ArchiveIcon />
+                                </ListItemIcon>
+                                <ListItemText primary="Archived Modules" />
                             </ListItemButton>
                         </List>
                     </Collapse>

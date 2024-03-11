@@ -19,6 +19,7 @@ import { getToken } from '../../utils/helpers';
 import PageviewIcon from '@mui/icons-material/Pageview';
 import axios from 'axios';
 import { Loader } from '../Loader';
+import DocViewer, { DocViewerRenderers } from "@cyntler/react-doc-viewer";
 
 const Transition = React.forwardRef(function Transition(props, ref) {
     return <Slide direction="up" ref={ref} {...props} />;
@@ -28,6 +29,7 @@ const ModuleDetail = ({ moduleId }) => {
     const [open, setOpen] = useState(false);
     const [module, setModule] = useState({});
     const [loader, setLoader] = useState(true);
+    const [docs, setDocs] = useState({})
 
     const handleClickOpen = () => {
         moduleDetails(moduleId);
@@ -50,33 +52,19 @@ const ModuleDetail = ({ moduleId }) => {
 
             const { data: { module } } = await axios.get(`http://localhost:4003/api/v1/module/${moduleId}`, config);
 
+            const docs = [
+                { uri: module?.contents?.url }
+            ];
+
             setLoader(false)
-            setModule(module)
+            setModule(module)      
+            setDocs(docs)
         } catch (error) {
             setLoader(false)
             alert('Error Occurred')
         }
     }
 
-    const disablePrintAndSave = () => {
-        // Wait for iframe content to load, then apply script to disable print and save
-        window.disablePrintAndSave = function () {
-            const iframe = document.querySelector('iframe[title="contents"]');
-            const iframeWindow = iframe.contentWindow;
-            iframeWindow.print = function () {
-                alert("Printing is disabled for this content.");
-            };
-            iframeWindow.document.addEventListener('contextmenu', function (e) {
-                e.preventDefault();
-            });
-            iframeWindow.document.addEventListener('keydown', function (e) {
-                if ((e.ctrlKey || e.metaKey) && e.keyCode === 83) { // Ctrl + S
-                    e.preventDefault();
-                    alert("Saving is disabled for this content.");
-                }
-            });
-        };
-    }
 
     return (
         <React.Fragment>
@@ -127,23 +115,8 @@ const ModuleDetail = ({ moduleId }) => {
                             </div>
                             <Typography variant='subtitle1' sx={{ mt: 5 }}>{module?.description}</Typography>
                         </Grid>
-                        <Grid item xs={12} md={12} lg={6} sx={{ paddingLeft: 2, display: 'flex', alignItems: 'center', mb: 5 }}> {/* Add paddingLeft for space */}
-                            {/* <iframe
-                                title='contents'
-                                width="100%"
-                                height="800"
-                                controls
-                                src={module?.contents?.url}
-                                sandbox="allow-scripts allow-same-origin"
-                                onLoad={disablePrintAndSave()}
-                            /> */}
-                            <object data={module?.contents?.url} type="application/pdf" width="600" height="800">
-                                <p>PDF cannot be displayed</p>
-                                {/* Hide download button */}
-                                <param name="toolbar" value="0" />
-                                <param name="navpanes" value="0" />
-                                <param name="scrollbar" value="0" />
-                            </object>
+                        <Grid item xs={12} md={12} lg={6} sx={{ paddingLeft: 2, display: 'flex', alignItems: 'center', mb: 5 }}>
+                            <DocViewer documents={docs} pluginRenderers={DocViewerRenderers} />
                         </Grid>
                     </Grid>
 
