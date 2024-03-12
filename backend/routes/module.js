@@ -1,6 +1,7 @@
 const express = require('express');
 const router = express.Router();
 const upload = require("../utils/multer");
+const Module = require('../models/module');
 
 const { newModule, getAllModules, getSingleModule, softDeleteModule, getAllArchivedModules, restoreModule, deleteModule } = require('../controllers/moduleController');
 const { isAuthenticatedUser, authorizeRoles } = require('../middlewares/auth');
@@ -16,5 +17,18 @@ router.get('/admin/archive/modules', isAuthenticatedUser, authorizeRoles('admin'
 router.delete('/admin/module/delete/:id', isAuthenticatedUser, authorizeRoles('admin'), softDeleteModule);
 router.delete('/admin/module/delete/force/:id', isAuthenticatedUser, authorizeRoles('admin'), deleteModule);
 router.put('/admin/module/restore/:id', isAuthenticatedUser, authorizeRoles('admin'), restoreModule);
+router.get('/admin/module-categories', async (req, res) => {
+    try {
+        const categories = await Module.aggregate([
+            { $group: { _id: '$category', count: { $sum: 1 } } },
+            { $project: { category: '$_id', count: 1, _id: 0 } }
+        ]);
+        res.json({ categories });
+    } catch (error) {
+        console.error(error);
+        res.status(500).json({ message: 'Internal server error' });
+    }
+});
+
 
 module.exports = router;

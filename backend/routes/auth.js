@@ -57,6 +57,7 @@ router.get('/admin/userRegistrations', async (req, res) => {
         res.status(500).send('Server Error');
     }
 });
+
 router.get('/admin/user-activity', async (req, res) => {
     try {
         // Query the database to get user login activity data

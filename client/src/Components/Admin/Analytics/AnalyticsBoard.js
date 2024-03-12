@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { styled, createTheme, ThemeProvider } from '@mui/material/styles';
-import { Grid, Paper, Menu, MenuItem, CssBaseline, Drawer as MuiDrawer, Box, AppBar as MuiAppBar, Toolbar, List, Typography, Divider, IconButton, Container, Avatar, TextField } from '@mui/material';
+import { Grid, Paper, Menu, MenuItem, CssBaseline, Drawer as MuiDrawer, Box, AppBar as MuiAppBar, Toolbar, List, Typography, Divider, IconButton, Container, Avatar } from '@mui/material';
 import { Menu as MenuIcon, ChevronLeft as ChevronLeftIcon } from '@mui/icons-material';
 import MetaData from '../../Layout/Metadata';
 import { getUser, logout } from '../../../utils/helpers';
@@ -10,7 +10,7 @@ import MainListItems from '../../listItems';
 
 import { Loader } from '../../Loader';
 import EditProfile from '../../User/EditProfile';
-import { BarChart, Bar, LineChart, Line, XAxis, YAxis, CartesianGrid, Tooltip, Legend, ResponsiveContainer } from 'recharts';
+import { BarChart, Bar, LineChart, Line, XAxis, YAxis, CartesianGrid, Tooltip, Legend, ResponsiveContainer, PieChart, Pie, Cell } from 'recharts';
 
 import axios from 'axios';
 
@@ -72,7 +72,11 @@ const AnalyticsBoard = () => {
     const [data, setData] = useState([]);
     const [attendanceData, setAttendanceData] = useState([]);
     const [activityData, setActivityData] = useState([]);
-    const [categoryDistribution, setCategoryDistribution] = useState([]);
+    const [categoryDistribution, setCategoryDistribution] = useState(
+        JSON.parse('[{"count":2,"category":"Information Technology"},{"count":1,"category":"Personal Development"},{"count":2,"category":"Computer Science"}]')
+    );
+
+    console.log(categoryDistribution)
 
     const logoutUser = async () => {
         try {
@@ -102,54 +106,57 @@ const AnalyticsBoard = () => {
         setProfileAnchorEl(null);
     };
 
+    const fetchData = async () => {
+        try {
+            const res = await axios.get('http://localhost:4003/api/v1/admin/userRegistrations');
+            setData(res.data);
+            setLoader(false);
+        } catch (err) {
+            console.error(err);
+            setLoader(false);
+        }
+    };
+
+    const fetchAttendance = async () => {
+        try {
+            const response = await axios.get('http://localhost:4003/api/v1/admin/classrooms/attendance-analysis');
+            setAttendanceData(response.data.attendanceAnalysis);
+        } catch (error) {
+            console.error('Error fetching data:', error);
+        }
+    };
+
+    const fetchLoginActivity = async () => {
+        try {
+            const response = await axios.get('http://localhost:4003/api/v1/admin/user-activity');
+            setActivityData(response.data.activity);
+        } catch (error) {
+            console.error(error);
+        }
+    };
+
+    // const fetchModules = async () => {
+    //     try {
+    //         const { data } = await axios.get('http://localhost:4003/api/v1/admin/module-categories');
+    //         console.log(data)
+    //         setCategoryDistribution(data.categories);
+
+    //     } catch (error) {
+    //         console.log('Error fetching data:', error);
+    //     }
+    // };
+
 
 
     useEffect(() => {
         setUser(getUser());
-        const fetchData = async () => {
-            try {
-                const res = await axios.get('http://localhost:4003/api/v1/admin/userRegistrations');
-                setData(res.data);
-                setLoader(false);
-            } catch (err) {
-                console.error(err);
-                setLoader(false);
-            }
-        };
-
-        const fetchAttendance = async () => {
-            try {
-                const response = await axios.get('http://localhost:4003/api/v1/admin/classrooms/attendance-analysis');
-                setAttendanceData(response.data.attendanceAnalysis);
-            } catch (error) {
-                console.error('Error fetching data:', error);
-            }
-        };
-
-        const fetchLoginActivity = async () => {
-            try {
-                const response = await axios.get('http://localhost:4003/api/v1/admin/user-activity');
-                setActivityData(response.data.activity);
-            } catch (error) {
-                console.error(error);
-            }
-        };
-
-        // const fetchCategoryDistribution = async () => {
-        //     try {
-        //         const response = await axios.get('http://localhost:4003/api/v1/admin/module-distribution');
-        //         setCategoryDistribution(Object.entries(response.data.modulesPerCategory).map(([category, count]) => ({ category, count })));
-        //     } catch (error) {
-        //         console.error(error);
-        //     }
-        // };
-
-
         fetchData();
         fetchAttendance();
         fetchLoginActivity();
-        // fetchCategoryDistribution();
+        // fetchModules();
     }, [])
+
+    const COLORS = ['#0088FE', '#00C49F', '#FFBB28', '#FF8042', '#AF19FF'];
 
     return (
         <>
@@ -250,7 +257,7 @@ const AnalyticsBoard = () => {
                         <Toolbar />
                         <Container maxWidth="lg" sx={{ mt: 4, mb: 4 }}>
                             <Grid container spacing={3}>
-                                <Grid item xs={12} md={8} lg={9}>
+                                <Grid item xs={12} md={8} lg={8}>
                                     <Typography component="h2" variant="h6" color="primary" gutterBottom>
                                         Attendance Rate
                                     </Typography>
@@ -259,36 +266,57 @@ const AnalyticsBoard = () => {
                                             p: 2,
                                             display: 'flex',
                                             flexDirection: 'column',
-                                            height: 240,
+                                            height: 340,
                                         }}
                                     >
-                                        <ResponsiveContainer width="100%" height={220}>
+                                        <ResponsiveContainer width="100%" height={320}>
                                             <BarChart data={attendanceData}>
                                                 <CartesianGrid strokeDasharray="3 3" />
                                                 <XAxis dataKey="className" />
                                                 <YAxis />
                                                 <Tooltip />
                                                 <Legend />
-                                                <Bar dataKey="attendanceRate" fill="#8884d8" />
+                                                <Bar dataKey="attendanceRate" fill="#8884d8" >
+                                                    {attendanceData.map((entry, index) => (
+                                                        <Cell key={`cell-${index}`} fill={COLORS[index % COLORS.length]} />
+                                                    ))}
+                                                </Bar>
                                             </BarChart>
                                         </ResponsiveContainer>
 
                                     </Paper>
                                 </Grid>
 
-                                <Grid item xs={12} md={4} lg={3}>
+                                <Grid item xs={12} md={4} lg={4}>
                                     <Typography component="h2" variant="h6" color="primary" gutterBottom>
-                                        Registration Count
+                                        Modules Count Per Category
                                     </Typography>
                                     <Paper
                                         sx={{
                                             p: 2,
                                             display: 'flex',
                                             flexDirection: 'column',
-                                            height: 240,
+                                            height: 340,
                                         }}
                                     >
+                                        <PieChart width={300} height={300}>
+                                            <Tooltip formatter={(value, _id, props) => [`${value}`, _id]} />
+                                            <Pie
+                                                data={categoryDistribution}
+                                                dataKey="count"
+                                                nameKey="category"
+                                                cx="50%"
+                                                cy="50%"
+                                                // outerRadius={150}
+                                                fill="#8884d8"
+                                            // label
+                                            >
+                                                {categoryDistribution.map((entry, index) => (
+                                                    <Cell key={`cell-${index}`} fill={COLORS[index % COLORS.length]} />
+                                                ))}
 
+                                            </Pie>
+                                        </PieChart>
                                     </Paper>
                                 </Grid>
                                 <Grid item xs={12}>

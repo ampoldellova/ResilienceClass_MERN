@@ -697,6 +697,8 @@ const ClassworkDetails = () => {
                                                             <Typography variant='subtitle1' style={{ color: green[500] }}>submitted</Typography>
                                                         ) : isSubmitted() && isGraded() ? (
                                                             <Typography variant='subtitle1' style={{ color: green[500] }}>graded</Typography>
+                                                        ) : new Date(classwork.deadline) < new Date() ? (
+                                                            <Typography variant='subtitle1' style={{ color: red[500] }}>Missing</Typography>
                                                         ) : <></>}
                                                     </div>
 

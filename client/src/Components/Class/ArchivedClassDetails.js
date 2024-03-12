@@ -464,11 +464,11 @@ const ArchivedClassDetails = () => {
                                             <ClassworkList />
                                         </Paper>
 
-                                        <ClassMembers classroom={archivedClassroom} />
+                                        {/* <ClassMembers classroom={archivedClassroom} /> */}
                                         <Button variant='contained' onClick={restoreClassroom} sx={{ mt: 1 }} fullWidth>Unarchive Classroom</Button>
                                     </>
                                     : <>
-                                        <ClassMembers classroom={archivedClassroom} />
+                                        {/* <ClassMembers classroom={archivedClassroom} /> */}
                                         <Paper
                                             sx={{
                                                 p: 2,

@@ -81,7 +81,7 @@ const Login = () => {
                         sm={4}
                         md={7}
                         sx={{
-                            backgroundImage: 'url(https://source.unsplash.com/random?wallpapers)',
+                            backgroundImage: 'url(https://res.cloudinary.com/dwkmutbz3/image/upload/v1710244637/ResilienceClass/Pngtree_3d_render_of_empty_classroom_5826947_zupaun.jpg)',
                             backgroundRepeat: 'no-repeat',
                             backgroundColor: (t) =>
                                 t.palette.mode === 'light' ? t.palette.grey[50] : t.palette.grey[900],
