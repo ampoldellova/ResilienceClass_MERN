@@ -1,18 +1,19 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { styled, createTheme, ThemeProvider } from '@mui/material/styles';
-import { Grid, Paper, Menu, MenuItem, CssBaseline, Drawer as MuiDrawer, Box, AppBar as MuiAppBar, Toolbar, List, Typography, Divider, IconButton, Container, Avatar } from '@mui/material';
-import { Menu as MenuIcon, ChevronLeft as ChevronLeftIcon } from '@mui/icons-material';
+import { Grid, Paper, Menu, MenuItem, CssBaseline, Drawer as MuiDrawer, Box, AppBar as MuiAppBar, Toolbar, List, Typography, Divider, IconButton, Container, Avatar, Button } from '@mui/material';
+import { Menu as MenuIcon, ChevronLeft as ChevronLeftIcon, Download } from '@mui/icons-material';
 import MetaData from '../../Layout/Metadata';
 import { getUser, logout } from '../../../utils/helpers';
 import LogoutIcon from '@mui/icons-material/Logout';
 import MainListItems from '../../listItems';
-
+import jsPDF from 'jspdf';
 import { Loader } from '../../Loader';
 import EditProfile from '../../User/EditProfile';
 import { BarChart, Bar, LineChart, Line, XAxis, YAxis, CartesianGrid, Tooltip, Legend, ResponsiveContainer, PieChart, Pie, Cell } from 'recharts';
-
+import html2canvas from 'html2canvas';
 import axios from 'axios';
+import { borderRadius } from '@mui/system';
 
 const drawerWidth = 240;
 
@@ -72,11 +73,9 @@ const AnalyticsBoard = () => {
     const [data, setData] = useState([]);
     const [attendanceData, setAttendanceData] = useState([]);
     const [activityData, setActivityData] = useState([]);
-    const [categoryDistribution, setCategoryDistribution] = useState(
-        JSON.parse('[{"count":2,"category":"Information Technology"},{"count":1,"category":"Personal Development"},{"count":2,"category":"Computer Science"}]')
-    );
-
-    console.log(categoryDistribution)
+    const [categoryDistribution, setCategoryDistribution] = useState([]);
+    const chartContainerRef = useRef(null);
+    // console.log(categoryDistribution)
 
     const logoutUser = async () => {
         try {
@@ -135,17 +134,34 @@ const AnalyticsBoard = () => {
         }
     };
 
-    // const fetchModules = async () => {
-    //     try {
-    //         const { data } = await axios.get('http://localhost:4003/api/v1/admin/module-categories');
-    //         console.log(data)
-    //         setCategoryDistribution(data.categories);
+    const fetchModules = async () => {
+        try {
+            const { data } = await axios.get('http://localhost:4003/api/v1/admin/module-categories');
+            console.log(data)
+            setCategoryDistribution(data.categories);
 
-    //     } catch (error) {
-    //         console.log('Error fetching data:', error);
-    //     }
-    // };
+        } catch (error) {
+            console.log('Error fetching data:', error);
+        }
+    };
 
+    const handleDownload = () => {
+        const pdf = new jsPDF();
+        if (chartContainerRef.current) {
+            const chartElement = chartContainerRef.current;
+            html2canvas(chartElement).then(canvas => {
+                const imgData = canvas.toDataURL('image/png');
+                const imgWidth = 190; // Adjusted width of the image in mm
+                const imgHeight = (canvas.height * imgWidth) / canvas.width;
+                const marginLeft = 10; // Adjusted left margin in mm
+                const marginTop = 10; // Adjusted top margin in mm
+                pdf.addImage(imgData, 'PNG', marginLeft, marginTop, imgWidth, imgHeight);
+                pdf.save('Analytical Data.pdf');
+            });
+        } else {
+            console.error('chartContainerRef.current is not defined or null');
+        }
+    };
 
 
     useEffect(() => {
@@ -153,7 +169,7 @@ const AnalyticsBoard = () => {
         fetchData();
         fetchAttendance();
         fetchLoginActivity();
-        // fetchModules();
+        fetchModules();
     }, [])
 
     const COLORS = ['#0088FE', '#00C49F', '#FFBB28', '#FF8042', '#AF19FF'];
@@ -255,7 +271,7 @@ const AnalyticsBoard = () => {
                         }}
                     >
                         <Toolbar />
-                        <Container maxWidth="lg" sx={{ mt: 4, mb: 4 }}>
+                        <Container ref={chartContainerRef} maxWidth="lg" sx={{ mt: 4, mb: 4 }}>
                             <Grid container spacing={3}>
                                 <Grid item xs={12} md={8} lg={8}>
                                     <Typography component="h2" variant="h6" color="primary" gutterBottom>
@@ -330,6 +346,7 @@ const AnalyticsBoard = () => {
                                                 <XAxis dataKey="date" />
                                                 <YAxis />
                                                 <Tooltip />
+                                                {/* <Tooltip formatter={(value, name, props) => [value, `${props.payload.date}`]} /> */}
                                                 <Legend />
                                                 <Line data={data} type="monotone" dataKey="registry" stroke="#8884d8" activeDot={{ r: 8 }} />
                                                 <Line data={activityData} type="monotone" dataKey="logins" stroke="#82ca9d" />
@@ -338,7 +355,15 @@ const AnalyticsBoard = () => {
                                     </Paper>
                                 </Grid>
                             </Grid>
-
+                            <Button
+                                variant='contained'
+                                onClick={handleDownload}
+                                sx={{ borderRadius: '5px', mt: 2 }}
+                                size='small'
+                                startIcon={<Download />}
+                            >
+                                Download Data
+                            </Button>
                         </Container>
                     </Box>
                 </Box>
