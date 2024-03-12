@@ -347,3 +347,29 @@ exports.deleteClassroom = async (req, res, next) => {
         message: 'Classroom deleted to database'
     })
 }
+
+exports.adminRestoreClassroom = async (req, res, next) => {
+    try {
+        const deletedClasses = await DeletedClasses.findById(req.params.id);
+        if (!deletedClasses) {
+            return res.status(404).json({
+                success: false,
+                message: 'Deleted Classroom not found'
+            });
+        }
+
+        const archivedClassroom = await ArchivedClassrooms.create(deletedClasses.toObject());
+
+        await DeletedClasses.findByIdAndDelete(req.params.id);
+
+        res.status(200).json({
+            success: true,
+            message: 'Classroom Restored to User Archive!',
+            archivedClassroom
+        });
+
+    } catch (error) {
+        console.error(error);
+        res.status(500).json({ message: 'Internal server error' });
+    }
+}

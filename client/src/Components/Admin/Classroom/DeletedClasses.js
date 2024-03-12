@@ -72,6 +72,7 @@ const DeletedClasses = () => {
     const [open, setOpen] = React.useState(true);
     const [profileaAnchorEl, setProfileAnchorEl] = React.useState(null);
     const [loader, setLoader] = useState(true);
+    const [isRestored, setIsRestored] = useState(false)
 
     const logoutUser = async () => {
         try {
@@ -101,6 +102,10 @@ const DeletedClasses = () => {
         setProfileAnchorEl(null);
     };
 
+    const restoreClassHandler = (id) => {
+        adminRestoreClassroom(id)
+    }
+
     const getDeletedClassrooms = async () => {
         setLoader(true)
         try {
@@ -116,6 +121,26 @@ const DeletedClasses = () => {
 
             setLoader(false)
             setDeletedClasses(deletedClasses)
+        } catch (error) {
+            setLoader(false)
+            alert('Error Occurred')
+        }
+    }
+
+    const adminRestoreClassroom = async (id) => {
+        setLoader(true)
+        try {
+            const config = {
+                headers: {
+                    'Authorization': `Bearer ${getToken()}`
+                }
+            }
+            const { data } = await axios.put(`http://localhost:4003/api/v1/admin/class/deleted/${id}/restore`, {}, config)
+
+            setLoader(false)
+            setIsRestored(data.success)
+            getDeletedClassrooms();
+            alert('Classroom Successfully Restored to User Archive!')
         } catch (error) {
             setLoader(false)
             alert('Error Occurred')
@@ -199,6 +224,14 @@ const DeletedClasses = () => {
                             justifyContent: 'center',
                             alignItems: 'center'
                         }}>
+                            <Button
+                                variant='contained'
+                                color='secondary'
+                                onClick={() => restoreClassHandler(value)}
+                                sx={{ mr: 1 }}
+                            >
+                                <RestoreIcon />
+                            </Button>
                             <DeleteModal getDeletedClassrooms={getDeletedClassrooms} classId={value} />
                         </Container>
                     ),
