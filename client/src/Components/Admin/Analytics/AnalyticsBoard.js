@@ -2,7 +2,7 @@ import React, { useState, useEffect, useRef } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { styled, createTheme, ThemeProvider } from '@mui/material/styles';
 import { Grid, Paper, Menu, MenuItem, CssBaseline, Drawer as MuiDrawer, Box, AppBar as MuiAppBar, Toolbar, List, Typography, Divider, IconButton, Container, Avatar, Button } from '@mui/material';
-import { Menu as MenuIcon, ChevronLeft as ChevronLeftIcon, Download } from '@mui/icons-material';
+import { Menu as MenuIcon, ChevronLeft as ChevronLeftIcon, Download, Radar } from '@mui/icons-material';
 import MetaData from '../../Layout/Metadata';
 import { getUser, logout } from '../../../utils/helpers';
 import LogoutIcon from '@mui/icons-material/Logout';
@@ -10,7 +10,7 @@ import MainListItems from '../../listItems';
 import jsPDF from 'jspdf';
 import { Loader } from '../../Loader';
 import EditProfile from '../../User/EditProfile';
-import { BarChart, Bar, LineChart, Line, XAxis, YAxis, CartesianGrid, Tooltip, Legend, ResponsiveContainer, PieChart, Pie, Cell } from 'recharts';
+import { BarChart, Bar, LineChart, Line, XAxis, YAxis, CartesianGrid, Tooltip, Legend, ResponsiveContainer, PieChart, Pie, Cell, RadarChart, PolarGrid, PolarAngleAxis, PolarRadiusAxis, RadialBarChart, RadialBar, FunnelChart, Funnel, LabelList } from 'recharts';
 import html2canvas from 'html2canvas';
 import axios from 'axios';
 import { borderRadius } from '@mui/system';
@@ -172,7 +172,7 @@ const AnalyticsBoard = () => {
         fetchModules();
     }, [])
 
-    const COLORS = ['#0088FE', '#00C49F', '#FFBB28', '#FF8042', '#AF19FF'];
+    const COLORS = ['#27374D', '#526D82', '#9BABB8', '#967E76'];
 
     return (
         <>
@@ -273,7 +273,7 @@ const AnalyticsBoard = () => {
                         <Toolbar />
                         <Container ref={chartContainerRef} maxWidth="lg" sx={{ mt: 4, mb: 4 }}>
                             <Grid container spacing={3}>
-                                <Grid item xs={12} md={8} lg={8}>
+                                <Grid item xs={12} md={6} lg={6}>
                                     <Typography component="h2" variant="h6" color="primary" gutterBottom>
                                         Attendance Rate
                                     </Typography>
@@ -292,7 +292,7 @@ const AnalyticsBoard = () => {
                                                 <YAxis />
                                                 <Tooltip />
                                                 <Legend />
-                                                <Bar dataKey="attendanceRate" fill="#8884d8" >
+                                                <Bar dataKey="attendanceRate" fill="#27374D" >
                                                     {attendanceData.map((entry, index) => (
                                                         <Cell key={`cell-${index}`} fill={COLORS[index % COLORS.length]} />
                                                     ))}
@@ -303,7 +303,7 @@ const AnalyticsBoard = () => {
                                     </Paper>
                                 </Grid>
 
-                                <Grid item xs={12} md={4} lg={4}>
+                                <Grid item xs={12} md={6} lg={6}>
                                     <Typography component="h2" variant="h6" color="primary" gutterBottom>
                                         Modules Count Per Category
                                     </Typography>
@@ -315,7 +315,7 @@ const AnalyticsBoard = () => {
                                             height: 340,
                                         }}
                                     >
-                                        <PieChart width={300} height={300}>
+                                        <PieChart width={500} height={300}>
                                             <Tooltip formatter={(value, _id, props) => [`${value}`, _id]} />
                                             <Pie
                                                 data={categoryDistribution}
@@ -323,15 +323,14 @@ const AnalyticsBoard = () => {
                                                 nameKey="category"
                                                 cx="50%"
                                                 cy="50%"
-                                                // outerRadius={150}
                                                 fill="#8884d8"
-                                            // label
                                             >
                                                 {categoryDistribution.map((entry, index) => (
                                                     <Cell key={`cell-${index}`} fill={COLORS[index % COLORS.length]} />
                                                 ))}
-
+                                                <LabelList position="inside" fill="#fff" stroke="none" dataKey="count" fontSize={18} />
                                             </Pie>
+                                            <Legend iconSize={10} layout='vertical' verticalAlign='middle' align="right" />
                                         </PieChart>
                                     </Paper>
                                 </Grid>
@@ -346,24 +345,25 @@ const AnalyticsBoard = () => {
                                                 <XAxis dataKey="date" />
                                                 <YAxis />
                                                 <Tooltip />
-                                                {/* <Tooltip formatter={(value, name, props) => [value, `${props.payload.date}`]} /> */}
                                                 <Legend />
-                                                <Line data={data} type="monotone" dataKey="registry" stroke="#8884d8" activeDot={{ r: 8 }} />
-                                                <Line data={activityData} type="monotone" dataKey="logins" stroke="#82ca9d" />
+                                                <Line data={data} type="monotone" dataKey="registry" stroke="#27374D" strokeWidth={3} />
+                                                <Line data={activityData} type="monotone" dataKey="logins" stroke="#967E76" strokeWidth={3} />
                                             </LineChart>
                                         </ResponsiveContainer>
                                     </Paper>
                                 </Grid>
                             </Grid>
-                            <Button
-                                variant='contained'
-                                onClick={handleDownload}
-                                sx={{ borderRadius: '5px', mt: 2 }}
-                                size='small'
-                                startIcon={<Download />}
-                            >
-                                Download Data
-                            </Button>
+                            <div style={{ display: 'flex', justifyContent: 'center' }}>
+                                <Button
+                                    variant='contained'
+                                    onClick={handleDownload}
+                                    sx={{ borderRadius: '5px', mt: 2 }}
+                                    size='small'
+                                    startIcon={<Download />}
+                                >
+                                    Download Data
+                                </Button>
+                            </div>
                         </Container>
                     </Box>
                 </Box>
