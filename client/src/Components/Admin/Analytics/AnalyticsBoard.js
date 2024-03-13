@@ -291,7 +291,6 @@ const AnalyticsBoard = () => {
                                                 <XAxis dataKey="className" />
                                                 <YAxis />
                                                 <Tooltip />
-                                                <Legend />
                                                 <Bar dataKey="attendanceRate" fill="#27374D" >
                                                     {attendanceData.map((entry, index) => (
                                                         <Cell key={`cell-${index}`} fill={COLORS[index % COLORS.length]} />
@@ -339,7 +338,7 @@ const AnalyticsBoard = () => {
                                         Registration and Login Count
                                     </Typography>
                                     <Paper sx={{ p: 2, display: 'flex', flexDirection: 'column' }}>
-                                        <ResponsiveContainer width="100%" height={220}>
+                                        <ResponsiveContainer width="100%" height={300}>
                                             <LineChart margin={{ top: 20, right: 30, left: 20, bottom: 5 }}>
                                                 <CartesianGrid strokeDasharray="3 3" />
                                                 <XAxis dataKey="date" />

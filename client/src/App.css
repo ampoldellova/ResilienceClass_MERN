@@ -6,6 +6,14 @@
   display: none !important;
 }
 
+#file-name {
+  display: none !important;
+}
+
+#header-bar {
+  display: none !important;
+}
+
 .App-logo {
   height: 40vmin;
   pointer-events: none;

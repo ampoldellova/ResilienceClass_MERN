@@ -13,7 +13,7 @@ import {
     Box,
     Container
 } from '@mui/material';
-import { useParams } from 'react-router-dom';
+import { Watermark } from '@hirohe/react-watermark';
 import CloseIcon from '@mui/icons-material/Close';
 import { getToken } from '../../utils/helpers';
 import PageviewIcon from '@mui/icons-material/Pageview';
@@ -57,7 +57,7 @@ const ModuleDetail = ({ moduleId }) => {
             ];
 
             setLoader(false)
-            setModule(module)      
+            setModule(module)
             setDocs(docs)
         } catch (error) {
             setLoader(false)
@@ -116,7 +116,11 @@ const ModuleDetail = ({ moduleId }) => {
                             <Typography variant='subtitle1' sx={{ mt: 5 }}>{module?.description}</Typography>
                         </Grid>
                         <Grid item xs={12} md={12} lg={6} sx={{ paddingLeft: 2, display: 'flex', alignItems: 'center', mb: 5 }}>
-                            <DocViewer documents={docs} pluginRenderers={DocViewerRenderers} />
+                            <Watermark text="ResilienceClass" wid opacity={0.4}>
+                                <div style={{ width: 800, height: 1000, border: '1px solid #000' }}>
+                                    <DocViewer documents={docs} pluginRenderers={DocViewerRenderers} />
+                                </div>
+                            </Watermark>
                         </Grid>
                     </Grid>
 
