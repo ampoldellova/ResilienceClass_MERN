@@ -8,6 +8,7 @@ import { Document, Page } from 'react-pdf'
 import axios from 'axios';
 import EditPost from './EditPost';
 import SendIcon from '@mui/icons-material/Send';
+import { filterText } from '../../utils/filterText';
 
 const Posts = ({ posts, getClassPosts, classRoom, postId }) => {
     const [user, setUser] = useState('')
@@ -122,7 +123,7 @@ const Posts = ({ posts, getClassPosts, classRoom, postId }) => {
                         }
                     </div>
                     <Typography sx={{ mt: 2, ml: 1 }}>
-                        {posts.contents}
+                        {filterText(posts.contents)}
                     </Typography>
                     {posts.attachments && posts.attachments.map(attachment => {
                         return <>
@@ -172,7 +173,7 @@ const Posts = ({ posts, getClassPosts, classRoom, postId }) => {
                                     <div className="d-flex align-items-center mb-3">
                                         <Typography variant='caption'>{new Date(comment.commentCreated).toLocaleDateString('en-PH', { month: 'long', day: '2-digit', year: 'numeric' })} • {new Date(comment.commentCreated).toLocaleTimeString('en-PH', { hour: '2-digit', minute: '2-digit' })}</Typography>
                                     </div>
-                                    <Typography sx={{ marginBottom: 3 }}>{comment.body}</Typography>
+                                    <Typography sx={{ marginBottom: 3 }}>{filterText(comment.body)}</Typography>
                                 </div>
                             </div >
                             <Divider sx={{ marginBottom: 3 }} />
